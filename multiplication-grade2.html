@@ -278,9 +278,17 @@ p.secp{margin:0 0 10px;color:var(--soft);font-size:16px}
 @media (max-width:860px){.tt{grid-template-columns:1fr}}
 @media (max-width:560px){.lineb text{font-size:30px}.lineb text[font-size="16"]{font-size:24px}.algo{font-size:24px}.pad{grid-template-columns:repeat(3,68px)}.acell{min-height:58px;font-size:13px}.acell b{font-size:16px}}
 
+/* site navigation */
+#nav{max-width:1180px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));display:flex;gap:8px;flex-wrap:wrap}
+.navb{min-height:42px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--page);color:var(--go);font-weight:600;font-size:16px;text-decoration:none;display:inline-flex;align-items:center;font-family:inherit}
+.navb:hover{border-color:var(--go)}
+body.at-home #navHome{display:none}
+@media (max-width:440px){.navb{font-size:15px;padding:6px 10px}.navb .nw{display:none}}
+
 </style>
 </head>
 <body>
+<nav id="nav" aria-label="Go to"><a class="navb" href="index.html">🏠 Learning Corner</a><button class="navb" id="navHome" type="button">🔢 Multiplication<span class="nw"> home</span></button></nav>
 <div id="app"></div>
 <div id="hand" aria-hidden="true">👆</div>
 <div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Settings"></div>
@@ -914,7 +922,7 @@ function stateOf(u){const s=pu(u.id),need=A.need;
 /* ---------- small UI helpers ---------- */
 const PRAISE=['Yes, that is right.','Nice thinking.','You got it.','Great work.','That is it.','Good job.'];
 let ctx=null,STALE={};
-function newCtx(){const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
+function newCtx(){document.body.classList.remove('at-home');const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
 const guard=p=>Promise.resolve(p).catch(e=>{if(e!==STALE)throw e});
 async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getBoundingClientRect();hd.style.left=(r.left+r.width/2-10)+'px';hd.style.top=(r.top+Math.min(r.height/2,80))+'px';await c.wait(520)}
 function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
@@ -925,7 +933,7 @@ function header(u,phase,partIx,count,idx){
   if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of 5`));
   else PARTS.forEach((p,i)=>trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')},i===partIx?`${p} ${idx+1} of ${count}`:p)));
   return h('div',{class:'top'},
-    h('button',{class:'quiet',on:{click:()=>{hush();hideHand();newCtx();home()}}},'← Home'),
+    
     h('div',{class:'ttl'},u.title,h('small',{},ses.mode==='review'?'Quick review, numbers only':phase==='pic'?'With pictures':'Numbers only')),trail,
     h('button',{class:'quiet',id:'readBtn',on:{click:readAloud}},'🔊 Read'),
     h('button',{class:'quiet',id:'pauseBtn',on:{click:pauseScreen}},'⏸ Pause'),
@@ -1064,7 +1072,7 @@ function intro(u){
   const canSkip=!isReview&&(s.log.some(x=>x.ph===nx.ph));
   const plan=isReview?h('p',{},'5 problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.'):
     h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},'🤝 Try together: 2 problems, with help on every step.'),h('li',{},'⭐ On my own: 5 problems with your checklist. Get 4 right to move on.'));
-  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home')),
+  app.append(
     h('div',{class:'panel'},h('div',{class:'chip'},`Grade ${GRADE}, ${u.std}, ${nx.mode==='boost'?'Boost':isReview?'Review':nx.ph==='pic'?'With pictures':'Numbers only'}`),h('h1',{},u.title),h('p',{style:'margin:0'},u.sub),plan,wordsBox(u),
       h('div',{class:'row'},h('button',{class:'btn main',id:'startBtn',on:{click:()=>start(u,nx)}},isReview?'Start review':"Let's start"),canSkip?h('button',{class:'btn',on:{click:()=>start(u,nx,true)}},'Skip watching, I remember'):null,
         s.pic>=A.need&&nx.ph==='num'&&!isReview?h('button',{class:'quiet',on:{click:()=>start(u,{ph:'pic',mode:'learn'})}},'Practice with pictures again'):null)));
@@ -1081,7 +1089,7 @@ const ROWPAT={1:'Times 1, the number stays the same.',2:'Every answer is even. T
 let ttSel=null,ttHide=false,ttRev=false;
 function tableScreen(){
   screen='table';newCtx();hush();hideHand();view=null;app.innerHTML='';
-  const top=h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home'),h('div',{class:'ttl'},'Times table',h('small',{},'Tap any box to see the fact')),
+  const top=h('div',{class:'top'},h('div',{class:'ttl'},'Times table',h('small',{},'Tap any box to see the fact')),
     h('button',{class:'quiet','aria-pressed':String(ttHide),on:{click(){ttHide=!ttHide;ttRev=false;tableScreen()}}},'Hide answers'),h('button',{class:'quiet','aria-label':'Settings',on:{click:openSettings}},'⚙'));
   const S=ttSel||[0,0];
   const grid=h('div',{class:'ttgrid',role:'group','aria-label':'times table'});
@@ -1132,7 +1140,7 @@ const lastTimed=()=>{const L=SPR.filter(x=>x.mode==='t');return L.length?L[L.len
 function sprintHome(){
   screen='sprint';newCtx();hush();hideHand();view=null;app.innerHTML='';
   const{note,facts}=sprintFacts(),goal=lastTimed();
-  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home'),h('div',{class:'ttl'},'Quick practice',h('small',{},`${facts.length} facts from the families you have learned`))),
+  app.append(h('div',{class:'top'},h('div',{class:'ttl'},'Quick practice',h('small',{},`${facts.length} facts from the families you have learned`))),
     h('div',{class:'panel'},h('h1',{},'Quick practice'),
       h('p',{style:'margin:0'},'Answer as many facts as you can. Most facts will be ones you know, mixed with a few you are still learning. If you miss one, the clock stops and we fix it together.'),
       h('p',{style:'margin:0;font-weight:600'},goal?`Your goal: meet or beat ${goal}.`:'This is your first try. Just do your best. Next time you will have a goal to beat.'),
@@ -1188,7 +1196,7 @@ function unitCard(u,i,up){const st=stateOf(u),s=pu(u.id);
   return h('div',{class:'unit'+(st.done&&st.chip!=='due'?' done':'')+(up?' up':'')},h('div',{class:'t'},h('span',{class:'num'},s.mastered?'⭐':String(i+1)),h('div',{},h('b',{},u.title),h('small',{},u.sub))),chips,
     h('button',{class:'btn'+(up||st.chip==='due'?' main':''),on:{click:()=>intro(u)}},st.chip==='due'?(st.next.mode==='review'?'Start review':'Start boost'):s.log.length?(st.done?'Practice more':'Keep going'):'Start'))}
 function home(){
-  screen='home';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  screen='home';newCtx();document.body.classList.add('at-home');hush();hideHand();view=null;app.innerHTML='';
   const grades=h('nav',{class:'grades','aria-label':'Grades'},[2,3,4,5].map(g=>h('a',{href:`multiplication-grade${g}.html`,'aria-current':g===GRADE?'page':null},`Grade ${g}`)));
   app.append(h('div',{class:'hero'},h('div',{class:'grow'},h('h1',{},'Multiplication Path'),h('p',{},'Multiplication, one step at a time.')),grades,h('button',{class:'quiet',on:{click:openSettings}},'⚙ Settings')));
   if(ses&&!ses.done){const u=unitById(ses.u);if(u)app.append(h('div',{class:'card'},h('div',{class:'grow'},h('b',{},'Continue where you stopped'),h('div',{class:'muted',style:'font-size:15px'},`${u.title}: ${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
@@ -1241,6 +1249,7 @@ function openSettings(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden){$('#sheet').hidden=true}});
 window.__T={K,UNITS,LESSONS,FACTSETS,pickProblems,isRight,show:()=>show(),get ses(){return ses},get view(){return view},start,unitById,stateOf,PROG:()=>PROG,factState,factLog,setFacts,factHelp,sprintRun,sprintHome,tableScreen,home,FST:()=>FST,SPR:()=>SPR,spoken,md};
+$('#navHome').addEventListener('click',()=>home());
 home();
 </script>
 </body>
