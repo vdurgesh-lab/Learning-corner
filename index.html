@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Corner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#EEF3F6;--card:#FFFFFF;--ink:#1A2B3C;--soft:#55677A;--line:#CFDAE2;--go:#25558F;--money:#2E7D4F}
+@media (prefers-color-scheme:dark){:root{--bg:#111B24;--card:#1A2732;--ink:#E9F0F5;--soft:#A5B6C4;--line:#33444F;--go:#7FB2EA;--money:#7CDBB0;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Lexend",Verdana,Tahoma,sans-serif;line-height:1.5}
+main{max-width:860px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left)) 40px max(16px,env(safe-area-inset-right))}
+h1{font-size:clamp(32px,6vw,46px);margin:0 0 6px;line-height:1.15}
+p.lead{margin:0 0 28px;color:var(--soft);font-size:19px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+a.card{display:flex;flex-direction:column;gap:8px;padding:26px;border-radius:20px;background:var(--card);border:2px solid var(--line);color:inherit;text-decoration:none;min-height:200px}
+a.card:hover,a.card:focus-visible{border-color:var(--go);outline:none;box-shadow:0 0 0 4px rgba(37,85,143,.18)}
+.icon{font-size:54px;line-height:1}
+a.card b{font-size:26px}
+a.card span{color:var(--soft);font-size:17px}
+a.card .go{margin-top:auto;font-weight:600;color:var(--go)}
+a.money .go{color:var(--money)}
+h2.sec{font-size:24px;margin:30px 0 14px}
+a.frac .go{color:#B05A00}
+@media (prefers-color-scheme:dark){a.frac .go{color:#FFC67A}}
+footer{margin-top:30px;color:var(--soft);font-size:15px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Learning Corner</h1>
+  <p class="lead">Pick what you want to practice today.</p>
+  <div class="grid">
+    <a class="card money" href="money-time.html">
+      <div class="icon">🪙</div>
+      <b>Money Time</b>
+      <span>Coins and dollars, adding and taking away, sharing, and saving.</span>
+      <span class="go">Start Money Time</span>
+    </a>
+    <a class="card" href="story-shelf.html">
+      <div class="icon">📚</div>
+      <b>Story Shelf</b>
+      <span>30 stories with new words, questions, a lesson, and spelling.</span>
+      <span class="go">Open Story Shelf</span>
+    </a>
+  </div>
+  <h2 class="sec">Fraction Path: fractions and division</h2>
+  <div class="grid">
+    <a class="card frac" href="fractions-grade3.html"><div class="icon">🍕</div><b>Grade 3</b><span>What a fraction is, number lines, equal fractions, comparing, and division as sharing.</span><span class="go">Open Grade 3</span></a>
+    <a class="card frac" href="fractions-grade4.html"><div class="icon">🧩</div><b>Grade 4</b><span>Equivalent fractions, adding and subtracting, mixed numbers, and division with remainders.</span><span class="go">Open Grade 4</span></a>
+    <a class="card frac" href="fractions-grade5.html"><div class="icon">📐</div><b>Grade 5</b><span>Different bottom numbers, fractions as division, multiplying fractions, and 2-digit division.</span><span class="go">Open Grade 5</span></a>
+  </div>
+  <footer>Progress is saved in this browser on this device.</footer>
+</main>
+</body>
+</html>

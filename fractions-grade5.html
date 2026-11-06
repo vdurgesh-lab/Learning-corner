@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraction Path Grade 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF3F6; --page:#FFFFFF; --ink:#1A2B3C; --soft:#55677A; --line:#CFDAE2;
+  --go:#25558F; --go-ink:#FFFFFF; --yes:#1D7350; --yes-bg:#DDF3E8; --try:#8A4B00; --try-bg:#FFF0D4;
+  --glow:#D69A00; --chip:#E3EBF1; --bubble:#E7EFFA; --hot:#D1495B; --c1:#4E9AE0; --c2:#F28E2B;
+  --read:"Lexend",Verdana,Tahoma,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111B24; --page:#1A2732; --ink:#E9F0F5; --soft:#A5B6C4; --line:#33444F; --go:#7FB2EA; --go-ink:#0E1B26;
+  --yes:#7CDBB0; --yes-bg:#17392C; --try:#FFC67A; --try-bg:#3D2C12; --glow:#F2C14E; --chip:#24343F; --bubble:#203247; --hot:#FF7A8A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111B24; --page:#1A2732; --ink:#E9F0F5; --soft:#A5B6C4; --line:#33444F; --go:#7FB2EA; --go-ink:#0E1B26;
+  --yes:#7CDBB0; --yes-bg:#17392C; --try:#FFC67A; --try-bg:#3D2C12; --glow:#F2C14E; --chip:#24343F; --bubble:#203247; --hot:#FF7A8A; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--read);font-size:18px;line-height:1.45}
+#app{max-width:1180px;margin:0 auto;padding-block:12px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--glow);outline-offset:2px}
+h1{font-size:clamp(26px,4.4vw,38px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:21px;margin:0;line-height:1.3;text-wrap:balance}
+.muted{color:var(--soft)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grow{flex:1 1 auto;min-width:0}
+.btn{min-height:50px;padding:8px 20px;border-radius:12px;border:2px solid var(--go);background:var(--page);color:var(--go);font-weight:600}
+.btn.main{background:var(--go);color:var(--go-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.quiet{min-height:42px;padding:5px 12px;border-radius:10px;border:1px solid var(--line);background:var(--page);font-size:16px}
+.quiet[aria-pressed="true"]{background:var(--go);border-color:var(--go);color:var(--go-ink)}
+.chip{display:inline-block;font-size:14px;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--soft);white-space:nowrap}
+.chip.ok{background:var(--yes-bg);color:var(--yes);font-weight:600}
+.chip.due{background:var(--try-bg);color:var(--try);font-weight:600}
+
+/* fraction text */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .1em}
+.fr .nu{border-bottom:.09em solid currentColor;padding:0 .15em}
+.fr .de{padding:0 .15em}
+.mx{margin-right:.06em}
+
+/* home */
+.hero{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+.hero p{margin:4px 0 0;color:var(--soft)}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.unit{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:16px;background:var(--page);border:2px solid var(--line)}
+.unit.up{border-color:var(--go);box-shadow:0 0 0 3px rgba(37,85,143,.15)}
+.unit .t{display:flex;gap:10px;align-items:flex-start}
+.unit .num{flex:none;width:42px;height:42px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-weight:700}
+.unit.done .num{background:var(--yes-bg);color:var(--yes)}
+.unit b{font-size:19px;line-height:1.25;display:block}
+.unit small{font-size:15px;color:var(--soft);display:block}
+.unit .chips{display:flex;gap:6px;flex-wrap:wrap}
+.unit .btn{align-self:flex-start;min-height:44px}
+.card{background:var(--page);border:2px solid var(--go);border-radius:16px;padding:12px 16px;margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+details{margin-top:16px;background:var(--page);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:16px}
+summary{cursor:pointer;font-weight:600}
+details li{margin:6px 0}
+.grades{display:flex;gap:6px;flex-wrap:wrap}
+.grades a{color:var(--go);font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--line);text-decoration:none;background:var(--page)}
+.grades a[aria-current]{background:var(--go);color:var(--go-ink);border-color:var(--go)}
+
+/* session */
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.top .ttl{font-weight:600;font-size:17px;min-width:0;flex:1 1 200px}
+.top .ttl small{display:block;font-weight:400;color:var(--soft);font-size:14px}
+.trail{display:flex;gap:4px;flex-wrap:wrap}
+.pt{font-size:14px;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--soft);white-space:nowrap}
+.pt.on{background:var(--go);color:var(--go-ink);font-weight:600}
+.pt.done{background:var(--yes-bg);color:var(--yes)}
+.ses{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-areas:"work bubble" "work check";grid-template-rows:auto 1fr;gap:12px;align-items:start}
+.work{grid-area:work;background:var(--page);border:1px solid var(--line);border-radius:18px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.bubble{grid-area:bubble;display:flex;gap:10px;align-items:flex-start;background:var(--bubble);border-radius:16px;padding:12px 14px;font-size:18px;min-height:80px}
+.bubble .who{font-size:30px;line-height:1;flex:none}
+.bubble .txt{min-width:0}
+.check{grid-area:check;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+.check h2{font-size:16px;color:var(--soft);font-weight:600}
+.check ol{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.check li{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;font-size:16px;line-height:1.35}
+.check li .n{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--page)}
+.check li.now{background:var(--bubble);box-shadow:inset 0 0 0 2px var(--go)}
+.check li.done .n{background:var(--yes);border-color:var(--yes);color:var(--page)}
+.check button.n{cursor:pointer;padding:0}
+.q{font-size:20px;line-height:1.5}
+.eq{font-size:clamp(26px,4vw,34px);font-weight:600;text-align:center}
+.ans{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding-top:10px;border-top:1px dashed var(--line);min-height:76px}
+.ans .lead{width:100%;text-align:center;font-size:17px;color:var(--soft)}
+.box{width:76px;height:56px;font-size:28px;text-align:center;border:2px solid var(--go);border-radius:10px;background:var(--page);color:var(--ink);padding:0}
+.box.wide{width:110px}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fbar{width:86px;height:3px;background:var(--ink);border-radius:2px}
+.rlab{font-size:24px;font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%}
+.opt{min-height:56px;min-width:84px;padding:8px 16px;border-radius:12px;border:2px solid var(--go);background:var(--page);font-size:20px;font-weight:500}
+.opt.sym{font-size:30px;min-width:76px;font-weight:700}
+.opt:hover:not(:disabled){background:var(--chip)}
+.opt.no{border-style:dashed;border-color:var(--line);color:var(--soft)}
+.opt.ok{background:var(--yes-bg);border-color:var(--yes);color:var(--yes)}
+.filled{font-size:26px;font-weight:700;padding:6px 16px;border-radius:10px;background:var(--yes-bg);color:var(--yes)}
+.foot{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:10px;background:var(--bg);margin-top:10px}
+.foot .main{margin-left:auto;min-width:180px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#hand{position:fixed;left:-80px;top:-80px;font-size:42px;pointer-events:none;z-index:60;transition:left .45s ease,top .45s ease;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+
+/* boards */
+.board{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.btitle{font-size:15px;color:var(--soft);text-align:center;margin-bottom:4px}
+.stk{display:flex;flex-direction:column;gap:12px;width:100%;align-items:center}
+.stkit{width:100%;display:flex;flex-direction:column;align-items:center}
+.bars{width:100%;max-width:660px;display:flex;flex-direction:column;gap:10px;position:relative}
+.barrow{display:flex;align-items:center;gap:10px}
+.blab{width:78px;flex:none;text-align:right;font-size:20px;font-weight:600}
+.bar{flex:1;display:flex;height:50px;border:2.5px solid var(--ink);border-radius:6px;overflow:hidden;background:var(--page);position:relative}
+.bars.compact .bar{height:34px}
+.pc{flex:1 1 0;min-width:0;border:0;border-right:2px solid var(--ink);background:transparent;padding:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#1A2B3C;font-weight:600}
+.pc:last-child{border-right:0}
+.pc.v-a{background:var(--c)}
+.pc.v-b{background:repeating-linear-gradient(45deg,var(--c) 0 7px,#ffffff 7px 11px)}
+.pc.v-x{background:var(--page);color:var(--hot)}
+.pc.v-x::after{content:"✕";font-size:24px;font-weight:700}
+.pc:not(.v-a):not(.v-b){color:var(--soft)}
+button.pc:hover{box-shadow:inset 0 0 0 3px var(--glow)}
+.bars.half .bar::after{content:"";position:absolute;left:50%;top:-6px;bottom:-6px;border-left:3px dashed var(--hot);pointer-events:none}
+.halflab{font-size:14px;color:var(--hot);font-weight:600;text-align:center;padding-left:88px}
+.circs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.circ{width:min(150px,28vw);height:auto}
+.circ.sm{width:min(112px,24vw)}
+.stk .circ{width:min(118px,26vw)}
+.ans,.board{scroll-margin-bottom:96px;scroll-margin-top:12px}
+.circ path,.circ circle{stroke:var(--ink);stroke-width:1.6}
+.circ .tap{cursor:pointer}
+.grp{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:540px}
+.gi{width:54px;height:54px;border-radius:50%;border:2px solid var(--line);font-size:28px;display:flex;align-items:center;justify-content:center;background:var(--page);padding:0}
+.gi.on{background:var(--c);border-color:var(--ink)}
+.lineb{width:100%;max-width:700px}
+.lineb text{fill:var(--ink);font-family:var(--read)}
+.lineb .hit{cursor:pointer;fill:transparent}
+.lineb .hit:hover{fill:rgba(214,154,0,.25)}
+.area{width:min(250px,64vw);height:auto}
+.arealab{font-size:16px;color:var(--soft);text-align:center}
+.share{width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.pile{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;min-height:44px;font-size:24px;padding:8px;border:2px dashed var(--line);border-radius:12px;width:100%;max-width:640px}
+.plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.plate{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border:2px solid var(--line);border-radius:16px;background:var(--chip);min-width:86px}
+.pi{display:flex;flex-wrap:wrap;gap:1px;justify-content:center;max-width:120px;font-size:20px;min-height:28px}
+.pcnt{font-weight:700;font-size:16px}
+.left{font-weight:600;color:var(--try)}
+.stepper{display:flex;gap:10px;align-items:center;justify-content:center}
+.stepper button{width:52px;height:46px;font-size:26px;border-radius:10px;border:2px solid var(--go);background:var(--page);color:var(--go);padding:0}
+.stepper span{min-width:100px;text-align:center;font-weight:600}
+.toolsb{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.parts{width:100%;max-width:680px;display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:stretch;min-height:86px}
+.pdl{flex:none;width:52px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px}
+.pseg{min-width:74px;border:2.5px solid var(--ink);margin-left:-2.5px;background:var(--bubble);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;font-size:15px;text-align:center}
+.pseg:first-of-type{margin-left:0}
+.pseg b{font-size:16px}
+.pseg.left{background:var(--page);border-style:dashed;color:var(--soft)}
+.helper{display:flex;flex-wrap:wrap;gap:6px;font-size:15px;align-items:center}
+.helper span{background:var(--chip);padding:2px 8px;border-radius:8px;font-variant-numeric:tabular-nums}
+.ledger{font-size:24px;font-variant-numeric:tabular-nums;border-collapse:collapse}
+.ledger td{padding:1px 8px;text-align:right}
+.ledger td.note{text-align:left;font-size:16px;color:var(--soft)}
+.ledger tr.sub td.v{border-bottom:2px solid var(--ink)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:15px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:16px;height:16px;border-radius:4px;display:inline-block;border:1px solid var(--ink)}
+
+/* sheets */
+#sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,20,30,.45)}
+#sheet[hidden]{display:none!important}
+.sheet{background:var(--page);width:100%;max-width:600px;max-height:88%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.sheet:focus{outline:none}
+.inp{width:100%;min-height:44px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--page);font-size:16px}
+.big{font-size:56px;line-height:1}
+.score{display:flex;gap:6px;flex-wrap:wrap;font-size:30px}
+.panel{background:var(--page);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+@media (max-width:900px){
+  .ses{grid-template-columns:1fr;grid-template-areas:"bubble" "work" "check";grid-template-rows:auto}
+  .bubble{min-height:0}
+}
+@media (max-width:560px){
+  body{font-size:17px}
+  .work{padding:12px}
+  .blab{width:56px;font-size:17px}
+  .halflab{padding-left:66px}
+  .box{width:64px;height:52px;font-size:24px}
+  .foot .main{min-width:0;flex:1 1 auto}
+  .top .trail{width:100%}
+}
+@media (prefers-reduced-motion:reduce){#hand{transition:none}.shake{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="hand" aria-hidden="true">👆</div>
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Settings"></div>
+<script>
+'use strict';
+const GRADE=5;
+const KEY='fracpath'+GRADE+'.';
+const store={get(k,d){try{const v=localStorage.getItem(KEY+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch(e){}}};
+const $=s=>document.querySelector(s);
+const h=(t,a={},...k)=>{const e=document.createElement(t);
+  for(const[n,v]of Object.entries(a)){if(n==='class')e.className=v;else if(n==='on')for(const[x,f]of Object.entries(v))e.addEventListener(x,f);else if(n==='html')e.innerHTML=v;else if(v!==false&&v!=null)e.setAttribute(n,v)}
+  for(const c of k.flat())if(c!=null)e.append(c);return e};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const app=$('#app');
+const FAST=()=>window.__FAST?0.04:1;
+
+/* ---------- math text: {{3/4}} and {{1 3/4}} become stacked fractions ---------- */
+const TOK=/\{\{(?:(\d+) )?(\d+|\?)\/(\d+|\?)\}\}/g;
+function md(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(TOK,(m,w,n,d)=>(w?`<span class="mx">${w}</span>`:'')+`<span class="fr"><span class="nu">${n}</span><span class="de">${d}</span></span>`)}
+const ONES=['','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth','eleventh','twelfth','thirteenth','fourteenth','fifteenth','sixteenth','seventeenth','eighteenth','nineteenth'];
+const TENS=['','','twent','thirt','fort','fift','sixt','sevent','eight','ninet'];
+function ordinal(d){if(d<20)return ONES[d];const t=Math.floor(d/10),o=d%10;return o?TENS[t]+'y-'+ONES[o]:TENS[t]+'ieth'}
+function fracWords(n,d){if(d===1)return n+(n===1?' whole':' wholes');if(d===2)return n+(n===1?' half':' halves');const o=ordinal(d);return n+' '+(n===1?o:o+'s')}
+function spoken(s){return String(s).replace(TOK,(m,w,n,d)=>{const f=n==='?'?`what over ${d}`:d==='?'?`${n} over what`:fracWords(+n,+d);return w?`${w} and ${f}`:f})
+  .replace(/÷/g,' divided by ').replace(/×/g,' times ').replace(/−/g,' minus ').replace(/\+/g,' plus ').replace(/= \?/g,'equals what?').replace(/◯/g,' blank ')
+  .replace(/ = /g,' equals ').replace(/ > /g,' is greater than ').replace(/ < /g,' is less than ').replace(/(\d) R (\d)/g,'$1 remainder $2')
+  .replace(/["“”]/g,'').replace(/!/g,'.').replace(/\s+/g,' ').trim()}
+
+/* ---------- warm, slow voice ---------- */
+const TTS='speechSynthesis'in window&&'SpeechSynthesisUtterance'in window?window.speechSynthesis:null;
+const A={voice:store.get('voice',true),slow:store.get('slow',true),vol:store.get('vol',85),uri:store.get('uri',''),calm:store.get('calm',!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)),need:store.get('need',2)};
+const NOVELTY=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Ralph|Fred|Kathy|Grandma|Grandpa|Eddy|Flo|Reed|Rocko|Sandy|Shelley/i;
+const vScore=v=>{let n=0,s=v.name;if(/Natural|Neural/i.test(s))n+=50;if(/Premium|Enhanced/i.test(s))n+=40;if(/Google US English/i.test(s))n+=30;if(/Ava|Samantha|Allison|Susan|Zoe|Aria|Jenny|Serena|Nicky/i.test(s))n+=20;if(/en.US/i.test(v.lang))n+=10;return n};
+let voices=[];
+function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===A.uri))A.uri=voices[0].voiceURI}
+if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
+let sq=[],sbusy=false,srun=0,waiters=[];
+function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();const w=waiters;waiters=[];w.forEach(f=>f())}
+function pump(run){
+  if(run!==srun||sbusy)return;
+  if(!sq.length){const w=waiters;waiters=[];w.forEach(f=>f());return}
+  sbusy=true;const text=sq.shift();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=A.slow?.78:.92;u.pitch=1;u.volume=Math.max(.05,A.vol/100);
+  const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
+  let once=false;const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
+  const t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume();
+}
+function say(text,{queue=false}={}){return new Promise(res=>{
+  if(!TTS||!A.voice||!text){res();return}
+  if(!queue)hush();
+  const parts=(spoken(text).match(/[^.?]+[.?]*/g)||[]).map(x=>x.trim()).filter(Boolean);
+  if(!parts.length){res();return}
+  sq.push(...parts);waiters.push(res);pump(srun)})}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
+
+/* ---------- colors: each piece size keeps its own color, like color-coded fraction tiles ---------- */
+const DCOL={1:'#9AA8B6',2:'#E8706B',3:'#F2A04B',4:'#EBCB4E',5:'#6DB563',6:'#5FA8E8',8:'#A585E0',10:'#E58AC8',12:'#3CC0B0'};
+const dcol=d=>DCOL[d]||`hsl(${(d*53)%360} 62% 66%)`;
+const PCOL=['#E8706B','#5FA8E8','#6DB563','#F2A04B','#A585E0','#E58AC8','#3CC0B0','#EBCB4E'];
+
+/* ---------- boards (the virtual manipulatives) ---------- */
+const fillN=(d,n,v='a')=>Array.from({length:d},(_,i)=>i<n?v:0);
+function subOf(R,si){return R.type==='stack'?R.items[si]:R}
+function piecesOf(sp){return sp.type==='bars'?sp.bars.map(b=>b.f):sp.type==='circles'?sp.items.map(c=>c.f):sp.type==='group'?[sp.f]:[]}
+function countV(sp,v='a'){return piecesOf(sp).flat().filter(x=>x===v).length}
+function getD(sp){return sp.type==='bars'?sp.bars[sp.only||0].d:sp.type==='circles'?sp.items[0].d:sp.d}
+function setD(sp,d){if(sp.type==='bars'){const ix=sp.buildAll?sp.bars.map((_,i)=>i):[sp.only||0];ix.forEach(i=>{sp.bars[i].d=d;sp.bars[i].f=fillN(d,0)})}
+  else if(sp.type==='circles'){(sp.buildAll?sp.items:[sp.items[0]]).forEach(c=>{c.d=d;c.f=fillN(d,0)})}else{sp.d=d;sp.f=fillN(d,0)}}
+function shadeFirst(sp,n){const f=piecesOf(sp)[sp.only||0];for(let i=0;i<f.length;i++)f[i]=i<n?'a':0}
+function canTap(mode,v){return mode==='shade'||(mode==='shadeB'&&v!=='a'&&v!=='x')||(mode==='cross'&&(v==='a'||v==='x'))}
+function stepperHTML(si,d,word){return `<div class="stepper"><button type="button" data-s="${si}" data-act="minus" aria-label="Fewer parts">−</button><span>${d} ${d===1?word[0]:word[1]}</span><button type="button" data-s="${si}" data-act="plus" aria-label="More parts">+</button></div>`}
+function toolsHTML(si,sp){const L={shade:'Shade',shadeB:'Add more',cross:'Take away',clear:'Clear'};return `<div class="toolsb">${sp.tools.map(t=>`<button type="button" class="quiet" data-s="${si}" data-act="tool:${t}" aria-pressed="${sp.mode===t}">${L[t]}</button>`).join('')}</div>`}
+function sector(i,d,r){const a0=-Math.PI/2+i*2*Math.PI/d,a1=a0+2*Math.PI/d;const p=a=>`${(r*Math.cos(a)).toFixed(2)} ${(r*Math.sin(a)).toFixed(2)}`;return `M0 0 L${p(a0)} A${r} ${r} 0 ${a1-a0>Math.PI?1:0} 1 ${p(a1)}Z`}
+function boardHTML(sp,si,live){
+  const tapOn=live&&sp.mode;const w=sp.word||['part','parts'];
+  switch(sp.type){
+  case 'stack':return `<div class="stk">`+sp.items.map((x,i)=>`<div class="stkit">${x.title?`<div class="btitle">${md(x.title)}</div>`:''}${boardHTML(x,i,live&&x.work)}</div>`).join('')+'</div>';
+  case 'bars':{let o=`<div class="bars${sp.half?' half':''}${sp.compact||sp.bars.length>3?' compact':''}">`;
+    if(sp.half)o+=`<div class="halflab">dashed line = 1 half</div>`;
+    sp.bars.forEach((b,bi)=>{const col=dcol(b.d);o+=`<div class="barrow"><div class="blab">${b.label?md(b.label):''}</div><div class="bar" role="group" aria-label="bar with ${b.d} parts">`;
+      const can=tapOn&&(sp.only==null||sp.only===bi||sp.buildAll);
+      for(let i=0;i<b.d;i++){const v=b.f[i]||0,tap=can&&canTap(sp.mode,v),lab=b.d===1?'1 whole':b.d<=10&&sp.tiles!==false?`1/${b.d}`:'';
+        o+=tap?`<button type="button" class="pc v-${v}" style="--c:${col}" data-s="${si}" data-b="${bi}" data-i="${i}" aria-label="part ${i+1}">${v==='x'?'':lab}</button>`:`<div class="pc v-${v}" style="--c:${col}">${v==='x'?'':lab}</div>`}
+      o+=`</div></div>`});
+    if(live&&sp.build)o+=stepperHTML(si,getD(sp),w);
+    if(live&&sp.tools)o+=toolsHTML(si,sp);
+    return o+'</div>'}
+  case 'circles':{let o=`<div class="circs">`;
+    sp.items.forEach((c,ci)=>{const col=dcol(c.d);o+=`<svg class="circ${sp.items.length>3?' sm':''}" viewBox="-54 -54 108 108" role="img" aria-label="circle with ${c.d} parts">`;
+      const fillOf=v=>v==='a'?col:typeof v==='string'&&v[0]==='p'?PCOL[+v.slice(1)]:'var(--page)';
+      const tap=tapOn&&(sp.buildAll||ci===0);
+      if(c.d===1)o+=`<circle r="50" data-v="${c.f[0]||0}" style="fill:${fillOf(c.f[0])}" ${tap?`class="tap" data-s="${si}" data-b="${ci}" data-i="0"`:''}/>`;
+      else for(let i=0;i<c.d;i++)o+=`<path d="${sector(i,c.d,50)}" data-v="${c.f[i]||0}" style="fill:${fillOf(c.f[i])}" ${tap?`class="tap" data-s="${si}" data-b="${ci}" data-i="${i}"`:''}/>`;
+      o+='</svg>'});
+    o+='</div>';
+    if(sp.people)o+=`<div class="legend">${Array.from({length:sp.people},(_,i)=>`<span><i style="background:${PCOL[i]}"></i>Friend ${i+1}</span>`).join('')}</div>`;
+    if(live&&sp.build)o+=stepperHTML(si,getD(sp),['slice','slices']);
+    return o}
+  case 'group':{let o=`<div class="grp" style="--c:${dcol(Math.max(2,Math.min(12,sp.d)))}">`;
+    for(let i=0;i<sp.d;i++){const on=sp.f[i]==='a';o+=tapOn?`<button type="button" class="gi${on?' on':''}" data-s="${si}" data-i="${i}" aria-label="item ${i+1}">${sp.emoji}</button>`:`<div class="gi${on?' on':''}">${sp.emoji}</div>`}
+    o+='</div>';if(live&&sp.build)o+=stepperHTML(si,sp.d,['thing','things']);return o}
+  case 'line':{const W=700,x0=40,x1=660,y=86,N=sp.max*sp.d,X=k=>x0+(x1-x0)*k/N;let s=`<svg class="lineb" viewBox="0 0 ${W} 140" role="img" aria-label="number line from 0 to ${sp.max}">`;
+    if(sp.bar)for(let k=0;k<N;k++)s+=`<rect x="${X(k)}" y="6" width="${X(k+1)-X(k)}" height="28" style="fill:${k<(sp.barFill||0)?dcol(sp.d):'var(--page)'};stroke:var(--ink);stroke-width:1.5"/>`+(sp.d<=8?`<text x="${(X(k)+X(k+1))/2}" y="25" text-anchor="middle" font-size="12">1/${sp.d}</text>`:'');
+    for(let k=1;k<=(sp.hops||0);k++)s+=`<path d="M${X(k-1)} ${y-4} Q${(X(k-1)+X(k))/2} ${y-40} ${X(k)} ${y-4}" style="fill:none;stroke:var(--go);stroke-width:3"/>`;
+    s+=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" style="stroke:var(--ink);stroke-width:3"/>`;
+    for(let k=0;k<=N;k++){const wh=k%sp.d===0;s+=`<line x1="${X(k)}" y1="${y-(wh?16:10)}" x2="${X(k)}" y2="${y+(wh?16:10)}" style="stroke:var(--ink);stroke-width:${wh?3:2}"/>`;
+      if(wh)s+=`<text x="${X(k)}" y="${y+42}" text-anchor="middle" font-size="24" font-weight="700">${k/sp.d}</text>`;
+      if(tapOn)s+=`<rect class="hit" x="${X(k)-16}" y="${y-34}" width="32" height="68" rx="6" data-s="${si}" data-k="${k}"><title>mark ${k}</title></rect>`}
+    if(sp.point!=null)s+=`<circle cx="${X(sp.point)}" cy="${y}" r="11" style="fill:var(--hot);stroke:var(--page);stroke-width:3"/>`;
+    return s+'</svg>'}
+  case 'area':{const S=240,{b,d,a,c}=sp,show=sp.show||0;let s=`<svg class="area" viewBox="-6 -6 ${S+12} ${S+12}" role="img" aria-label="area model">`;
+    s+=`<rect width="${S}" height="${S}" style="fill:var(--page)"/>`;
+    if(show>=1)s+=`<rect width="${S*a/b}" height="${S}" style="fill:var(--c1);opacity:.55"/>`;
+    if(show>=2)s+=`<rect width="${S}" height="${S*c/d}" style="fill:var(--c2);opacity:.5"/>`;
+    if(show>=1)for(let i=1;i<b;i++)s+=`<line x1="${S*i/b}" y1="0" x2="${S*i/b}" y2="${S}" style="stroke:var(--ink);stroke-width:1.6"/>`;
+    if(show>=2)for(let j=1;j<d;j++)s+=`<line x1="0" y1="${S*j/d}" x2="${S}" y2="${S*j/d}" style="stroke:var(--ink);stroke-width:1.6"/>`;
+    if(show>=2)s+=`<rect width="${S*a/b}" height="${S*c/d}" style="fill:none;stroke:var(--ink);stroke-width:5"/>`;
+    s+=`<rect width="${S}" height="${S}" style="fill:none;stroke:var(--ink);stroke-width:3"/></svg>`;
+    return s+`<div class="legend"><span><i style="background:var(--c1);opacity:.7"></i>${md(`{{${a}/${b}}}`)} going down</span>${show>=2?`<span><i style="background:var(--c2);opacity:.7"></i>${md(`{{${c}/${d}}}`)} going across</span>`:''}</div>`}
+  case 'share':{const used=sp.plates.reduce((x,y)=>x+y,0),pile=sp.total-used;
+    let o=`<div class="share"><div class="pile" aria-label="${pile} left in the pile">${pile?Array(pile).fill(`<span>${sp.emoji}</span>`).join(''):'<span class="muted" style="font-size:16px">The pile is empty</span>'}</div><div class="plates">`;
+    sp.plates.forEach((n,i)=>o+=`<div class="plate"><div class="pi">${Array(n).fill(`<span>${sp.emoji}</span>`).join('')}</div><div class="pcnt">${sp.plateName} ${i+1}: ${n}</div></div>`);
+    o+='</div>';
+    if(sp.group&&pile>0&&pile<sp.size&&sp.plates.length)o+=`<div class="left">${pile} left over. Not enough for another group of ${sp.size}.</div>`;
+    if(live&&sp.mode==='deal')o+=`<div class="row"><button type="button" class="btn" data-s="${si}" data-act="deal">Give one to each ${sp.plateName.toLowerCase()}</button><button type="button" class="quiet" data-s="${si}" data-act="reset">Start over</button></div>`;
+    if(live&&sp.mode==='group')o+=`<div class="row"><button type="button" class="btn" data-s="${si}" data-act="group">Make a group of ${sp.size}</button><button type="button" class="quiet" data-s="${si}" data-act="reset">Start over</button></div>`;
+    return o+'</div>'}
+  case 'parts':{let o=`<div class="parts"><div class="btitle">Area model: ${sp.N} split into groups of ${sp.D}</div><div class="prow"><div class="pdl">${sp.D}</div>`;
+    sp.chunks.forEach(c=>o+=`<div class="pseg" style="flex:${Math.max(c,sp.N/sp.D/8)} 1 0"><b>${sp.D} × ${c}</b><span>= ${sp.D*c}</span></div>`);
+    o+=`<div class="pseg left" style="flex:${Math.max(sp.left/sp.D,sp.N/sp.D/8)} 1 0">${sp.chunks.length?`left: ${sp.left}`:`${sp.N} to share`}</div></div>`;
+    if(sp.helper)o+=`<div class="helper"><b>Helper:</b>${sp.helper.map(m=>`<span>${sp.D} × ${m} = ${sp.D*m}</span>`).join('')}</div>`;
+    return o+'</div>'}
+  case 'ledger':{let o=`<table class="ledger" aria-label="written work"><tr><td class="v">${sp.N}</td><td class="note"></td></tr>`;
+    sp.rows.forEach(r=>{o+=`<tr class="sub"><td class="v">− ${r.sub}</td><td class="note">${sp.D} × ${r.c}</td></tr><tr><td class="v">${r.left}</td><td class="note">left</td></tr>`});
+    o+='</table>';
+    if(sp.helper)o+=`<div class="helper"><b>Helper:</b>${sp.helper.map(m=>`<span>${sp.D} × ${m} = ${sp.D*m}</span>`).join('')}</div>`;
+    return o}
+  }return ''}
+function makeBoard(spec,onChange){
+  const el=h('div',{class:'board'});const B={el,spec,live:false};
+  B.refresh=()=>{el.innerHTML=boardHTML(B.spec,0,B.live)};
+  B.setLive=(live,mode)=>{B.live=!!live;const set=sp=>{if(mode!==undefined&&(sp.work||B.spec.type!=='stack'))sp.mode=mode};if(B.spec.type==='stack')B.spec.items.forEach(set);else set(B.spec);B.refresh()};
+  el.addEventListener('click',e=>{if(!B.live)return;const t=e.target.closest('[data-s]');if(!t)return;const sp=subOf(B.spec,+t.dataset.s);if(!sp)return;
+    const act=t.dataset.act;
+    if(act==='plus'||act==='minus'){const d=getD(sp)+(act==='plus'?1:-1);if(d<1||d>24)return;setD(sp,d)}
+    else if(act&&act.startsWith('tool:')){const m=act.slice(5);if(m==='clear'){piecesOf(sp).forEach(f=>f.fill(0))}else sp.mode=m}
+    else if(act==='deal'){let pile=sp.total-sp.plates.reduce((x,y)=>x+y,0);for(let i=0;i<sp.plates.length&&pile>0;i++){sp.plates[i]++;pile--}}
+    else if(act==='group'){const pile=sp.total-sp.plates.reduce((x,y)=>x+y,0);if(pile>=sp.size)sp.plates.push(sp.size)}
+    else if(act==='reset'){sp.plates=sp.group?[]:sp.plates.map(()=>0)}
+    else if(t.dataset.k!=null){sp.point=+t.dataset.k;if(sp.bar)sp.barFill=sp.point}
+    else if(t.dataset.i!=null){const f=sp.type==='group'?sp.f:piecesOf(sp)[+t.dataset.b];const i=+t.dataset.i,v=f[i]||0,m=sp.mode;
+      if(m==='shade')f[i]=v==='a'?0:'a';else if(m==='shadeB')f[i]=v==='b'?0:'b';else if(m==='cross')f[i]=v==='x'?'a':'x'}
+    else return;
+    B.refresh();if(onChange)onChange()});
+  B.refresh();return B;
+}
+
+/* ---------- shared word lists ---------- */
+const DENS=[2,3,4,5,6,8,10,12];
+const NAMES=['Ava','Leo','Maya','Sam','Zoe','Omar','Lily','Jay','Nia','Ben','Priya','Theo','Rosa','Kai','Ella','Max','Aria','Finn','Iris','Noah'];
+const ITEMS=[['🍪','cookies'],['🍓','strawberries'],['⚽','balls'],['✏️','pencils'],['🎈','balloons'],['🐟','crackers'],['🌸','flowers'],['🍎','apples'],['⭐','stickers'],['🧁','cupcakes'],['🍋','lemons'],['🧸','bears']];
+const countUp=n=>n<=6?Array.from({length:n},(_,i)=>i+1).join(', ')+'.':'I count them one at a time.';
+const halfOf=b=>b%2?`${(b-1)/2} and a half`:String(b/2);
+const factors=n=>{const o=[];for(let i=1;i<=n;i++)if(n%i===0)o.push(i);return o};
+const multiples=(b,L)=>{const o=[];for(let m=b;m<=L;m+=b)o.push(m);return o};
+const F=(n,d)=>`{{${n}/${d}}}`;
+const nm=p=>NAMES[p.nx%NAMES.length];
+const itm=p=>ITEMS[p.cx%ITEMS.length];
+function shape(s,d,n,emoji){const f=fillN(d,n);if(s==='circle')return{type:'circles',items:[{d,f}]};if(s==='group')return{type:'group',d,f,emoji};return{type:'bars',bars:[{d,f}]}}
+
+/* ---------- problem kinds ---------- */
+const K={};
+K.identify={
+  pool:()=>{const o=[];for(const d of DENS)for(let n=1;n<d;n++)for(const s of ['circle','bar','group'])if(!(s==='group'&&d>10))o.push({n,d,s});return o},
+  make(p,ph){const{n,d,s}=p,it=itm(p);
+    const pic=shape(s,d,n,it[0]);pic.title='The picture';
+    const q=s==='group'?`What fraction of the ${it[1]} are colored in?`:`What fraction of the ${s} is shaded?`;
+    const list=['Count all the equal parts. That is the bottom number.','Count the shaded parts. That is the top number.','Write the top number over the bottom number.'];
+    const allTxt=`I count every part, shaded and white. ${countUp(d)} There are ${d} equal parts.`,shTxt=`Now I count only the shaded parts. ${countUp(n)} There ${n===1?'is':'are'} ${n}.`;
+    const fin={li:2,prompt:'Now write the fraction. Shaded parts go on top. All the parts go on the bottom.',think:`The top number is ${n}, the shaded parts. The bottom number is ${d}, all the parts. The fraction is ${F(n,d)}.`,input:{t:'frac',a:[n,d]},cue:'Top number: the shaded parts. Bottom number: all the equal parts.'};
+    const explain=`${n} shaded out of ${d} equal parts is ${F(n,d)}.`;
+    if(ph==='pic'){const build=shape(s,1,0,it[0]);Object.assign(build,{build:true,work:true,title:'Build it here'});
+      return{q,list,explain,board:{type:'stack',items:[pic,build]},ownMode:'shade',steps:[
+        {li:0,prompt:'Count all the equal parts in the picture. Then press + until your whole has the same number of parts.',think:allTxt+` So I press plus until my whole has ${d} parts. ${d} is the bottom number.`,input:{t:'board',mode:'shade',check:R=>getD(R.items[1])===d},cue:'Count every part, the shaded ones and the white ones. Then use + and − to match.',act:R=>setD(R.items[1],d)},
+        {li:1,prompt:'Now tap to shade the same number of parts as the picture.',think:shTxt+` So I shade ${n} of my parts.`,input:{t:'board',mode:'shade',check:R=>getD(R.items[1])===d&&countV(R.items[1])===n},cue:'Count the shaded parts in the picture slowly. Then tap that many of your parts.',act:R=>{if(getD(R.items[1])!==d)setD(R.items[1],d);shadeFirst(R.items[1],n)}},fin]}}
+    return{q,list,explain,board:pic,steps:[
+      {li:0,prompt:'How many equal parts are there in all?',think:allTxt+` ${d} is the bottom number.`,input:{t:'num',a:d},cue:'Count every part, shaded and white. Point to each one as you count.'},
+      {li:1,prompt:'How many parts are shaded?',think:shTxt+` ${n} is the top number.`,input:{t:'num',a:n},cue:'Count only the colored parts. Go slowly.'},fin]}}};
+K.numline={
+  pool:()=>{const o=[];for(const d of [2,3,4,6,8])for(let n=1;n<=2*d;n++)o.push({n,d});return o},
+  dress:p=>{p.v=pick(['place','read'])},
+  make(p,ph){const{n,d}=p,v=p.v||'place',mx=n>d||p.cx%2?2:1;const line={type:'line',max:mx,d,bar:ph==='pic',barFill:0,point:v==='read'?n:null,hops:0,work:true};
+    const cnt={li:0,prompt:'How many equal spaces are there from 0 to 1?',think:`I count the spaces between the marks, from 0 to 1. ${countUp(d)} There are ${d} equal spaces. Each space is ${F(1,d)}, so the bottom number is ${d}.`,input:{t:'num',a:d},cue:'Count the spaces between the marks, not the marks. Start at 0 and stop at 1.'};
+    const hopAct=R=>{R.hops=n;R.barFill=n;R.point=n};
+    if(v==='place')return{q:`Where does ${F(n,d)} go on the number line?`,list:['Count the equal spaces from 0 to 1. That is the bottom number.','Start at 0. Hop the top number of spaces. Tap where you land.'],explain:`${F(n,d)} is ${n} hop${n>1?'s':''} of ${F(1,d)} from 0.`,board:line,ownMode:'point',steps:[cnt,
+      {li:1,prompt:`The top number is ${n}. Start at 0, hop ${n} space${n>1?'s':''}, and tap where you land.`,think:`The top number is ${n}. I start at 0 and hop ${n} time${n>1?'s':''}. ${countUp(n)} I land here.`,input:{t:'point',a:n},cue:`Put your finger on 0. Hop one space at a time and count to ${n}.`,act:hopAct}]};
+    return{q:'What fraction is at the red dot?',list:['Count the equal spaces from 0 to 1. That is the bottom number.','Count the hops from 0 to the dot. That is the top number.','Write the fraction.'],explain:`The dot is ${n} hop${n>1?'s':''} of ${F(1,d)} from 0, so it is at ${F(n,d)}.`,board:line,steps:[cnt,
+      {li:1,prompt:'Start at 0. How many hops to reach the dot?',think:`I start at 0 and hop to the dot. ${countUp(n)} That is ${n} hop${n>1?'s':''}.`,input:{t:'num',a:n},cue:'Hop one space at a time from 0. Count each hop.',act:hopAct},
+      {li:2,prompt:'Write the fraction.',think:`${n} hops of ${F(1,d)} is ${F(n,d)}.`,input:{t:'frac',a:[n,d],equiv:true},cue:'Top: the hops. Bottom: the spaces from 0 to 1.'}]}}};
+K.equiv3={
+  pool:()=>{const o=[];for(const b of [2,3,4,5,6])for(const k of [2,3,4,5,6]){const B=b*k;if(!DENS.includes(B))continue;for(let a=1;a<b;a++)for(const dir of ['up','down'])o.push({a,b,k,dir})}return o},
+  make(p,ph){const{a,b,k,dir}=p,B=b*k,A=a*k;const[gn,gd,tn,td]=dir==='up'?[a,b,A,B]:[A,B,a,b];
+    const eq=`${F(gn,gd)} = {{?/${td}}}`,explain=`${F(gn,gd)} and ${F(tn,td)} cover the same amount, so they are equal.`;
+    if(ph==='pic')return{q:'Find the missing number. Make both bars cover the same amount.',eq,explain,list:['Shade the bottom bar to match the top bar.','Count the shaded parts on the bottom bar.'],ownMode:'shade',
+      board:{type:'bars',only:1,bars:[{d:gd,f:fillN(gd,gn),label:F(gn,gd)},{d:td,f:fillN(td,0),label:`{{?/${td}}}`}]},steps:[
+      {li:0,prompt:'Tap parts of the bottom bar until it is shaded up to the same place as the top bar.',think:`The top bar is shaded up to here. I shade the bottom bar up to the same place. That takes ${tn} parts.`,input:{t:'board',mode:'shade',check:R=>R.bars[1].f.filter(x=>x==='a').length===tn},cue:'Look where the color stops on the top bar. Shade the bottom bar up to that same spot.',act:R=>{R.bars[1].f=fillN(td,tn)}},
+      {li:1,prompt:'How many parts of the bottom bar are shaded? That is the missing top number.',think:`I count the shaded parts on the bottom bar. There are ${tn}. So ${F(gn,gd)} = ${F(tn,td)}.`,input:{t:'num',a:tn},cue:'Count only the shaded parts of the bottom bar.'}]};
+    const up=dir==='up',sm=Math.min(gd,td),bg=Math.max(gd,td);
+    return{q:'Find the missing number.',eq,explain,list:[up?'How many times bigger is the new bottom number?':'How many times smaller is the new bottom number?','Do the same to the top number.'],steps:[
+      {li:0,prompt:up?`${td} is how many times ${gd}?`:`${gd} is how many times ${td}?`,think:`${sm} times ${k} is ${bg}. So the bottom number got ${k} times ${up?'bigger':'smaller'}.`,input:{t:'num',a:k},cue:`Count by ${sm}s until you reach ${bg}. How many counts?`},
+      {li:1,prompt:up?`Multiply the top number by ${k}. ${gn} × ${k} = ?`:`Divide the top number by ${k}. ${gn} ÷ ${k} = ?`,think:up?`${gn} times ${k} is ${tn}. So ${F(gn,gd)} = ${F(tn,td)}.`:`${gn} divided by ${k} is ${tn}. So ${F(gn,gd)} = ${F(tn,td)}.`,input:{t:'num',a:tn},cue:'Whatever you do to the bottom number, do the same to the top number.'}]}}};
+K.equiv4={
+  pool:()=>{const o=[];for(const b of DENS)for(let k=2;k<=5;k++){if(b*k>36)continue;for(let a=1;a<b;a++)if(gcd(a,b)===1)for(const m of ['top','bottom'])o.push({a,b,k,m})}return o},
+  make(p,ph){const{a,b,k,m}=p,B=b*k,A=a*k;const top=m==='top';
+    const eq=top?`${F(a,b)} = {{?/${B}}}`:`${F(a,b)} = {{${A}/?}}`;
+    const board=ph==='pic'?{type:'bars',bars:[{d:b,f:fillN(b,a),label:F(a,b)},{d:b,f:fillN(b,a),label:top?`{{?/${B}}}`:`{{${A}/?}}`}]}:null;
+    return{q:'Find the missing number.',eq,board,explain:`Multiplying the top and the bottom by ${k} gives ${F(A,B)}. It is the same amount cut into smaller parts.`,list:['How many times bigger is the new number?','Multiply the other number by the same amount.'],steps:[
+      {li:0,prompt:top?`The bottom number went from ${b} to ${B}. ${b} times what is ${B}?`:`The top number went from ${a} to ${A}. ${a} times what is ${A}?`,think:top?`${b} times ${k} is ${B}. That is like cutting every part into ${k} smaller parts.`:`${a} times ${k} is ${A}. That is like cutting every part into ${k} smaller parts.`,input:{t:'num',a:k},cue:top?`Count by ${b}s until you reach ${B}.`:`Count by ${a}s until you reach ${A}.`,act:R=>{R.bars[1].d=B;R.bars[1].f=fillN(B,A)}},
+      {li:1,prompt:top?`So multiply the top number by ${k} too. ${a} × ${k} = ?`:`So multiply the bottom number by ${k} too. ${b} × ${k} = ?`,think:top?`${a} times ${k} is ${A}. So ${F(a,b)} = ${F(A,B)}.`:`${b} times ${k} is ${B}. So ${F(a,b)} = ${F(A,B)}.`,input:{t:'num',a:top?A:B},cue:'Do the same thing to the top and the bottom.'}]}}};
+K.simplify={
+  pool:()=>{const o=[];for(let b=2;b<=12;b++)for(let a=1;a<b;a++){if(gcd(a,b)!==1)continue;for(let g=2;g<=6;g++)if(b*g<=36)o.push({a,b,g})}return o},
+  make(p,ph){const{a,b,g}=p,n=a*g,d=b*g;
+    const board=ph==='pic'?{type:'bars',bars:[{d,f:fillN(d,n),label:F(n,d)},{d,f:fillN(d,n),label:'?'}]}:null;
+    return{q:`Write ${F(n,d)} in simplest form.`,eq:`${F(n,d)} = ?`,board,explain:`Dividing the top and bottom by ${g} gives ${F(a,b)}. Same amount, bigger parts.`,list:['Find the biggest number that divides the top and the bottom.','Divide the top and the bottom by that number.'],steps:[
+      {li:0,prompt:`What is the biggest number that divides both ${n} and ${d}?`,think:`Numbers that divide ${n} are ${factors(n).join(', ')}. The biggest one that also divides ${d} is ${g}.`,input:{t:'num',a:g},cue:`List the numbers that divide ${n}. Which is the biggest one that also divides ${d}?`,act:R=>{R.bars[1]={d:b,f:fillN(b,a),label:F(a,b)}}},
+      {li:1,prompt:`Divide both by ${g}. ${n} ÷ ${g} and ${d} ÷ ${g}. Write the new fraction.`,think:`${n} divided by ${g} is ${a}. ${d} divided by ${g} is ${b}. So ${F(n,d)} = ${F(a,b)}.`,input:{t:'frac',a:[a,b]},cue:'Divide the top number and the bottom number by the same number.'}]}}};
+function cmpSteps(a,b,c,d,type,opts){
+  const f1=F(a,b),f2=F(c,d),v=a*d-c*b,big=v>0?0:1,sym=v>0?'>':v<0?'<':'=',L=lcm(b,d),r1=F(a*L/b,L),r2=F(c*L/d,L);
+  const why={den:`Both bottom numbers are ${b}, so the parts are the same size. ${big?c:a} parts is more than ${big?a:c} parts.`,
+    num:`Both top numbers are ${a}. A smaller bottom number means bigger parts. ${F(1,big?d:b)} is bigger than ${F(1,big?b:d)}, so ${big?f2:f1} is bigger.`,
+    half:`Half of ${b} is ${halfOf(b)}, so ${f1} is ${2*a<b?'less':'more'} than 1 half. Half of ${d} is ${halfOf(d)}, so ${f2} is ${2*c<d?'less':'more'} than 1 half.`,
+    cross:`With ${L} on the bottom, ${f1} = ${r1} and ${f2} = ${r2}.`};
+  let s2;
+  if(type==='den')s2={li:1,prompt:'The parts are the same size. Which fraction has more parts?',think:why.den,input:{t:'choice',opts:[f1,f2],a:big},cue:'Same size parts: the one with more parts is bigger.'};
+  else if(type==='num')s2={li:1,prompt:'Same number of parts. Which fraction has bigger parts? A smaller bottom number means bigger parts.',think:why.num,input:{t:'choice',opts:[f1,f2],a:big},cue:'Think of sharing a pizza. Cut into fewer slices, each slice is bigger.'};
+  else if(type==='half')s2={li:1,prompt:'Which fraction is more than 1 half?',think:why.half,input:{t:'choice',opts:[f1,f2],a:big},cue:`Half of ${b} is ${halfOf(b)}. Is ${a} more or less than that? Now check ${f2} the same way.`};
+  else{
+    s2={li:1,prompt:`Rename both fractions with the bottom number ${L}. Which is bigger?`,think:`${L} works for both. ${f1} = ${r1} and ${f2} = ${r2}. Now the parts are the same size, so I compare the top numbers.`,input:{t:'choice',opts:[`${f1} = ${r1}`,`${f2} = ${r2}`],a:big},cue:`Multiply to get ${L} on the bottom. Do the same to the top. Then compare the top numbers.`}}
+  const s1={li:0,...opts.s1};
+  const s3={li:2,prompt:`${f1} ◯ ${f2}. Which sign goes in the circle?`,think:`${big?f2:f1} is bigger, so the open side faces it. ${f1} ${sym} ${f2}.`,input:{t:'choice',opts:['>','<','='],a:['>','<','='].indexOf(sym),sym:true},cue:'The open side of the sign faces the bigger fraction, like a mouth eating the bigger one.'};
+  return{steps:[s1,s2,s3],explain:`${f1} ${sym} ${f2}. ${why[type]||''}`.trim(),eq:`${f1} ◯ ${f2}`};
+}
+K.compare3={
+  pool:()=>{const o=[];for(const b of [2,3,4,5,6,8])for(let a=1;a<b;a++)for(let c=1;c<b;c++)if(a!==c)o.push({t:'den',a,b,c,d:b});
+    for(let a=1;a<=3;a++)for(const b of [2,3,4,6,8])for(const d of [2,3,4,6,8])if(b!==d&&a<b&&a<d)o.push({t:'num',a,b,c:a,d});return o},
+  make(p,ph){const{t,a,b,c,d}=p;
+    const r=cmpSteps(a,b,c,d,t,{s1:{prompt:'Look at both fractions. Are the bottom numbers the same, or are the top numbers the same?',think:t==='den'?`Both bottom numbers are ${b}. So the parts are the same size.`:`Both top numbers are ${a}. So there are the same number of parts, but the parts are different sizes.`,input:{t:'choice',opts:['The bottom numbers are the same','The top numbers are the same'],a:t==='den'?0:1},cue:'Look at the bottom numbers first. Are they the same? Then look at the top numbers.'}});
+    return{q:'Which fraction is bigger? Choose >, <, or =.',eq:r.eq,explain:r.explain,list:['Are the bottom numbers the same, or the top numbers?','Decide which fraction is bigger.','Write >, <, or =. The open side faces the bigger fraction.'],steps:r.steps,
+      board:ph==='pic'?{type:'bars',bars:[{d:b,f:fillN(b,a),label:F(a,b)},{d,f:fillN(d,c),label:F(c,d)}]}:null}}};
+const CMP_T=['den','num','half','cross'];
+K.compare4={
+  pool:()=>i=>{const t=CMP_T[i%4];for(;;){
+    if(t==='den'){const b=pick(DENS),a=rint(1,b-1),c=rint(1,b-1);if(a!==c)return{t,a,b,c,d:b}}
+    if(t==='num'){const a=rint(1,5),b=pick(DENS),d=pick(DENS);if(b!==d&&a<b&&a<d)return{t,a,b,c:a,d}}
+    if(t==='half'){const b=pick(DENS),d=pick(DENS),a=rint(1,b-1),c=rint(1,d-1);if(b!==d&&a!==c&&2*a<b&&2*c>d)return Math.random()<.5?{t,a,b,c,d}:{t,a:c,b:d,c:a,d:b}}
+    if(t==='cross'){const b=pick(DENS),d=pick(DENS),a=rint(1,b-1),c=rint(1,d-1);if(b!==d&&a!==c&&lcm(b,d)<=24&&(2*a-b)*(2*c-d)>0&&a*d!==c*b&&b%d&&d%b)return{t,a,b,c,d}}}},
+  make(p,ph){const{t,a,b,c,d}=p;const ti=CMP_T.indexOf(t);
+    const r=cmpSteps(a,b,c,d,t,{s1:{prompt:'How will you compare these two fractions?',think:['Both bottom numbers are the same. So I just compare the top numbers.','Both top numbers are the same. So I compare the size of the parts.','One fraction looks less than 1 half and the other looks more. So I can compare each one with 1 half.','The tops and bottoms are all different, and both are on the same side of 1 half. So I will make the bottom numbers the same.'][ti],input:{t:'choice',opts:['Same bottom numbers','Same top numbers','Compare each with 1 half','Make the bottom numbers the same'],a:ti},cue:'Check in order. Same bottom numbers? Same top numbers? Is one less than 1 half and one more? If none of those, make the bottom numbers the same.'}});
+    return{q:'Which fraction is bigger? Choose >, <, or =.',eq:r.eq,explain:r.explain,list:['Pick a way to compare.','Use it to find the bigger fraction.','Write >, <, or =.'],steps:r.steps,
+      board:ph==='pic'?{type:'bars',half:true,bars:[{d:b,f:fillN(b,a),label:F(a,b)},{d,f:fillN(d,c),label:F(c,d)}]}:null}}};
+const ADD_CTX=[(n,a,b)=>`${n} mixes ${a} cup of flour and ${b} cup of sugar. How many cups is that in all?`,(n,a,b)=>`${n} walks ${a} mile to the park and ${b} mile to the store. How far does ${n} walk?`,(n,a,b)=>`${n} eats ${a} of a pizza. A friend eats ${b} of the same pizza. How much of the pizza did they eat?`,(n,a,b)=>`${n} paints ${a} of a fence in the morning and ${b} of it after lunch. How much of the fence is painted?`];
+const SUB_CTX=[(n,a,b)=>`${n} has ${a} cup of flour and uses ${b} cup. How much flour is left?`,(n,a,b)=>`A ribbon is ${a} yard long. ${n} cuts off ${b} yard. How much ribbon is left?`,(n,a,b)=>`${n} had ${a} of a pan of brownies and gave away ${b} of the pan. How much is left?`,(n,a,b)=>`A bottle holds ${a} liter of juice. ${n} drinks ${b} liter. How much juice is left?`];
+K.addlike={
+  pool:()=>{const o=[];for(const d of [3,4,5,6,8,10,12])for(let x=1;x<d;x++)for(let y=1;y<d;y++){if(x+y<=d)o.push({op:'+',x,y,d});if(x>y)o.push({op:'-',x,y,d})}return o},
+  make(p,ph){const{op,x,y,d}=p,add=op==='+',r=add?x+y:x-y,sg=add?'+':'−';
+    const q=(add?ADD_CTX:SUB_CTX)[p.cx%4](nm(p),F(x,d),F(y,d)),eq=`${F(x,d)} ${sg} ${F(y,d)} = ?`;
+    const explain=`${x} ${sg} ${y} = ${r} parts of size ${F(1,d)}, so the answer is ${F(r,d)}. The bottom number stays ${d}.`;
+    const fin=li=>({li,prompt:`Count the parts you have now. The bottom number stays ${d}. Write the answer.`,think:`${x} ${add?'plus':'minus'} ${y} is ${r}. The parts are still ${ordinal(d)}s, so the answer is ${F(r,d)}.`,input:{t:'frac',a:[r,d],equiv:true},cue:`Count the shaded parts that are left. Keep ${d} on the bottom.`});
+    const opStep=li=>({li,prompt:'Are we adding or taking away?',think:add?'The story puts two amounts together. So we are adding.':'The story uses up some of it. So we are taking away.',input:{t:'choice',opts:['Adding (+)','Taking away (−)'],a:add?0:1},cue:add?'Do the amounts go together, or does some get used up?':'Is something being used up, eaten, or cut off?'});
+    if(ph==='pic')return{q,eq,explain,list:['Find the bottom number. Use parts of that size.','Build the first fraction.','Are we adding or taking away?','Add parts, or take parts away.','Count the parts. The bottom number stays the same.'],
+      board:{type:'bars',bars:[{d:1,f:[0],label:''}]},own:{type:'bars',bars:[{d,f:fillN(d,0),label:''}],tools:['shade',add?'shadeB':'cross','clear'],mode:'shade'},ownMode:'shade',steps:[
+      {li:0,prompt:`Look at the bottom number. What size parts do we need? Each part is 1 out of how many?`,think:`The bottom number is ${d}. So I cut the whole bar into ${d} equal parts. Each part is ${F(1,d)}.`,input:{t:'num',a:d},cue:'The bottom number tells how many equal parts make the whole.',act:R=>{R.bars[0]={d,f:fillN(d,0),label:''}}},
+      {li:1,prompt:`Shade ${F(x,d)}. Tap ${x} part${x>1?'s':''}.`,think:`The first fraction is ${F(x,d)}. I shade ${x} parts. ${countUp(x)}`,input:{t:'board',mode:'shade',check:R=>countV(R)===x},cue:`The top number is ${x}. Tap exactly ${x} parts.`,act:R=>{R.bars[0].f=fillN(d,x)}},
+      opStep(2),
+      add?{li:3,prompt:`Add ${y} more. Tap ${y} white part${y>1?'s':''}.`,think:`Now I add ${y} more parts. ${countUp(y)}`,input:{t:'board',mode:'shadeB',check:R=>countV(R,'a')===x&&countV(R,'b')===y},cue:`Tap ${y} white parts. They get stripes so you can see what you added.`,act:R=>{R.bars[0].f=R.bars[0].f.map((v,i)=>i<x?'a':i<x+y?'b':0)}}
+         :{li:3,prompt:`Take away ${y}. Tap ${y} shaded part${y>1?'s':''} to cross them out.`,think:`Now I take away ${y} parts. I cross them out. ${countUp(y)}`,input:{t:'board',mode:'cross',check:R=>countV(R,'x')===y},cue:`Tap ${y} of the shaded parts. Each tap crosses one out.`,act:R=>{R.bars[0].f=R.bars[0].f.map((v,i)=>i<x-y?'a':i<x?'x':0)}},
+      fin(4)]};
+    return{q,eq,explain,list:['Check that the bottom numbers are the same.','Are we adding or taking away?','Add or subtract the top numbers.','Keep the same bottom number.'],steps:[
+      {li:0,prompt:'Are the bottom numbers the same?',think:`Both bottom numbers are ${d}. The parts are the same size, so I can add or subtract the top numbers.`,input:{t:'choice',opts:['Yes, they are the same','No, they are different'],a:0},cue:'Look at the number under the line in each fraction.'},
+      opStep(1),
+      {li:2,prompt:`${x} ${sg} ${y} = ?`,think:`${x} ${add?'plus':'minus'} ${y} is ${r}.`,input:{t:'num',a:r},cue:'Only add or subtract the top numbers.'},fin(3)]}}};
+K.addunlike={
+  pool:()=>{const o=[];for(const b of DENS)for(const d of DENS){if(b>=d||lcm(b,d)>24)continue;for(let x=1;x<b;x++)for(let y=1;y<d;y++){if(gcd(x,b)>1||gcd(y,d)>1)continue;const L=lcm(b,d),X=x*L/b,Y=y*L/d;if(X+Y<L)o.push({op:'+',x,b,y,d,s:1});if(X!==Y)o.push(X>Y?{op:'-',x,b,y,d,s:1}:{op:'-',x:y,b:d,y:x,d:b,s:0})}}return o},
+  make(p,ph){const{op,x,b,y,d}=p,add=op==='+',L=lcm(b,d),X=x*L/b,Y=y*L/d,r=add?X+Y:X-Y,sg=add?'+':'−';
+    const q=(add?ADD_CTX:SUB_CTX)[p.cx%4](nm(p),F(x,b),F(y,d)),eq=`${F(x,b)} ${sg} ${F(y,d)} = ?`;
+    const board=ph==='pic'?{type:'bars',bars:[{d:b,f:fillN(b,x),label:F(x,b)},{d,f:fillN(d,y),label:F(y,d)}]}:null;
+    return{q,eq,board,explain:`${F(x,b)} = ${F(X,L)} and ${F(y,d)} = ${F(Y,L)}. ${F(X,L)} ${sg} ${F(Y,L)} = ${F(r,L)}.`,list:['Are the bottom numbers the same?','Find a common bottom number.','Rename the first fraction.','Rename the second fraction.','Add or subtract the top numbers. Keep the new bottom number.'],steps:[
+      {li:0,prompt:'Are the bottom numbers the same?',think:`The bottom numbers are ${b} and ${d}. They are different, so the parts are different sizes. I need to make them the same first.`,input:{t:'choice',opts:['Yes, they are the same','No, they are different'],a:1},cue:'Look at the number under the line in each fraction.'},
+      {li:1,prompt:`Find a number that both ${b} and ${d} go into. What is the smallest one?`,think:`Counting by ${b}s: ${multiples(b,L).join(', ')}. Counting by ${d}s: ${multiples(d,L).join(', ')}. ${L} is in both lists.`,input:{t:'num',a:L},cue:`Count by ${b}s: ${multiples(b,L+b).join(', ')}. Count by ${d}s: ${multiples(d,L+d).join(', ')}. What is the first number in both lists?`,act:R=>{R.bars[0].d=L;R.bars[0].f=fillN(L,X);R.bars[1].d=L;R.bars[1].f=fillN(L,Y)}},
+      {li:2,prompt:`${F(x,b)} = {{?/${L}}}`,think:`${b} times ${L/b} is ${L}. So I multiply the top by ${L/b} too. ${x} times ${L/b} is ${X}. ${F(x,b)} = ${F(X,L)}.`,input:{t:'num',a:X},cue:`${b} × ${L/b} = ${L}. Multiply the top number by ${L/b} too.`,act:R=>{R.bars[0].label=F(X,L)}},
+      {li:3,prompt:`${F(y,d)} = {{?/${L}}}`,think:`${d} times ${L/d} is ${L}. ${y} times ${L/d} is ${Y}. ${F(y,d)} = ${F(Y,L)}.`,input:{t:'num',a:Y},cue:`${d} × ${L/d} = ${L}. Multiply the top number by ${L/d} too.`,act:R=>{R.bars[1].label=F(Y,L)}},
+      {li:4,prompt:`${F(X,L)} ${sg} ${F(Y,L)} = ?`,think:`${X} ${add?'plus':'minus'} ${Y} is ${r}. The bottom number stays ${L}. The answer is ${F(r,L)}.`,input:{t:'frac',a:[r,L],equiv:true},cue:`Now the parts are the same size. ${add?'Add':'Subtract'} the top numbers and keep ${L} on the bottom.`}]}}};
+K.mixed={
+  pool:()=>{const o=[];for(const d of [2,3,4,5,6,8,10])for(let w=1;w<=3;w++)for(let r=1;r<d;r++)o.push({w,r,d});return o},
+  dress:p=>{p.v=pick(['toMixed','toImproper'])},
+  make(p,ph){const{w,r,d}=p,v=p.v||'toMixed',N=w*d+r;
+    const board=ph==='pic'?{type:'bars',compact:true,bars:Array.from({length:w+1},(_,i)=>({d,f:fillN(d,i<w?d:r),label:i<w?'1 whole':''}))}:null;
+    if(v==='toMixed')return{q:`Write ${F(N,d)} as a mixed number.`,eq:`${F(N,d)} = ?`,board,explain:`${N} parts make ${w} whole${w>1?'s':''} with ${r} left over, so ${F(N,d)} = {{${w} ${r}/${d}}}.`,list:['How many parts make one whole?','How many wholes can you fill?','How many parts are left over?','Write the mixed number.'],steps:[
+      {li:0,prompt:`How many parts make one whole?`,think:`The bottom number is ${d}. So ${d} parts make one whole.`,input:{t:'num',a:d},cue:'The bottom number tells how many parts fill one whole.'},
+      {li:1,prompt:`How many groups of ${d} fit in ${N}?`,think:`${d} times ${w} is ${w*d}, and ${d} times ${w+1} is ${(w+1)*d}, which is too many. So I can fill ${w} whole${w>1?'s':''}.`,input:{t:'num',a:w},cue:`Count by ${d}s: ${multiples(d,(w+1)*d).join(', ')}. Stop before you go past ${N}.`},
+      {li:2,prompt:`${N} − ${w*d} = ?`,think:`${N} minus ${w*d} is ${r}. So ${r} parts are left over.`,input:{t:'num',a:r},cue:'Take away the parts used for the wholes.'},
+      {li:3,prompt:'Write the mixed number.',think:`${w} wholes and ${F(r,d)}. That is {{${w} ${r}/${d}}}.`,input:{t:'mixed',a:[w,r,d]},cue:'Whole number first, then the leftover parts over the bottom number.'}]};
+    return{q:`Write {{${w} ${r}/${d}}} as a fraction.`,eq:`{{${w} ${r}/${d}}} = ?`,board,explain:`${w} wholes is ${w*d} parts. Add ${r} more to get ${N}. So {{${w} ${r}/${d}}} = ${F(N,d)}.`,list:['How many parts make one whole?','How many parts are in the wholes?','Add the extra parts. Keep the bottom number.'],steps:[
+      {li:0,prompt:'How many parts make one whole?',think:`The bottom number is ${d}, so ${d} parts make one whole.`,input:{t:'num',a:d},cue:'Look at the bottom number.'},
+      {li:1,prompt:`${w} whole${w>1?'s':''} with ${d} parts each. ${w} × ${d} = ?`,think:`${w} times ${d} is ${w*d}. So the wholes have ${w*d} parts.`,input:{t:'num',a:w*d},cue:`Count by ${d}s, ${w} time${w>1?'s':''}.`},
+      {li:2,prompt:`Add the ${r} extra part${r>1?'s':''}. Keep ${d} on the bottom.`,think:`${w*d} plus ${r} is ${N}. The answer is ${F(N,d)}.`,input:{t:'frac',a:[N,d]},cue:`${w*d} + ${r} goes on top. ${d} stays on the bottom.`}]}}};
+const TIMES_CTX=[(k,f,n)=>`Each glass holds ${f} liter of juice. How much juice is in ${k} glasses?`,(k,f,n)=>`${n} runs ${f} mile every day. How far does ${n} run in ${k} days?`,(k,f,n)=>`A recipe uses ${f} cup of milk. ${n} makes the recipe ${k} times. How much milk is that?`];
+K.fracxwhole={
+  pool:()=>{const o=[];for(let k=2;k<=6;k++)for(const b of DENS)for(let a=1;a<b;a++)o.push({k,a,b});return o},
+  make(p,ph){const{k,a,b}=p,t=k*a;
+    const board=ph==='pic'?{type:'bars',compact:true,bars:Array.from({length:k},(_,i)=>({d:b,f:fillN(b,a),label:`Group ${i+1}`}))}:null;
+    return{q:TIMES_CTX[p.cx%3](k,F(a,b),nm(p)),eq:`${k} × ${F(a,b)} = ?`,board,explain:`${k} groups of ${a} parts is ${t} parts of size ${F(1,b)}. So ${k} × ${F(a,b)} = ${F(t,b)}.`,list:['Think: how many groups, and how many parts in each?','Multiply to find all the parts.','Write the parts over the bottom number.'],steps:[
+      {li:0,prompt:`${k} × ${F(a,b)} means ${k} groups of ${F(a,b)}. How many ${F(1,b)} parts are in one group?`,think:`${F(a,b)} is ${a} parts of size ${F(1,b)}. So each group has ${a} part${a>1?'s':''}.`,input:{t:'num',a},cue:'The top number tells how many parts are in one group.'},
+      {li:1,prompt:`${k} groups of ${a}. ${k} × ${a} = ?`,think:`${k} times ${a} is ${t}. That is ${t} parts in all.`,input:{t:'num',a:t},cue:`Count by ${a}s, ${k} times.`},
+      {li:2,prompt:'Write the answer as a fraction.',think:`${t} parts of size ${F(1,b)} is ${F(t,b)}.`,input:{t:'frac',a:[t,b],equiv:true},cue:`${t} goes on top. The size of the parts, ${b}, stays on the bottom.`}]}}};
+const PIZZA=[['pizza','pizzas'],['pie','pies'],['pancake','pancakes']];
+K.fracdiv={
+  pool:()=>{const o=[];for(let a=1;a<=9;a++)for(let b=2;b<=8;b++)if(a%b)o.push({a,b});return o},
+  make(p,ph){const{a,b}=p,w=PIZZA[p.cx%3],t=a*b;
+    const board=ph==='pic'?{type:'circles',items:Array.from({length:a},()=>({d:1,f:[0]}))}:null;
+    const q=`${a} ${a>1?w[1]:w[0]} ${a>1?'are':'is'} shared equally by ${b} friends. How much does each friend get?`;
+    const explain=`Each friend gets ${a} slice${a>1?'s':''} of size ${F(1,b)}, which is ${F(a,b)}. So ${a} ÷ ${b} = ${F(a,b)}.`;
+    if(ph==='pic')return{q,eq:`${a} ÷ ${b} = ?`,board,explain,list:['Cut each one into as many slices as there are friends.','Share the slices out, one at a time.','Each slice is 1 over the number of friends. Write how much each friend gets.'],steps:[
+      {li:0,prompt:`There are ${b} friends. Cut each ${w[0]} into ${b} equal slices. How many slices are there in all?`,think:`I cut each ${w[0]} into ${b} slices, one for each friend. ${a} times ${b} is ${t} slices in all.`,input:{t:'num',a:t},cue:`${a} ${a>1?w[1]:w[0]} with ${b} slices each. ${a} × ${b} = ?`,act:R=>{R.items.forEach(c=>{c.d=b;c.f=fillN(b,0)})}},
+      {li:1,prompt:`Share the ${t} slices equally. How many slices does each friend get?`,think:`Each friend takes one slice from each ${w[0]}. That is ${a} slice${a>1?'s':''} each.`,input:{t:'num',a},cue:`${t} slices shared by ${b} friends. ${t} ÷ ${b} = ?`,act:R=>{R.items.forEach(c=>{c.f=Array.from({length:b},(_,j)=>'p'+j)});R.people=b}},
+      {li:2,prompt:`Each slice is ${F(1,b)} of a ${w[0]}. Write how much each friend gets.`,think:`${a} slice${a>1?'s':''} of ${F(1,b)} is ${F(a,b)}.`,input:{t:'frac',a:[a,b],equiv:true},cue:`${a} slices on top. Each slice is ${F(1,b)}, so ${b} goes on the bottom.`}]};
+    return{q,eq:`${a} ÷ ${b} = ?`,board:null,explain,list:['A division can be written as a fraction: the first number goes on top.','The number of friends goes on the bottom.'],steps:[
+      {li:0,prompt:`In ${a} ÷ ${b}, which number goes on top of the fraction?`,think:`The amount being shared, ${a}, goes on top.`,input:{t:'num',a},cue:'The number being shared goes on top.'},
+      {li:1,prompt:'Write the answer as a fraction.',think:`The number of friends, ${b}, goes on the bottom. ${a} ÷ ${b} = ${F(a,b)}.`,input:{t:'frac',a:[a,b],equiv:true},cue:'Top: the amount shared. Bottom: the number of friends.'}]}}};
+K.fracmul={
+  pool:()=>{const o=[];for(const b of [2,3,4,5,6])for(const d of [2,3,4,5,6])for(let a=1;a<b;a++)for(let c=1;c<d;c++)o.push({a,b,c,d});return o},
+  make(p,ph){const{a,b,c,d}=p,n=a*c,m=b*d;
+    const q=`${nm(p)} plants ${F(c,d)} of a garden. ${F(a,b)} of that part has flowers. What fraction of the whole garden has flowers?`;
+    const explain=`${F(a,b)} × ${F(c,d)} = ${F(n,m)}. Multiply the tops and multiply the bottoms.`;
+    if(ph==='pic')return{q,eq:`${F(a,b)} × ${F(c,d)} = ?`,board:{type:'area',a,b,c,d,show:0},explain,list:['Shade the first fraction going down.','Shade the second fraction going across.','Count all the small boxes. That is the bottom number.','Count the boxes shaded twice. That is the top number.','Write the fraction.'],steps:[
+      {li:0,prompt:`Cut the square into ${b} columns and shade ${a}. How many columns are shaded?`,think:`I cut the square into ${b} columns going down and shade ${a} of them. That shows ${F(a,b)}.`,input:{t:'num',a},cue:'The top number of the first fraction tells how many columns to shade.',act:R=>{R.show=1}},
+      {li:1,prompt:`Now cut it into ${d} rows going across and shade ${c}. How many rows are shaded?`,think:`Now I cut it into ${d} rows going across and shade ${c}. That shows ${F(c,d)}.`,input:{t:'num',a:c},cue:'The top number of the second fraction tells how many rows to shade.',act:R=>{R.show=2}},
+      {li:2,prompt:'How many small boxes are in the whole square?',think:`${b} columns and ${d} rows make ${b} times ${d}, which is ${m} small boxes.`,input:{t:'num',a:m},cue:`Count the boxes, or multiply: ${b} × ${d}.`},
+      {li:3,prompt:'How many boxes are shaded with both colors? They are inside the thick outline.',think:`The boxes with both colors are inside the thick outline. ${a} times ${c} is ${n}.`,input:{t:'num',a:n},cue:`Look inside the thick outline. ${a} × ${c} = ?`},
+      {li:4,prompt:'Write the fraction.',think:`${n} out of ${m} boxes. The answer is ${F(n,m)}.`,input:{t:'frac',a:[n,m],equiv:true},cue:'Top: boxes shaded twice. Bottom: all the boxes.'}]};
+    return{q,eq:`${F(a,b)} × ${F(c,d)} = ?`,board:null,explain,list:['Multiply the top numbers.','Multiply the bottom numbers.','Write the fraction.'],steps:[
+      {li:0,prompt:`${a} × ${c} = ?`,think:`${a} times ${c} is ${n}.`,input:{t:'num',a:n},cue:'Multiply the two top numbers.'},
+      {li:1,prompt:`${b} × ${d} = ?`,think:`${b} times ${d} is ${m}.`,input:{t:'num',a:m},cue:'Multiply the two bottom numbers.'},
+      {li:2,prompt:'Write the fraction.',think:`The answer is ${F(n,m)}.`,input:{t:'frac',a:[n,m],equiv:true},cue:'Put the top answer over the bottom answer.'}]}}};
+K.unitdiv={
+  pool:()=>{const o=[];for(let n=2;n<=8;n++)for(let b=2;b<=6;b++)o.push({v:'wd',n,b});for(let b=2;b<=6;b++)for(let k=2;k<=5;k++)o.push({v:'uw',b,k});return o},
+  make(p,ph){if(p.v==='wd'){const{n,b}=p,t=n*b;
+      const q=`${nm(p)} has ${n} feet of ribbon. Each bow needs ${F(1,b)} foot. How many bows can ${nm(p)} make?`;
+      return{q,eq:`${n} ÷ ${F(1,b)} = ?`,board:ph==='pic'?{type:'bars',compact:true,bars:Array.from({length:n},(_,i)=>({d:1,f:[0],label:`${i+1} ft`}))}:null,explain:`Each whole has ${b} pieces of ${F(1,b)}. ${n} wholes have ${n} × ${b} = ${t} pieces.`,list:['How many pieces fit in 1 whole?','Multiply by the number of wholes.'],steps:[
+        {li:0,prompt:`How many ${F(1,b)} pieces fit in 1 whole?`,think:`If I cut 1 whole into pieces of ${F(1,b)}, I get ${b} pieces.`,input:{t:'num',a:b},cue:`${F(1,b)} means 1 whole cut into ${b} equal pieces.`,act:R=>{R.bars.forEach(x=>{x.d=b;x.f=fillN(b,0)})}},
+        {li:1,prompt:`${n} wholes with ${b} pieces each. ${n} × ${b} = ?`,think:`${n} times ${b} is ${t}. So ${nm(p)} can make ${t} bows.`,input:{t:'num',a:t},cue:`Count by ${b}s, ${n} times.`}]}}
+    const{b,k}=p,t=b*k;const q=`${F(1,b)} of a pan of cornbread is shared equally by ${k} friends. What fraction of the whole pan does each friend get?`;
+    return{q,eq:`${F(1,b)} ÷ ${k} = ?`,board:ph==='pic'?{type:'bars',bars:[{d:b,f:fillN(b,1),label:'1 pan'}]}:null,explain:`Cutting each ${F(1,b)} into ${k} pieces makes ${t} pieces in the whole pan. One piece is ${F(1,t)}.`,list:[ph==='pic'?'Cut every part into as many pieces as there are friends.':'Dividing by a number is the same as cutting into that many pieces.','One friend gets one small piece. Write it as a fraction of the whole.'],steps:[
+      {li:0,prompt:ph==='pic'?`Cut each part into ${k} pieces. How many pieces are in the whole pan now?`:`Cut each ${F(1,b)} into ${k} pieces. ${b} × ${k} = ?`,think:`${b} parts, each cut into ${k}, makes ${b} times ${k}, which is ${t} pieces in the whole pan.`,input:{t:'num',a:t},cue:`${b} × ${k} = ?`,act:R=>{R.bars[0]={d:t,f:Array.from({length:t},(_,i)=>i===0?'a':i<k?'b':0),label:'1 pan'}}},
+      {li:1,prompt:'One friend gets one small piece. What fraction of the whole pan is that?',think:`One piece out of ${t} is ${F(1,t)}.`,input:{t:'frac',a:[1,t],equiv:true},cue:'1 piece on top. All the pieces in the whole pan on the bottom.'}]}}};
+const PEOPLE=[['friends','Friend'],['kids','Kid'],['plates','Plate'],['bags','Bag']];
+K.share={
+  picPool:true,
+  pool:ph=>{const o=[];const[K1,Q1]=ph==='pic'?[6,7]:[9,10];for(let k=2;k<=K1;k++)for(let q=2;q<=Q1;q++)o.push({k,q});return o},
+  make(p,ph){const{k,q}=p,t=k*q,it=itm(p),pw=PEOPLE[p.nx%2];
+    const qs=`${t} ${it[1]} are shared equally by ${k} ${pw[0]}. How many does each get?`,eq=`${t} ÷ ${k} = ?`,explain=`${t} shared by ${k} is ${q} each, because ${k} × ${q} = ${t}.`;
+    if(ph==='pic')return{q:qs,eq,explain,board:{type:'share',emoji:it[0],total:t,plates:Array(k).fill(0),plateName:pw[1]},ownMode:'deal',list:['How many are there in all?','How many groups are there?','Share them out one at a time.','Count one group. That is the answer.'],steps:[
+      {li:0,prompt:`How many ${it[1]} are there in all?`,think:`There are ${t} ${it[1]} in the pile.`,input:{t:'num',a:t},cue:'Count them, or look at the first number in the problem.'},
+      {li:1,prompt:`How many ${pw[0]} are sharing?`,think:`There are ${k} ${pw[0]}, so I make ${k} groups.`,input:{t:'num',a:k},cue:'Look at the problem. How many are sharing?'},
+      {li:2,prompt:`Share them out. Press the button to give one to each, until the pile is empty.`,think:'I give one to each, again and again, like dealing cards, until the pile is empty.',input:{t:'board',mode:'deal',check:R=>R.plates.reduce((x,y)=>x+y,0)===t},cue:'Keep pressing until the pile is empty.',act:R=>{R.plates=Array(k).fill(q)}},
+      {li:3,prompt:'How many does each one get?',think:`Each one has ${q}. So ${t} ÷ ${k} = ${q}.`,input:{t:'num',a:q},cue:'Count the items in one group.'}]};
+    return{q:qs,eq,explain,list:['How many groups are there?','Think of a multiplication fact: groups × ? = total.'],steps:[
+      {li:0,prompt:`How many ${pw[0]} are sharing?`,think:`${k} ${pw[0]} are sharing. That is ${k} groups.`,input:{t:'num',a:k},cue:'This is the number you divide by.'},
+      {li:1,prompt:`${k} × ? = ${t}`,think:`${k} times ${q} is ${t}. So each gets ${q}.`,input:{t:'num',a:q},cue:`Count by ${k}s until you reach ${t}. How many counts?`}]}}};
+const BAGS=[['bag','bags'],['box','boxes'],['jar','jars'],['row','rows']];
+K.groups={
+  picPool:true,
+  pool:ph=>{const o=[];const[S1,C1]=ph==='pic'?[6,7]:[9,10];for(let s=2;s<=S1;s++)for(let c=2;c<=C1;c++)o.push({s,c});return o},
+  make(p,ph){const{s,c}=p,t=s*c,it=itm(p),bg=BAGS[p.nx%4],who=nm(p);
+    const q=`${who} has ${t} ${it[1]}. ${who} puts ${s} in each ${bg[0]}. How many ${bg[1]} does ${who} need?`,eq=`${t} ÷ ${s} = ?`,explain=`${c} ${bg[1]} of ${s} is ${t}, because ${c} × ${s} = ${t}. So ${t} ÷ ${s} = ${c}.`;
+    if(ph==='pic')return{q,eq,explain,board:{type:'share',emoji:it[0],total:t,plates:[],group:true,size:s,plateName:bg[0][0].toUpperCase()+bg[0].slice(1)},ownMode:'group',list:['How many are there in all?','How many go in each group?','Make groups until the pile is empty.','Count the groups. That is the answer.'],steps:[
+      {li:0,prompt:`How many ${it[1]} are there in all?`,think:`There are ${t} ${it[1]}.`,input:{t:'num',a:t},cue:'Look at the first number in the problem.'},
+      {li:1,prompt:`How many go in each ${bg[0]}?`,think:`${s} go in each ${bg[0]}.`,input:{t:'num',a:s},cue:`Look for the words "in each ${bg[0]}".`},
+      {li:2,prompt:`Make groups of ${s} until the pile is empty.`,think:`I make a group of ${s}, then another, until the pile is empty.`,input:{t:'board',mode:'group',check:R=>R.plates.length===c},cue:'Keep making groups until nothing is left.',act:R=>{R.plates=Array(c).fill(s)}},
+      {li:3,prompt:`How many ${bg[1]}?`,think:`I count the ${bg[1]}. ${countUp(c)} ${c} ${bg[1]}.`,input:{t:'num',a:c},cue:'Count the groups, not the items.'}]};
+    return{q,eq,explain,list:['How many go in each group?','Think: ? × group size = total.'],steps:[
+      {li:0,prompt:`How many go in each ${bg[0]}?`,think:`${s} in each ${bg[0]}.`,input:{t:'num',a:s},cue:`Look for the words "in each ${bg[0]}".`},
+      {li:1,prompt:`? × ${s} = ${t}`,think:`${c} times ${s} is ${t}. So ${who} needs ${c} ${bg[1]}.`,input:{t:'num',a:c},cue:`Count by ${s}s until you reach ${t}. How many counts?`}]}}};
+K.remdiv={
+  picPool:true,
+  pool:ph=>{const o=[];const D1=ph==='pic'?6:9,Q1=ph==='pic'?7:9;for(let D=3;D<=D1;D++)for(let q=2;q<=Q1;q++)for(let r=1;r<D;r++)o.push({D,q,r});return o},
+  dress:p=>{p.v=pick(['plain','teams','vans','left'])},
+  make(p,ph){const{D,q,r}=p,t=D*q+r,it=itm(p),v=p.v||'plain';
+    const Q={plain:`What is ${t} ÷ ${D}? Write the answer and the remainder.`,teams:`${t} kids make teams of ${D}. How many full teams can they make?`,vans:`${t} people are going on a trip. Each van holds ${D} people. How many vans are needed so everyone can go?`,left:`${nm(p)} packs ${t} ${it[1]} into boxes of ${D}. How many ${it[1]} are left over?`}[v];
+    const fin={plain:{prompt:`Write the answer with R for the remainder.`,think:`${q} groups with ${r} left. ${t} ÷ ${D} = ${q} R ${r}.`,input:{t:'rem',a:[q,r]},cue:'The groups go first. The leftover goes after R.'},
+      teams:{prompt:`There are ${q} full teams and ${r} kids left over. How many full teams?`,think:`Only full teams count, so the answer is ${q}.`,input:{t:'num',a:q},cue:'The leftover kids are not a full team.'},
+      vans:{prompt:`${q} vans are full and ${r} people are left. Do the leftover people need a van too? How many vans in all?`,think:`The ${r} leftover people still need a ride. So we need one more van. ${q} plus 1 is ${q+1} vans.`,input:{t:'num',a:q+1},cue:'Nobody can be left behind. The leftover people need a van too.'},
+      left:{prompt:`How many ${it[1]} are left over?`,think:`${r} ${it[1]} are left over.`,input:{t:'num',a:r},cue:'The question asks about the leftovers, not the boxes.'}}[v];
+    return{q:Q,eq:`${t} ÷ ${D} = ?`,board:ph==='pic'?{type:'share',emoji:it[0],total:t,plates:[],group:true,size:D,plateName:'Group'}:null,ownMode:'group',explain:`${D} × ${q} = ${D*q}, and ${t} − ${D*q} = ${r}. So ${t} ÷ ${D} = ${q} R ${r}.`,
+      list:['Find the most groups that fit without going over.','Multiply.','Subtract to find what is left.','Answer the question.'],steps:[
+      {li:0,prompt:`Count by ${D}s. What is the most groups of ${D} that fit in ${t}?`,think:`Counting by ${D}s: ${multiples(D,D*q).join(', ')}. The next one, ${D*(q+1)}, is too big. So ${q} groups fit.`,input:{t:'num',a:q},cue:`${D} × ${q} = ${D*q} and ${D} × ${q+1} = ${D*(q+1)}. Which one is not more than ${t}?`,act:R=>{R.plates=Array(q).fill(D)}},
+      {li:1,prompt:`${D} × ${q} = ?`,think:`${D} times ${q} is ${D*q}.`,input:{t:'num',a:D*q},cue:`Count by ${D}s, ${q} times.`},
+      {li:2,prompt:`${t} − ${D*q} = ?`,think:`${t} minus ${D*q} is ${r}. That is the remainder.`,input:{t:'num',a:r},cue:'Subtract to find what is left.'},
+      {li:3,...fin}]}}};
+const PW=[[1000,'thousands'],[100,'hundreds'],[10,'tens'],[1,'ones']];
+function chunksOf(Q){const o=[];let x=Q;for(const[p]of PW){const dgt=Math.floor(x/p);if(dgt){o.push(dgt*p);x-=dgt*p}}return o}
+K.longdiv={
+  pool:()=>i=>{if(GRADE<5){const D=rint(3,9),N=Math.random()<.3?rint(1000,2999):rint(100,999);return{N,D}}
+    for(;;){const D=rint(11,48);if(D%10===0)continue;const Q=Math.random()<.25?rint(100,160):rint(12,99),N=D*Q+rint(0,D-1);if(N>=200&&N<=5999)return{N,D}}},
+  make(p,ph){const{N,D}=p,Q=Math.floor(N/D),R=N%D,ch=chunksOf(Q);
+    const helper=GRADE<5?[1,2,5,10,100]:[1,2,3,4,5,6,7,8,9,10];
+    const board=ph==='pic'?{type:'parts',N,D,chunks:[],left:N,helper}:{type:'ledger',N,D,rows:[],helper:GRADE<5?null:[1,2,5,10]};
+    const steps=[];let left=N;
+    ch.forEach(c=>{const pw=PW.find(([p])=>c%p===0&&c>=p)[0],pn=PW.find(x=>x[0]===pw)[1],nl=left-D*c,L0=left;
+      steps.push({li:0,prompt:`How many groups of ${D} can you take from ${L0}? Think in ${pn}.`,think:`I have ${L0}. Thinking in ${pn}: ${D} × ${c} = ${D*c}. ${D} × ${c+pw} = ${D*(c+pw)} is too much. So I take ${c} groups.`,input:{t:'num',a:c},cue:`Try ${D} × ${pw}, ${D} × ${2*pw}, ${D} × ${3*pw}, and so on. Stop before you go over ${L0}.`,act:R=>{if(R.type==='parts'){R.chunks.push(c);R.left=L0-D*c}else R.rows.push({c,sub:D*c,left:'?'})}});
+      steps.push({li:1,prompt:`${L0} − ${D*c} = ?`,think:`${L0} minus ${D*c} leaves ${nl}.`,input:{t:'num',a:nl},cue:'Subtract carefully. Line up the ones, tens, and hundreds.',act:R=>{if(R.type==='ledger')R.rows[R.rows.length-1].left=nl}});
+      left=nl});
+    steps.push({li:2,prompt:`Add up the groups${ch.length>1?`: ${ch.join(' + ')}`:''}. The number left is the remainder.`,think:`${ch.length>1?ch.join(' plus ')+' is '+Q+'. ':''}${R} is left over. So ${N} ÷ ${D} = ${Q} R ${R}.`,input:{t:'rem',a:[Q,R]},cue:'Add the group numbers. The remainder is the last number you got when you subtracted.'});
+    return{q:`What is ${N} ÷ ${D}?`,eq:`${N} ÷ ${D} = ?`,board,explain:`${ch.map(c=>`${D} × ${c}`).join(', then ')}. That makes ${Q} groups with ${R} left, so ${N} ÷ ${D} = ${Q} R ${R}.`,list:['Take away the biggest group you can: hundreds, then tens, then ones.','Subtract to see what is left.','Add up the groups. What is left is the remainder.'],steps}}};
+
+/* ---------- units for each grade ---------- */
+const UNITS={
+ 3:[{id:'g3a',kind:'identify',title:'What is a fraction?',sub:'Name the shaded part of a whole or a group',std:'3.NF.1'},
+    {id:'g3b',kind:'numline',title:'Fractions on a number line',sub:'Hop from 0 to find a fraction',std:'3.NF.2'},
+    {id:'g3c',kind:'equiv3',title:'Equal fractions',sub:'Two fractions that cover the same amount',std:'3.NF.3'},
+    {id:'g3d',kind:'compare3',title:'Compare fractions',sub:'Same bottom numbers or same top numbers',std:'3.NF.3d'},
+    {id:'g3e',kind:'share',title:'Division as sharing',sub:'Share equally, one at a time',std:'3.OA.2'},
+    {id:'g3f',kind:'groups',title:'Division as making groups',sub:'How many groups can you make?',std:'3.OA.2'}],
+ 4:[{id:'g4a',kind:'equiv4',title:'Equivalent fractions',sub:'Multiply the top and bottom by the same number',std:'4.NF.1'},
+    {id:'g4b',kind:'compare4',title:'Compare any two fractions',sub:'Use 1 half or make the bottoms the same',std:'4.NF.2'},
+    {id:'g4c',kind:'addlike',title:'Add and subtract fractions',sub:'Same bottom numbers, in real stories',std:'4.NF.3'},
+    {id:'g4d',kind:'mixed',title:'Mixed numbers',sub:'Fractions bigger than 1 whole',std:'4.NF.3'},
+    {id:'g4e',kind:'fracxwhole',title:'Whole number × fraction',sub:'Groups of a fraction',std:'4.NF.4'},
+    {id:'g4f',kind:'remdiv',title:'Division with remainders',sub:'What to do with the leftovers',std:'4.OA.3'},
+    {id:'g4g',kind:'longdiv',title:'Divide bigger numbers',sub:'Take away groups by hundreds, tens, and ones',std:'4.NBT.6'}],
+ 5:[{id:'g5a',kind:'addunlike',title:'Add and subtract with different bottoms',sub:'Find a common bottom number first',std:'5.NF.1'},
+    {id:'g5b',kind:'fracdiv',title:'Fractions are division',sub:'Share pizzas and see the fraction',std:'5.NF.3'},
+    {id:'g5c',kind:'fracmul',title:'Multiply fractions',sub:'A fraction of a fraction',std:'5.NF.4'},
+    {id:'g5d',kind:'unitdiv',title:'Divide with unit fractions',sub:'Ribbons, bows, and sharing a part',std:'5.NF.7'},
+    {id:'g5e',kind:'simplify',title:'Simplest form',sub:'Same amount, bigger parts',std:'5.NF'},
+    {id:'g5f',kind:'longdiv',title:'Divide by 2-digit numbers',sub:'Use a helper list of multiples',std:'5.NBT.6'}]
+}[GRADE];
+const unitById=id=>UNITS.find(u=>u.id===id);
+
+/* ---------- never repeat: each problem family remembers what it has used ---------- */
+let USED=store.get('used',{});
+function pickProblems(u,ph,n){
+  const kd=K[u.kind],key=u.kind+(kd.picPool?':'+ph:''),src=kd.pool(ph);
+  const used=new Set(USED[key]||[]),out=[],keys=new Set();
+  const take=p=>{const k=JSON.stringify(p);if(keys.has(k))return;keys.add(k);out.push(p)};
+  if(Array.isArray(src)){
+    let fresh=shuffle(src.filter(p=>!used.has(JSON.stringify(p))));
+    if(fresh.length<n){const recent=new Set((USED[key]||[]).slice(-n));USED[key]=[...recent];fresh=shuffle(src.filter(p=>!recent.has(JSON.stringify(p))))}
+    for(const p of fresh){if(out.length>=n)break;take(p)}
+    for(const p of shuffle(src)){if(out.length>=n)break;take(p)}
+  }else{let tries=0;while(out.length<n&&tries<20000){tries++;const p=src(out.length);if(!used.has(JSON.stringify(p)))take(p)}}
+  USED[key]=[...(USED[key]||[]),...out.map(p=>JSON.stringify(p))].slice(-3000);store.set('used',USED);
+  return out.map(p=>{const q={...p,cx:rint(0,9999),nx:rint(0,9999)};if(kd.dress)kd.dress(q);return q});
+}
+
+/* ---------- progress ---------- */
+let PROG=store.get('prog',{}),ses=store.get('ses',null);
+const DAY=86400000;
+const pu=id=>PROG[id]||(PROG[id]={pic:0,num:0,mastered:null,due:null,gap:7,boost:false,log:[]});
+const saveProg=()=>store.set('prog',PROG);
+const saveSes=()=>store.set('ses',ses);
+function stateOf(u){const s=pu(u.id),need=A.need;
+  if(s.boost)return{label:'Boost practice',next:{ph:'num',mode:'boost'},chip:'due'};
+  if(s.mastered&&s.due&&Date.now()>=s.due)return{label:'Review is ready',next:{ph:'num',mode:'review'},chip:'due'};
+  if(s.pic<need)return{label:`With pictures: ${s.pic} of ${need}`,next:{ph:'pic',mode:'learn'}};
+  if(s.num<need)return{label:`Numbers only: ${s.num} of ${need}`,next:{ph:'num',mode:'learn'}};
+  return{label:'Mastered',next:{ph:'num',mode:'learn'},chip:'ok',done:true}}
+
+/* ---------- small UI helpers ---------- */
+const PRAISE=['Yes, that is right.','Nice thinking.','You got it.','Great work.','That is it.','Good job.'];
+let ctx=null,STALE={};
+function newCtx(){const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
+const guard=p=>Promise.resolve(p).catch(e=>{if(e!==STALE)throw e});
+async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getBoundingClientRect();hd.style.left=(r.left+r.width/2-10)+'px';hd.style.top=(r.top+Math.min(r.height/2,80))+'px';await c.wait(520)}
+function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
+function ansText(inp){switch(inp.t){case 'num':return String(inp.a);case 'frac':return F(inp.a[0],inp.a[1]);case 'mixed':return `{{${inp.a[0]} ${inp.a[1]}/${inp.a[2]}}}`;case 'rem':return `${inp.a[0]} R ${inp.a[1]}`;case 'choice':return inp.opts[inp.a];case 'point':return 'the red dot shows it';default:return 'done on the picture'}}
+function isRight(inp,val,B){
+  const num=x=>x!==''&&/^\d+$/.test(String(x).trim())?+x:NaN;
+  switch(inp.t){
+  case 'num':return num(val)===inp.a;
+  case 'frac':{const n=num(val[0]),d=num(val[1]);if(!(d>0)||isNaN(n))return false;return inp.equiv?n*inp.a[1]===d*inp.a[0]:n===inp.a[0]&&d===inp.a[1]}
+  case 'mixed':return num(val[0])===inp.a[0]&&num(val[1])===inp.a[1]&&num(val[2])===inp.a[2];
+  case 'rem':{const q=num(val[0]),r=String(val[1]).trim()===''?0:num(val[1]);return q===inp.a[0]&&r===inp.a[1]}
+  case 'choice':return val===inp.a;
+  case 'point':return B&&B.spec.point===inp.a;
+  case 'board':return B&&inp.check(B.spec);}
+  return false}
+/* answer widgets */
+function widget(inp,onSubmit){
+  const wrap=h('div',{class:'ans'});const boxes=[];
+  const box=(lab,wide)=>{const b=h('input',{class:'box'+(wide?' wide':''),inputmode:'numeric',autocomplete:'off',maxlength:'5','aria-label':lab});b.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}});boxes.push(b);return b};
+  const go=()=>{let v;
+    if(inp.t==='num')v=boxes[0].value;else if(inp.t==='frac')v=[boxes[0].value,boxes[1].value];else if(inp.t==='mixed')v=[boxes[0].value,boxes[1].value,boxes[2].value];else if(inp.t==='rem')v=[boxes[0].value,boxes[1].value];else v=null;
+    if(boxes.length&&boxes.some((b,i)=>b.value.trim()===''&&!(inp.t==='rem'&&i===1))){const e=boxes.find(b=>!b.value.trim());e.focus();return}
+    onSubmit(v)};
+  const checkBtn=h('button',{class:'btn main',type:'button',on:{click:go}},'Check');
+  if(inp.t==='num')wrap.append(box('Your answer'),checkBtn);
+  else if(inp.t==='frac')wrap.append(h('div',{class:'fin'},box('Top number'),h('div',{class:'fbar'}),box('Bottom number')),checkBtn);
+  else if(inp.t==='mixed')wrap.append(box('Whole number'),h('div',{class:'fin'},box('Top number'),h('div',{class:'fbar'}),box('Bottom number')),checkBtn);
+  else if(inp.t==='rem')wrap.append(box('Answer',true),h('span',{class:'rlab'},'R'),box('Remainder'),checkBtn);
+  else if(inp.t==='choice'){const ob=inp.opts.map((o,i)=>{const b=h('button',{class:'opt'+(inp.sym?' sym':''),type:'button',html:md(o),on:{click(){if(b.disabled)return;const ok=onSubmit(i);if(ok===false){b.classList.add('no');b.disabled=true}}}});return b});wrap.append(h('div',{class:'opts'},ob))}
+  else wrap.append(h('div',{class:'lead'},inp.t==='point'?'Tap the number line, then press Check.':'Use the picture, then press Check.'),checkBtn);
+  wrap.focusFirst=()=>{(boxes[0]||wrap.querySelector('button'))?.focus({preventScroll:true})};
+  wrap.clear=()=>{boxes.forEach(b=>b.value='');boxes[0]?.focus()};
+  return wrap}
+
+/* ---------- screens ---------- */
+const PARTS=['Watch me','Try together','On my own'];
+function header(u,phase,partIx,count,idx){
+  const trail=h('div',{class:'trail'});
+  if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of 5`));
+  else PARTS.forEach((p,i)=>trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')},i===partIx?`${p} ${idx+1} of ${count}`:p)));
+  return h('div',{class:'top'},
+    h('button',{class:'quiet',on:{click:()=>{hush();hideHand();newCtx();home()}}},'← Home'),
+    h('div',{class:'ttl'},u.title,h('small',{},ses.mode==='review'?'Quick review, numbers only':phase==='pic'?'With pictures':'Numbers only')),trail,
+    h('button',{class:'quiet',id:'readBtn',on:{click:readAloud}},'🔊 Read'),
+    h('button',{class:'quiet',id:'pauseBtn',on:{click:pauseScreen}},'⏸ Pause'),
+    h('button',{class:'quiet','aria-label':'Settings',on:{click:openSettings}},'⚙'));
+}
+let view=null;
+function readAloud(){if(!view)return;const t=[view.prob.q,view.prob.eq,view.bubbleText].filter(Boolean).join('. ');hush();say(t)}
+function buildView(u,p,ph,mode){
+  const prob=K[u.kind].make(p,ph);
+  const work=h('div',{class:'work'}),bubble=h('div',{class:'bubble','aria-live':'polite'},h('div',{class:'who','aria-hidden':'true'},'🧑‍🏫'),h('div',{class:'txt'}));
+  const list=h('ol');const check=h('div',{class:'check'},h('h2',{},mode==='own'?'My checklist: tap each step when you do it':'Steps'),list);
+  prob.list.forEach((t,i)=>{const n=mode==='own'?h('button',{class:'n',type:'button','aria-label':`Mark step ${i+1} done`},String(i+1)):h('span',{class:'n'},String(i+1));
+    const li=h('li',{},n,h('span',{},t));if(mode==='own')n.addEventListener('click',()=>li.classList.toggle('done'));list.append(li)});
+  work.append(h('div',{class:'q',html:md(prob.q)}));if(prob.eq)work.append(h('div',{class:'eq',html:md(prob.eq)}));
+  let B=null;const spec=mode==='own'&&prob.own?prob.own:prob.board;
+  if(spec){B=makeBoard(spec);work.append(B.el)}
+  const ansSlot=h('div');work.append(ansSlot);
+  const v={prob,B,work,ansSlot,check,list,bubble,bubbleText:'',
+    say(t,speak=true){v.bubbleText=t;bubble.querySelector('.txt').innerHTML=md(t);if(speak)return say(t);return Promise.resolve()},
+    mark(li,state){[...list.children].forEach((x,i)=>{x.classList.toggle('now',state==='now'&&i===li);if(state==='done'&&i===li){x.classList.add('done');x.classList.remove('now')}})},
+    fill(inp){ansSlot.innerHTML='';if(inp.t!=='board'&&inp.t!=='point'){const a=h('div',{class:'ans'},h('div',{class:'filled',html:md(ansText(inp))}));ansSlot.append(a);a.scrollIntoView({block:'nearest'})}},
+    ask(inp,cb){ansSlot.innerHTML='';const w=widget(inp,cb);ansSlot.append(w);w.focusFirst();(inp.t==='board'||inp.t==='point')&&B?B.el.scrollIntoView({block:'nearest'}):w.scrollIntoView({block:'nearest'});return w}};
+  return v;
+}
+function layout(u,ph,partIx,count,idx,v,footBtns){
+  hush();hideHand();app.innerHTML='';
+  app.append(header(u,ph,partIx,count,idx),h('div',{class:'ses'},v.work,v.bubble,v.check),h('div',{class:'foot'},footBtns));
+  window.scrollTo(0,0);view=v;
+}
+function probIndex(){return ses.mode==='review'?ses.i:[0,2,4][ses.part]+ses.i}
+function partLen(){return ses.mode==='review'?5:[2,2,5][ses.part]}
+function show(){
+  screen='ses';if(!ses)return home();saveSes();
+  const u=unitById(ses.u);if(!u){ses=null;saveSes();return home()}
+  if(ses.part===3)return results();
+  if(ses.part===0)return watchScreen(u);
+  if(ses.part===1)return togetherScreen(u);
+  return ownScreen(u);
+}
+function advance(){ses.i++;if(ses.i>=partLen()){ses.part++;ses.i=0}saveSes();show()}
+
+/* Watch me: step-by-step modeling with a spoken think-aloud */
+function watchScreen(u){
+  const c=newCtx();const p=ses.probs[probIndex()],v=buildView(u,p,ses.ph,'watch');
+  let paused=false,resume=null,skip=null;
+  const gate=()=>paused?new Promise(r=>resume=r):Promise.resolve();
+  const pauseBtn=h('button',{class:'btn',on:{click(){paused=!paused;pauseBtn.textContent=paused?'▶ Play':'⏸ Pause';if(paused)hush();else if(resume){const r=resume;resume=null;r()}}}},'⏸ Pause');
+  const nextStep=h('button',{class:'btn',on:{click(){hush();if(skip)skip()}}},'⏭ Next step');
+  const again=h('button',{class:'btn',on:{click:()=>watchScreen(u)}},'↺ Watch again');
+  const last=ses.i===partLen()-1;
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},last?'Try one together':'Next example');
+  layout(u,ses.ph,0,2,ses.i,v,[pauseBtn,nextStep,again,go]);
+  if(v.B)v.B.setLive(false);
+  const talk=async t=>{v.say(t,false);const min=(TTS&&A.voice)?300:Math.max(1800,t.length*48);await Promise.race([Promise.all([say(t),c.wait(min)]),new Promise(r=>skip=r)]);skip=null};
+  guard((async()=>{
+    await talk(ses.i===0?"Watch me first. I will show you each step and say what I am thinking.":"Here is one more. Watch each step.");
+    const S=v.prob.steps;
+    for(let si=0;si<S.length;si++){const st=S[si];await gate();if(!c.alive)return;
+      v.mark(st.li,'now');await talk(st.think);await gate();if(!c.alive)return;
+      if(st.act&&v.B){await pointAt(v.B.el,c);st.act(v.B.spec);v.B.refresh()}else await pointAt(v.ansSlot,c);
+      hideHand();v.fill(st.input);if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');await c.wait(600)}
+    await talk('So the answer is '+ansText(S[S.length-1].input)+'. '+v.prob.explain);
+    pauseBtn.disabled=true;nextStep.disabled=true;go.disabled=false;go.focus();
+  })());
+}
+/* Try together: guided steps with prompts and cues */
+function togetherScreen(u){
+  const c=newCtx();const p=ses.probs[probIndex()],v=buildView(u,p,ses.ph,'together');
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'Now on my own':'Next problem');
+  const helper=h('button',{class:'btn',hidden:true},'Okay, next step');
+  layout(u,ses.ph,1,2,ses.i,v,[helper,go]);
+  const S=v.prob.steps;let si=0;
+  const step=()=>{const st=S[si];let tries=0;v.cur=st;v.mark(st.li,'now');
+    if(v.B)v.B.setLive(st.input.t==='board'||st.input.t==='point',st.input.t==='point'?'point':st.input.mode);
+    v.say((si===0&&ses.i===0?"Let's do this one together. ":'')+st.prompt);
+    v.ask(st.input,val=>{if(!c.alive)return;
+      if(isRight(st.input,val,v.B)){v.say(pick(PRAISE));finish(st,false);return true}
+      tries++;v.ansSlot.firstChild?.classList.add('shake');setTimeout(()=>v.ansSlot.firstChild?.classList.remove('shake'),400);
+      if(tries===1){v.say("Hmm, not quite. That's okay. "+st.cue);if(st.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
+      v.say("Let's do this step together. "+st.think);finish(st,true);return false})};
+  const finish=(st,shown)=>{if(st.act&&v.B){st.act(v.B.spec)}if(v.B)v.B.setLive(false);v.fill(st.input);
+    if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');
+    const next=()=>{helper.hidden=true;si++;if(si<S.length)step();else{v.say(`${pick(PRAISE)} ${v.prob.explain}`);go.disabled=false;go.focus()}};
+    if(shown){helper.hidden=false;helper.onclick=next;helper.focus()}else guard(c.wait(900).then(next))};
+  step();
+}
+/* On my own: independent practice with a self-monitoring checklist */
+function ownScreen(u){
+  const c=newCtx();const idx=probIndex(),p=ses.probs[idx],v=buildView(u,p,ses.mode==='review'?'num':ses.ph,'own');
+  const quiet=ses.mode==='review';
+  const fin=v.prob.steps[v.prob.steps.length-1];v.cur=fin;
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'See how I did':'Next problem');
+  let tries=0,hints=0;
+  const help=h('button',{class:'btn',on:{click(){if(!c.alive)return;hints++;const left=[...v.list.children].findIndex(x=>!x.classList.contains('done'));const li=left<0?v.prob.list.length-1:left;v.mark(li,'now');
+    if(hints===1)v.say(`What is the next step on your checklist? It is step ${li+1}: ${v.prob.list[li]}`);
+    else{const st=v.prob.steps.find(s=>s.li===li)||fin;v.say(st.cue)}}}},'💡 Help');
+  layout(u,ses.mode==='review'?'num':ses.ph,2,5,ses.i,v,quiet?[go]:[help,go]);
+  if(v.B)v.B.setLive(!quiet&&ses.ph==='pic'||fin.input.t==='point',fin.input.t==='point'?'point':v.prob.ownMode||null);
+  v.say(quiet?'Work this one out on your own. I will show you how you did at the end.':ses.i===0?'Your turn. Use your checklist. Tap Help if you get stuck.':pick(['Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.']));
+  const record=ok=>{ses.res[idx]={ok};saveSes()};
+  v.ask(fin.input,val=>{if(!c.alive)return;const ok=isRight(fin.input,val,v.B);
+    if(quiet){record(ok);v.fill({t:'num',a:'Saved'});v.ansSlot.querySelector('.filled').textContent='Answer saved';go.disabled=false;go.focus();if(v.B)v.B.setLive(false);return true}
+    if(ok){record(tries===0&&hints===0);v.fill(fin.input);v.say(`${tries?'Yes, you fixed it. ':pick(PRAISE)+' '}${v.prob.explain}`);if(v.B)v.B.setLive(false);go.disabled=false;go.focus();help.disabled=true;return true}
+    tries++;
+    if(tries===1){v.say(fin.input.t==='choice'?'Not quite. Look at your checklist and try again.':"Not quite. That's okay. Look at your checklist and try once more.");v.ansSlot.firstChild?.classList.add('shake');if(fin.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
+    record(false);v.fill(fin.input);if(fin.act&&v.B){fin.act(v.B.spec);v.B.setLive(false)}
+    v.say(`Here is how it works. ${v.prob.explain} You are still learning this, and that is okay.`);go.disabled=false;go.focus();help.disabled=true;return false});
+}
+/* Results and mastery */
+function results(){
+  const u=unitById(ses.u),s=pu(u.id),r=ses.res.filter(Boolean),score=r.filter(x=>x.ok).length,pass=score>=4,need=A.need;
+  newCtx();hush();hideHand();app.innerHTML='';
+  let title,msg,nextLabel='Keep going';
+  if(!ses.done){ses.done=true;s.log.push({ph:ses.ph,mode:ses.mode,score,at:Date.now()});
+    if(ses.mode==='review'){if(pass){s.gap=Math.min(60,(s.gap||7)*2);s.due=Date.now()+s.gap*DAY}else{s.boost=true}}
+    else if(ses.mode==='boost'){if(pass){s.boost=false;s.due=Date.now()+(s.gap||7)*DAY}}
+    else if(pass){s[ses.ph]++;if(ses.ph==='num'&&s.num>=need&&!s.mastered){s.mastered=Date.now();s.due=Date.now()+7*DAY;s.gap=7}}
+    saveProg();saveSes()}
+  if(ses.mode==='review'){title=pass?'You still remember it!':'Time for a little boost';msg=pass?`You got ${score} of 5. Your next review will be ready in ${s.gap} days.`:`You got ${score} of 5. That's okay. Skills fade when we don't use them. A short boost lesson will bring it back.`}
+  else if(pass){title=score===5?'Wonderful work!':'Great job!';const st=stateOf(u);msg=`You got ${score} of 5 right on the first try.`+(ses.mode==='boost'?' The skill is back.':s.mastered&&ses.ph==='num'?' You have mastered this unit.':ses.ph==='pic'&&s.pic>=need?' You are ready for numbers only.':` ${st.label}.`)}
+  else{title="Let's practice this one more time";msg=`You got ${score} of 5 right on the first try. Practicing again, with new numbers, is how your brain gets stronger.`;nextLabel='Practice again'}
+  const dots=h('div',{class:'score','aria-label':`${score} of 5`},ses.res.map(x=>h('span',{},x&&x.ok?'⭐':'○')));
+  const next=stateOf(u).next;
+  app.append(h('div',{class:'panel',style:'margin-top:20px'},h('div',{class:'big'},pass?'🌟':'🌱'),h('h1',{},title),dots,h('p',{style:'margin:0'},msg)),
+    h('div',{class:'foot'},h('button',{class:'btn',on:{click:()=>{ses=null;saveSes();home()}}},'Home'),h('button',{class:'btn main',on:{click:()=>start(u,next)}},nextLabel)));
+  say(`${title}. ${msg}`);
+}
+function start(u,next,skipWatch){
+  const n=next.mode==='review'?5:9;ses={u:u.id,ph:next.ph,mode:next.mode,part:next.mode==='review'?2:(skipWatch?1:0),i:0,probs:pickProblems(u,next.ph,n),res:[]};
+  if(next.mode==='review')ses.probs=ses.probs.slice(0,5);
+  saveSes();show();
+}
+function intro(u){
+  screen='intro';const st=stateOf(u),s=pu(u.id);hush();newCtx();app.innerHTML='';
+  const nx=st.next,isReview=nx.mode==='review';
+  const canSkip=!isReview&&(s.log.some(x=>x.ph===nx.ph));
+  const plan=isReview?h('p',{},'5 problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.'):
+    h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},'🤝 Try together: 2 problems, with help on every step.'),h('li',{},'⭐ On my own: 5 problems with your checklist. Get 4 right to move on.'));
+  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home')),
+    h('div',{class:'panel'},h('div',{class:'chip'},`Grade ${GRADE}, ${u.std}, ${nx.mode==='boost'?'Boost':isReview?'Review':nx.ph==='pic'?'With pictures':'Numbers only'}`),h('h1',{},u.title),h('p',{style:'margin:0'},u.sub),plan,
+      h('div',{class:'row'},h('button',{class:'btn main',id:'startBtn',on:{click:()=>start(u,nx)}},isReview?'Start review':"Let's start"),canSkip?h('button',{class:'btn',on:{click:()=>start(u,nx,true)}},'Skip watching, I remember'):null,
+        s.pic>=A.need&&nx.ph==='num'&&!isReview?h('button',{class:'quiet',on:{click:()=>start(u,{ph:'pic',mode:'learn'})}},'Practice with pictures again'):null)));
+  say(`${u.title}. ${isReview?'This is a quick review.':"First I'll show you, then we'll try together, then you'll try on your own."}`);
+}
+function pauseScreen(){saveSes();newCtx();hush();hideHand();const u=unitById(ses.u);app.innerHTML='';
+  app.append(h('div',{class:'panel',style:'margin-top:30px;align-items:center;text-align:center'},h('div',{class:'big'},'⏸'),h('h1',{},'Your spot is saved'),
+    h('p',{style:'margin:0'},`${u.title}. When you come back, the same problem will be waiting, with the same numbers. You can close this page now.`),
+    h('div',{class:'row',style:'justify-content:center'},h('button',{class:'btn',on:{click:home}},'Home'),h('button',{class:'btn main',id:'keepGoing',on:{click:show}},'Keep going'))));
+  say("Okay, I've saved your spot. You can stop now, and we'll pick up right here next time.")}
+let screen='home';
+function home(){
+  screen='home';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  const grades=h('nav',{class:'grades','aria-label':'Grades'},[3,4,5].map(g=>h('a',{href:`fractions-grade${g}.html`,'aria-current':g===GRADE?'page':null},`Grade ${g}`)));
+  app.append(h('div',{class:'hero'},h('div',{class:'grow'},h('h1',{},'Fraction Path'),h('p',{},'Fractions and division, one step at a time.')),grades,h('button',{class:'quiet',on:{click:openSettings}},'⚙ Settings')));
+  if(ses&&!ses.done){const u=unitById(ses.u);if(u)app.append(h('div',{class:'card'},h('div',{class:'grow'},h('b',{},'Continue where you stopped'),h('div',{class:'muted',style:'font-size:15px'},`${u.title}: ${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
+  const firstOpen=UNITS.find(u=>!stateOf(u).done);
+  const grid=h('div',{class:'units'});
+  UNITS.forEach((u,i)=>{const st=stateOf(u),s=pu(u.id);
+    const chips=h('div',{class:'chips'},h('span',{class:'chip'+(s.pic>=A.need?' ok':'')},`Pictures ${Math.min(s.pic,A.need)}/${A.need}`),h('span',{class:'chip'+(s.num>=A.need?' ok':'')},`Numbers ${Math.min(s.num,A.need)}/${A.need}`),
+      s.mastered?h('span',{class:'chip ok'},'⭐ Mastered'):null,st.chip==='due'?h('span',{class:'chip due'},st.label):null);
+    grid.append(h('div',{class:'unit'+(st.done&&st.chip!=='due'?' done':'')+(u===firstOpen?' up':'')},h('div',{class:'t'},h('span',{class:'num'},s.mastered?'⭐':String(i+1)),h('div',{},h('b',{},u.title),h('small',{},u.sub))),chips,
+      h('button',{class:'btn'+(u===firstOpen||st.chip==='due'?' main':''),on:{click:()=>intro(u)}},st.chip==='due'?(st.next.mode==='review'?'Start review':'Start boost'):s.log.length?(st.done?'Practice more':'Keep going'):'Start')))});
+  app.append(h('h2',{style:'margin:8px 0'},firstOpen?`Up next: ${firstOpen.title}`:'Every unit is mastered. Reviews keep the skills fresh.'),grid,notes());
+  say('');
+}
+function notes(){return h('details',{},h('summary',{},'For teachers and parents: how this follows the research'),
+  h('ul',{},
+    h('li',{},'Each lesson uses explicit instruction: 2 modeled examples with a spoken think-aloud, 2 guided problems with a prompt for every step, then 5 independent problems. This matches the model, guide, and independent sequence in Bouck and colleagues (2019).'),
+    h('li',{},'Each unit moves from virtual manipulatives ("With pictures") to "Numbers only", like the virtual-abstract framework in the same study. Students move on after getting at least 4 of 5 right on the first try (80%). Below that, the lesson repeats with new numbers.'),
+    h('li',{},`The study asked for 3 passing sessions in each phase. This app asks for ${A.need} by default. You can change it in Settings.`),
+    h('li',{},'Pieces are tapped, not dragged. Students in that study found dragging and rotating pieces frustrating.'),
+    h('li',{},'Watch me shows each step one at a time from the learner\'s view, with the step spoken and shown on a checklist. That follows the video modeling package in Yakubova and colleagues (2020). Students can watch again any time.'),
+    h('li',{},'On my own gives students a self-monitoring checklist they tick themselves. Help first asks "What is the next step on your checklist?" and only then gives a cue, like the comprehension check in Yakubova and colleagues. Each piece size keeps its own color, like their color-coded fraction tiles.'),
+    h('li',{},'Fraction size gets its own attention: number lines, comparing with 1 half, and fractions with the same top number. Bailey and colleagues (2012) found that understanding fraction size predicted later gains in math achievement.'),
+    h('li',{},'Seven days after a unit is mastered, a 5-problem review appears with no hints. A score of 3 or less unlocks a boost lesson, like the maintenance checks and abstract boosts in Bouck and colleagues. Reviews then space out over time.'),
+    h('li',{},'Differences from the studies: students see right or wrong right away in On my own, to build confidence. The studies gave no feedback during independent work. Only first-try answers count toward mastery.'),
+    h('li',{},'Numbers never repeat between sessions. Each problem family remembers what it has used in this browser and picks new numbers until it runs out, then starts over.'),
+    h('li',{},'Keep in mind: the two intervention studies each worked with 3 middle school students with disabilities, and the third study was correlational. They point in a helpful direction, but they are not proof that this app will work for every child.'),
+    h('li',{},'Progress is saved in this browser on this device.')))}
+function openSettings(){
+  const box=h('div',{class:'sheet',tabindex:'-1'});
+  const sw=(on,f,l)=>{const b=h('button',{class:'quiet','aria-pressed':on,'aria-label':l,on:{click(){f();b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');b.textContent=b.getAttribute('aria-pressed')==='true'?'On':'Off'}}},on?'On':'Off');return b};
+  const test=()=>say("Hi there. I'm so glad you're here. Let's learn about fractions together, one step at a time.");
+  const seg=(vals,cur,set)=>h('div',{class:'row'},vals.map(([v,l])=>h('button',{class:'quiet','aria-pressed':cur===v,on:{click(e){set(v);e.currentTarget.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===e.currentTarget))}}},l)));
+  const sel=h('select',{class:'inp','aria-label':'Choose a voice',on:{change(e){A.uri=e.target.value;store.set('uri',A.uri);test()}}},voices.map(v=>h('option',{value:v.voiceURI},v.name)));sel.value=A.uri;
+  let arm=false;const reset=h('button',{class:'quiet',on:{click(){if(!arm){arm=true;reset.textContent='Tap again to erase all progress';return}PROG={};ses=null;USED={};store.set('prog',PROG);store.set('ses',null);store.set('used',USED);close();home()}}},'Erase progress');
+  box.append(h('div',{class:'row'},h('h2',{class:'grow'},'Settings'),h('button',{class:'quiet',on:{click:close}},'Close')),
+    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Teacher voice'),sw(A.voice,()=>{A.voice=!A.voice;store.set('voice',A.voice);if(!A.voice)hush();else test()},'Teacher voice')):h('div',{class:'muted'},'This browser has no talking voice.'),
+    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):null,
+    TTS?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):null,
+    TTS&&voices.length>1?h('div',{},h('div',{class:'muted'},'Which voice'),sel):null,
+    h('div',{class:'row'},h('span',{class:'grow'},'Calm motion (no moving hand)'),sw(A.calm,()=>{A.calm=!A.calm;store.set('calm',A.calm)},'Calm motion')),
+    h('div',{},h('div',{},'Passing sessions needed in each phase'),h('div',{class:'muted',style:'font-size:15px'},'The research study used 3.'),seg([[1,'1'],[2,'2'],[3,'3']],A.need,v=>{A.need=v;store.set('need',v)})),
+    h('div',{class:'muted',style:'font-size:15px'},'Voices come from this device. If it sounds robotic, pick another one.'),reset);
+  const sh=$('#sheet');sh.innerHTML='';sh.append(box);sh.hidden=false;box.focus();
+  function close(){sh.hidden=true;if(screen==='home')home()}
+  sh.onclick=e=>{if(e.target===sh)close()};
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden){$('#sheet').hidden=true}});
+window.__T={K,UNITS,pickProblems,isRight,show:()=>show(),get ses(){return ses},get view(){return view},start,unitById,stateOf,PROG:()=>PROG};
+home();
+</script>
+</body>
+</html>
