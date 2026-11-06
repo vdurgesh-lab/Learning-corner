@@ -23,6 +23,7 @@ button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visi
 /* top bar */
 #top{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:2px solid var(--line);z-index:30}
 .tool{min-height:44px;padding:6px 12px;border-radius:12px;background:#F2F6F5;border:2px solid var(--line);font-size:16px}
+a.tool{display:inline-flex;align-items:center;text-decoration:none;color:inherit;font-family:inherit}
 .tool[aria-pressed="true"],.tool[aria-expanded="true"]{background:#DCE7FB;border-color:var(--go);font-weight:700}
 #muteBtn.off{background:#FBE3DF;border-color:#C0392B;font-weight:700}
 #tools{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
@@ -227,7 +228,8 @@ details li{margin:6px 0}
 </head>
 <body>
 <header id="top">
-  <button class="tool" id="homeBtn" aria-label="Home">🏠<span class="w"> Home</span></button>
+  <a class="tool" id="lcBtn" href="index.html" aria-label="Learning Corner">🏠<span class="w"> Learning Corner</span></a>
+  <button class="tool" id="homeBtn" aria-label="Money Time home">🪙<span class="w"> Money Time home</span></button>
   <div id="dots" aria-hidden="true"></div>
   <span id="steptext"></span>
   <div id="tools">
@@ -579,7 +581,7 @@ function renderStep(){
     done(){if(fb.textContent)fb.scrollIntoView({block:'nearest'});next.disabled=false;next.classList.add('ready');next.focus({preventScroll:true})}};
   say(title.textContent,{lead:s.kind});
   window.scrollTo(0,0);
-  guard(Promise.resolve(s.build(api)).then(()=>{if(s.kind==='watch'&&ctx.alive)api.done()}));
+  guard(Promise.resolve(seeded(((cur.seed||1)+((cur.orig??cur.i)+1)*7919)>>>0,()=>s.build(api))).then(()=>{if(s.kind==='watch'&&ctx.alive)api.done()}));
   if(s.kind==='ask'){const q=vis.querySelector('.sum');if(q&&q.textContent.includes('?'))say(q.textContent,{queue:true})}
 }
 const wrapT=t=>typeof t==='function'?t:()=>t;
@@ -1312,7 +1314,7 @@ function askResume(c){
     h('div',{id:'nav'},h('button',{class:'btn',on:{click(){delete S.saved[c.id];store.set('saved',S.saved);start(c)}}},'Start over'),h('button',{class:'btn main ready',on:{click(){start(c,sv)}}},'Continue')));
 }
 function openPin(p){const ch=CH.find(c=>c.id===p.ch);if(!ch)return;clearStars();const steps=rebuild(ch,p);
-  cur={ch,seed:p.seed,hist:p.hist,st:p.st,level:p.level,i:0,steps:[steps[p.i]],single:true};renderStep()}
+  cur={ch,seed:p.seed,hist:p.hist,st:p.st,level:p.level,i:0,orig:p.i,steps:[steps[p.i]],single:true};renderStep()}
 
 /* ---------- screens ---------- */
 const clearStars=()=>document.querySelectorAll('.star').forEach(e=>e.remove());

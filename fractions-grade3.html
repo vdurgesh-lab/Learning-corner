@@ -196,9 +196,15 @@ button.pc:hover{box-shadow:inset 0 0 0 3px var(--glow)}
   .top .trail{width:100%}
 }
 @media (prefers-reduced-motion:reduce){#hand{transition:none}.shake{animation:none}}
+#nav{max-width:1180px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));display:flex;gap:8px;flex-wrap:wrap}
+.navb{min-height:42px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--page);color:var(--go);font-weight:600;font-size:16px;text-decoration:none;display:inline-flex;align-items:center;font-family:inherit}
+.navb:hover{border-color:var(--go)}
+body.at-home #navHome{display:none}
+@media (max-width:440px){.navb{font-size:15px;padding:6px 10px}.navb .nw{display:none}}
 </style>
 </head>
 <body>
+<nav id="nav" aria-label="Go to"><a class="navb" href="index.html">🏠 Learning Corner</a><button class="navb" id="navHome" type="button">🍕 Fractions<span class="nw"> home</span></button></nav>
 <div id="app"></div>
 <div id="hand" aria-hidden="true">👆</div>
 <div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Settings"></div>
@@ -674,7 +680,7 @@ function stateOf(u){const s=pu(u.id),need=A.need;
 /* ---------- small UI helpers ---------- */
 const PRAISE=['Yes, that is right.','Nice thinking.','You got it.','Great work.','That is it.','Good job.'];
 let ctx=null,STALE={};
-function newCtx(){const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
+function newCtx(){document.body.classList.remove('at-home');const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
 const guard=p=>Promise.resolve(p).catch(e=>{if(e!==STALE)throw e});
 async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getBoundingClientRect();hd.style.left=(r.left+r.width/2-10)+'px';hd.style.top=(r.top+Math.min(r.height/2,80))+'px';await c.wait(520)}
 function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
@@ -716,7 +722,7 @@ function header(u,phase,partIx,count,idx){
   if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of 5`));
   else PARTS.forEach((p,i)=>trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')},i===partIx?`${p} ${idx+1} of ${count}`:p)));
   return h('div',{class:'top'},
-    h('button',{class:'quiet',on:{click:()=>{hush();hideHand();newCtx();home()}}},'← Home'),
+    
     h('div',{class:'ttl'},u.title,h('small',{},ses.mode==='review'?'Quick review, numbers only':phase==='pic'?'With pictures':'Numbers only')),trail,
     h('button',{class:'quiet',id:'readBtn',on:{click:readAloud}},'🔊 Read'),
     h('button',{class:'quiet',id:'pauseBtn',on:{click:pauseScreen}},'⏸ Pause'),
@@ -855,7 +861,7 @@ function intro(u){
   const canSkip=!isReview&&(s.log.some(x=>x.ph===nx.ph));
   const plan=isReview?h('p',{},'5 problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.'):
     h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},'🤝 Try together: 2 problems, with help on every step.'),h('li',{},'⭐ On my own: 5 problems with your checklist. Get 4 right to move on.'));
-  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home')),
+  app.append(
     h('div',{class:'panel'},h('div',{class:'chip'},`Grade ${GRADE}, ${u.std}, ${nx.mode==='boost'?'Boost':isReview?'Review':nx.ph==='pic'?'With pictures':'Numbers only'}`),h('h1',{},u.title),h('p',{style:'margin:0'},u.sub),plan,
       h('div',{class:'row'},h('button',{class:'btn main',id:'startBtn',on:{click:()=>start(u,nx)}},isReview?'Start review':"Let's start"),canSkip?h('button',{class:'btn',on:{click:()=>start(u,nx,true)}},'Skip watching, I remember'):null,
         s.pic>=A.need&&nx.ph==='num'&&!isReview?h('button',{class:'quiet',on:{click:()=>start(u,{ph:'pic',mode:'learn'})}},'Practice with pictures again'):null)));
@@ -868,7 +874,7 @@ function pauseScreen(){saveSes();newCtx();hush();hideHand();const u=unitById(ses
   say("Okay, I've saved your spot. You can stop now, and we'll pick up right here next time.")}
 let screen='home';
 function home(){
-  screen='home';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  screen='home';newCtx();document.body.classList.add('at-home');hush();hideHand();view=null;app.innerHTML='';
   const grades=h('nav',{class:'grades','aria-label':'Grades'},[3,4,5].map(g=>h('a',{href:`fractions-grade${g}.html`,'aria-current':g===GRADE?'page':null},`Grade ${g}`)));
   app.append(h('div',{class:'hero'},h('div',{class:'grow'},h('h1',{},'Fraction Path'),h('p',{},'Fractions and division, one step at a time.')),grades,h('button',{class:'quiet',on:{click:openSettings}},'⚙ Settings')));
   if(ses&&!ses.done){const u=unitById(ses.u);if(u)app.append(h('div',{class:'card'},h('div',{class:'grow'},h('b',{},'Continue where you stopped'),h('div',{class:'muted',style:'font-size:15px'},`${u.title}: ${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
@@ -917,6 +923,7 @@ function openSettings(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden){$('#sheet').hidden=true}});
 window.__T={K,UNITS,pickProblems,isRight,show:()=>show(),get ses(){return ses},get view(){return view},start,unitById,stateOf,PROG:()=>PROG};
+$('#navHome').addEventListener('click',()=>home());
 home();
 </script>
 </body>

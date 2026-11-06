@@ -32,6 +32,8 @@ h2{font-size:22px;margin:0;line-height:1.3;text-wrap:balance}
 .btn.main{background:var(--go);color:var(--go-ink)}
 .btn:disabled{opacity:.45;cursor:default}
 .quiet{min-height:44px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--page);color:var(--ink);font-size:16px}
+a.quiet{display:inline-flex;align-items:center;text-decoration:none;color:var(--go);font-weight:600}
+@media (max-width:560px){.lc .lw{display:none}}
 .quiet[aria-pressed="true"]{background:var(--go);border-color:var(--go);color:var(--go-ink)}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .grow{flex:1 1 auto;min-width:0}
@@ -323,7 +325,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden
 /* ---------- shelf ---------- */
 let filter={topic:'All',q:''},tab='stories';
 function topBar(){
-  return h('div',{class:'top'},h('h1',{class:'grow'},'Story Shelf'),
+  return h('div',{class:'top'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),h('h1',{class:'grow'},'Story Shelf'),
     h('div',{class:'tabs'},
       h('button',{class:'quiet','aria-pressed':tab==='stories',on:{click(){tab='stories';location.hash='';route()}}},'Stories'),
       h('button',{class:'quiet','aria-pressed':tab==='words',on:{click(){location.hash='words'}}},'All words'),
@@ -374,7 +376,7 @@ let run=null;
 function stepper(n){return h('div',{class:'steps','aria-label':'Steps in this story'},STEPS.map((t,i)=>h('div',{class:'st'+(i===n?' on':i<n?' past':'')},t)))}
 function frame(step,title,body,nav){
   stopSpeech();clearApp();window.scrollTo(0,0);
-  app.append(h('div',{class:'row'},h('button',{class:'quiet',on:{click(){location.hash=''}}},'← All stories'),h('span',{class:'muted grow',style:'font-size:15px'},run.s.title),h('button',{class:'quiet','aria-label':'Sound settings',on:{click:openSound}},'🔊 Sound')),
+  app.append(h('div',{class:'row'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),h('button',{class:'quiet',on:{click(){location.hash=''}}},'📚 All stories'),h('span',{class:'muted grow',style:'font-size:15px'},run.s.title),h('button',{class:'quiet','aria-label':'Sound settings',on:{click:openSound}},'🔊 Sound')),
     stepper(step),h('h1',{style:'margin-bottom:8px;font-size:clamp(22px,3.4vw,28px)'},title),...body,h('div',{class:'nav'},nav));
 }
 let reader=null;
@@ -464,7 +466,7 @@ function readPage(){
   const rail=h('aside',{class:'rail'},pic,h('div',{class:'rt'},TTS?readBtn:null,TTS?h('button',{class:'quiet wide',id:'hearLine',on:{click(){if(reading)stopRead();const L=lines[line];speakTxt(words.slice(L.first,L.last+1).map(x=>x.textContent).join(' '))}}},'👂 Hear this line'):null,
     h('button',{class:'quiet','aria-label':'Smaller text',on:{click(){size(-2)}}},'A−'),h('button',{class:'quiet','aria-label':'Bigger text',on:{click(){size(2)}}},'A+'),picBtn,h('button',{class:'quiet wide',on:{click:openSound}},'🎚 Sound settings')));
   const pauseBtn=h('button',{class:'quiet',id:'pauseBtn',on:{click(){pauseView()}}},'⏸ Pause');
-  app.append(h('div',{class:'rhead'},h('button',{class:'quiet',on:{click(){location.hash=''}}},'← All stories'),h('span',{class:'ttl'},s.title),where,pauseBtn),h('div',{class:'pbar'},fill));
+  app.append(h('div',{class:'rhead'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),h('button',{class:'quiet',on:{click(){location.hash=''}}},'📚 All stories'),h('span',{class:'ttl'},s.title),where,pauseBtn),h('div',{class:'pbar'},fill));
   if(run.welcome){run.welcome=false;app.append(h('div',{class:'toast',id:'toast'},h('span',{class:'grow'},'Welcome back. The blue line shows where you stopped.'),h('button',{class:'quiet',id:'startOver',on:{click(){delete spots[s.id];saveProgress();run=null;start(s.id)}}},'Start the story over')));talk("Welcome back. Let's pick up right where you stopped.")}
   app.append(h('div',{class:'rbody'},rail,scroller),h('div',{class:'rfoot'},upBtn,h('span',{class:'keyhint'},'Finished the line? Press ',h('kbd',{},'Space'),' or ',h('kbd',{},'↓'),'. Go back with ',h('kbd',{},'↑'),'. Tap a word for help.'),main));
   measure();line=lineOf(Math.min(run.word,words.length-1));if(run.word>=1e9)line=lines.length-1;run.word=lines[line].first;scroller.style.scrollBehavior='auto';show();scroller.style.scrollBehavior='';saveSpot();
@@ -606,7 +608,7 @@ function addPage(){
     for(const s of added){let arm=false;const del=h('button',{class:'quiet',on:{async click(){if(!arm){arm=true;del.textContent='Tap again to remove';return}await removeStory(s.id);buildDict();drawAdded()}}},'Remove');
       addedList.append(h('div',{class:'row panel',style:'padding:10px 14px'},h('span',{class:'grow'},s.title),del))}}
   drawAdded();
-  app.append(h('div',{class:'row',style:'margin-bottom:12px'},h('button',{class:'quiet',on:{click(){location.hash=''}}},'← All stories')),h('h1',{style:'margin-bottom:12px'},'Add a story'),form,h('h2',{style:'margin:20px 0 10px'},'Stories you added'),addedList);
+  app.append(h('div',{class:'row',style:'margin-bottom:12px'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),h('button',{class:'quiet',on:{click(){location.hash=''}}},'📚 All stories')),h('h1',{style:'margin-bottom:12px'},'Add a story'),form,h('h2',{style:'margin:20px 0 10px'},'Stories you added'),addedList);
 }
 function parseStory(i){
   const errors=[];const req=(v,m)=>{if(!v.trim())errors.push(m)};
