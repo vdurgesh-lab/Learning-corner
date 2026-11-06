@@ -1,0 +1,1247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiplication Path Grade 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF3F6; --page:#FFFFFF; --ink:#1A2B3C; --soft:#55677A; --line:#CFDAE2;
+  --go:#25558F; --go-ink:#FFFFFF; --yes:#1D7350; --yes-bg:#DDF3E8; --try:#8A4B00; --try-bg:#FFF0D4;
+  --glow:#D69A00; --chip:#E3EBF1; --bubble:#E7EFFA; --hot:#D1495B; --c1:#4E9AE0; --c2:#F28E2B;
+  --read:"Lexend",Verdana,Tahoma,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111B24; --page:#1A2732; --ink:#E9F0F5; --soft:#A5B6C4; --line:#33444F; --go:#7FB2EA; --go-ink:#0E1B26;
+  --yes:#7CDBB0; --yes-bg:#17392C; --try:#FFC67A; --try-bg:#3D2C12; --glow:#F2C14E; --chip:#24343F; --bubble:#203247; --hot:#FF7A8A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111B24; --page:#1A2732; --ink:#E9F0F5; --soft:#A5B6C4; --line:#33444F; --go:#7FB2EA; --go-ink:#0E1B26;
+  --yes:#7CDBB0; --yes-bg:#17392C; --try:#FFC67A; --try-bg:#3D2C12; --glow:#F2C14E; --chip:#24343F; --bubble:#203247; --hot:#FF7A8A; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--read);font-size:18px;line-height:1.45}
+#app{max-width:1180px;margin:0 auto;padding-block:12px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--glow);outline-offset:2px}
+h1{font-size:clamp(26px,4.4vw,38px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:21px;margin:0;line-height:1.3;text-wrap:balance}
+.muted{color:var(--soft)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grow{flex:1 1 auto;min-width:0}
+.btn{min-height:50px;padding:8px 20px;border-radius:12px;border:2px solid var(--go);background:var(--page);color:var(--go);font-weight:600}
+.btn.main{background:var(--go);color:var(--go-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.quiet{min-height:42px;padding:5px 12px;border-radius:10px;border:1px solid var(--line);background:var(--page);font-size:16px}
+.quiet[aria-pressed="true"]{background:var(--go);border-color:var(--go);color:var(--go-ink)}
+.chip{display:inline-block;font-size:14px;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--soft);white-space:nowrap}
+.chip.ok{background:var(--yes-bg);color:var(--yes);font-weight:600}
+.chip.due{background:var(--try-bg);color:var(--try);font-weight:600}
+
+/* fraction text */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .1em}
+.fr .nu{border-bottom:.09em solid currentColor;padding:0 .15em}
+.fr .de{padding:0 .15em}
+.mx{margin-right:.06em}
+
+/* home */
+.hero{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+.hero p{margin:4px 0 0;color:var(--soft)}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.unit{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:16px;background:var(--page);border:2px solid var(--line)}
+.unit.up{border-color:var(--go);box-shadow:0 0 0 3px rgba(37,85,143,.15)}
+.unit .t{display:flex;gap:10px;align-items:flex-start}
+.unit .num{flex:none;width:42px;height:42px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-weight:700}
+.unit.done .num{background:var(--yes-bg);color:var(--yes)}
+.unit b{font-size:19px;line-height:1.25;display:block}
+.unit small{font-size:15px;color:var(--soft);display:block}
+.unit .chips{display:flex;gap:6px;flex-wrap:wrap}
+.unit .btn{align-self:flex-start;min-height:44px}
+.card{background:var(--page);border:2px solid var(--go);border-radius:16px;padding:12px 16px;margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+details{margin-top:16px;background:var(--page);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:16px}
+summary{cursor:pointer;font-weight:600}
+details li{margin:6px 0}
+.grades{display:flex;gap:6px;flex-wrap:wrap}
+.grades a{color:var(--go);font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--line);text-decoration:none;background:var(--page)}
+.grades a[aria-current]{background:var(--go);color:var(--go-ink);border-color:var(--go)}
+
+/* session */
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.top .ttl{font-weight:600;font-size:17px;min-width:0;flex:1 1 200px}
+.top .ttl small{display:block;font-weight:400;color:var(--soft);font-size:14px}
+.trail{display:flex;gap:4px;flex-wrap:wrap}
+.pt{font-size:14px;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--soft);white-space:nowrap}
+.pt.on{background:var(--go);color:var(--go-ink);font-weight:600}
+.pt.done{background:var(--yes-bg);color:var(--yes)}
+.ses{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-areas:"work bubble" "work check";grid-template-rows:auto 1fr;gap:12px;align-items:start}
+.work{grid-area:work;background:var(--page);border:1px solid var(--line);border-radius:18px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.bubble{grid-area:bubble;display:flex;gap:10px;align-items:flex-start;background:var(--bubble);border-radius:16px;padding:12px 14px;font-size:18px;min-height:80px}
+.bubble .who{font-size:30px;line-height:1;flex:none}
+.bubble .txt{min-width:0}
+.check{grid-area:check;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+.check h2{font-size:16px;color:var(--soft);font-weight:600}
+.check ol{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.check li{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;font-size:16px;line-height:1.35}
+.check li .n{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--page)}
+.check li.now{background:var(--bubble);box-shadow:inset 0 0 0 2px var(--go)}
+.check li.done .n{background:var(--yes);border-color:var(--yes);color:var(--page)}
+.check button.n{cursor:pointer;padding:0}
+.q{font-size:20px;line-height:1.5}
+.eq{font-size:clamp(26px,4vw,34px);font-weight:600;text-align:center}
+.ans{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding-top:10px;border-top:1px dashed var(--line);min-height:76px}
+.ans .lead{width:100%;text-align:center;font-size:17px;color:var(--soft)}
+.box{width:76px;height:56px;font-size:28px;text-align:center;border:2px solid var(--go);border-radius:10px;background:var(--page);color:var(--ink);padding:0}
+.box.wide{width:110px}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fbar{width:86px;height:3px;background:var(--ink);border-radius:2px}
+.rlab{font-size:24px;font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%}
+.opt{min-height:56px;min-width:84px;padding:8px 16px;border-radius:12px;border:2px solid var(--go);background:var(--page);font-size:20px;font-weight:500}
+.opt.sym{font-size:30px;min-width:76px;font-weight:700}
+.opt:hover:not(:disabled){background:var(--chip)}
+.opt.no{border-style:dashed;border-color:var(--line);color:var(--soft)}
+.opt.ok{background:var(--yes-bg);border-color:var(--yes);color:var(--yes)}
+.filled{font-size:26px;font-weight:700;padding:6px 16px;border-radius:10px;background:var(--yes-bg);color:var(--yes)}
+.foot{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:10px;background:var(--bg);margin-top:10px}
+.foot .main{margin-left:auto;min-width:180px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#hand{position:fixed;left:-80px;top:-80px;font-size:42px;pointer-events:none;z-index:60;transition:left .45s ease,top .45s ease;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+
+/* sheets */
+#sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,20,30,.45)}
+#sheet[hidden]{display:none!important}
+.sheet{background:var(--page);width:100%;max-width:600px;max-height:88%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.sheet:focus{outline:none}
+.inp{width:100%;min-height:44px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--page);font-size:16px}
+.big{font-size:56px;line-height:1}
+.score{display:flex;gap:6px;flex-wrap:wrap;font-size:30px}
+.panel{background:var(--page);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+@media (max-width:900px){
+  .ses{grid-template-columns:1fr;grid-template-areas:"bubble" "work" "check";grid-template-rows:auto}
+  .bubble{min-height:0}
+}
+@media (max-width:560px){
+  body{font-size:17px}
+  .work{padding:12px}
+  .blab{width:56px;font-size:17px}
+  .halflab{padding-left:66px}
+  .box{width:64px;height:52px;font-size:24px}
+  .foot .main{min-width:0;flex:1 1 auto}
+  .top .trail{width:100%}
+}
+@media (prefers-reduced-motion:reduce){#hand{transition:none}.shake{animation:none}}
+/* boards */
+.board{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.btitle{font-size:15px;color:var(--soft);text-align:center;margin-bottom:4px}
+.stk{display:flex;flex-direction:column;gap:14px;width:100%;align-items:center}
+.stkit{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.ans,.board{scroll-margin-bottom:96px;scroll-margin-top:12px}
+.count{font-size:19px;font-weight:600;text-align:center;color:var(--go);font-variant-numeric:tabular-nums}
+.plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:720px}
+.plate{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border:2px solid var(--line);border-radius:18px;background:var(--chip);min-width:88px}
+button.plate{cursor:pointer}
+button.plate:hover{border-color:var(--glow)}
+.plate.on{border-color:var(--go);background:var(--bubble)}
+.pi{display:grid;gap:2px;font-size:22px;line-height:1.15;min-height:28px;justify-items:center}
+.ptag{font-weight:700;font-size:16px;min-height:22px;color:var(--go)}
+.arr{display:flex;flex-direction:column;gap:3px;width:max-content;max-width:100%}
+.acap{font-size:15px;color:var(--soft);padding-left:34px}
+.arow{display:flex;align-items:center;gap:6px}
+.rn{width:26px;flex:none;text-align:right;font-size:13px;color:var(--soft)}
+.adots{display:flex;gap:4px;padding:3px 5px;border-radius:999px;border:2px solid transparent;background:transparent;position:relative}
+button.adots{cursor:pointer}
+button.adots:hover{border-color:var(--glow)}
+.adots i{width:var(--ds);height:var(--ds);border-radius:50%;background:var(--c);border:1.5px solid rgba(0,0,0,.35);display:block;flex:none}
+.adots.fade i{background:transparent;border:1.5px dashed var(--soft)}
+.adots.x::after{content:"";position:absolute;left:2px;right:2px;top:50%;border-top:3px solid var(--hot)}
+.atag{font-weight:700;color:var(--go);font-size:16px;white-space:nowrap}
+.acut{display:block;width:calc(100% - 34px);margin:1px 0 1px 34px;height:14px;border:0;background:transparent;border-top:3px dashed var(--line);padding:0}
+button.acut{cursor:pointer}
+button.acut:hover{border-top-color:var(--glow)}
+.acut.on{border-top:4px solid var(--hot)}
+.lineb{width:100%;max-width:700px}
+.lineb text{fill:var(--ink);font-family:var(--read)}
+.pairs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px}
+.loose{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:26px}
+.pair{display:flex;flex-direction:column;align-items:center;padding:4px 6px;border:2px solid var(--yes);border-radius:12px;font-size:24px;line-height:1.2}
+.pair.lone{border:2px dashed var(--hot)}
+.pair small{font-size:12px;color:var(--hot);font-weight:600}
+.tgroups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tg{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--chip)}
+.tgin{display:flex;gap:3px;align-items:flex-end;flex-wrap:wrap;justify-content:center;max-width:150px}
+.flat{width:44px;height:44px;background:#F2A04B;background-image:linear-gradient(#0003 1px,transparent 1px),linear-gradient(90deg,#0003 1px,transparent 1px);background-size:4.4px 4.4px;border:1.5px solid #0006}
+.rod{width:9px;height:44px;background:#5FA8E8;background-image:linear-gradient(#0004 1px,transparent 1px);background-size:9px 4.4px;border:1.5px solid #0006}
+.unit1{width:9px;height:9px;background:#6DB563;border:1.5px solid #0006}
+.tg small{font-size:14px;font-weight:600}
+.agrid{display:grid;gap:3px;width:100%;max-width:660px}
+.ahead{font-weight:700;text-align:center;font-size:17px;align-self:end;padding:2px}
+.ahead.side{align-self:center;text-align:right;padding-right:6px}
+.acell{min-height:68px;border:2.5px solid var(--ink);border-radius:6px;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:14px;padding:4px 2px;font-variant-numeric:tabular-nums}
+.acell b{font-size:18px}
+.acell.on{background:color-mix(in srgb,var(--c) 45%,var(--page))}
+.tape{width:100%;max-width:640px;display:flex;flex-direction:column;gap:10px}
+.trow{display:flex;align-items:center;gap:8px}
+.tname{width:64px;flex:none;text-align:right;font-weight:600;font-size:16px;overflow-wrap:anywhere}
+.tarea{flex:1;min-width:0}
+.tbar{display:flex;height:44px}
+.tbox{flex:1 1 0;min-width:0;border:2.5px solid var(--ink);margin-left:-2.5px;background:color-mix(in srgb,var(--c) 45%,var(--page));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.tbox:first-child{margin-left:0}
+.ttot{font-size:15px;color:var(--soft);margin-top:2px}
+.algo{font-size:30px;font-variant-numeric:tabular-nums;display:inline-flex;flex-direction:column;align-items:flex-end;font-weight:600;line-height:1.3}
+.algo .ln{display:flex;align-items:center}
+.algo .op{width:1.1em;text-align:left;color:var(--soft)}
+.algo .dg{width:.72em;text-align:center}
+.algo .dg.ph{color:var(--hot)}
+.algo .hr{align-self:stretch;border-top:3px solid var(--ink);margin:2px 0}
+.algo .note{font-size:14px;color:var(--soft);font-weight:400;margin-left:10px;min-width:96px;text-align:left}
+.layers{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;--cs:16px}
+.layer{display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.55}
+.layer.on{opacity:1}
+.lg{display:grid;gap:2px}
+.lg i{width:var(--cs);height:var(--cs);background:var(--chip);border:1.5px solid var(--soft);display:block}
+.layer.on .lg i{background:#A585E0;border-color:#0006}
+.layer small{font-size:13px;color:var(--soft)}
+.strips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.strip{display:flex;flex-direction:column;align-items:center;gap:3px}
+.sbar{display:flex;border:2px solid var(--ink)}
+.sbar i{width:18px;height:36px;border-right:1px solid var(--ink);background:var(--page);display:block}
+.sbar i:last-child{border-right:0}
+.sbar i.on{background:#5FA8E8}
+.strip small{font-size:14px}
+.hund{width:min(240px,64vw);height:auto}
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:15px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:16px;height:16px;border-radius:4px;display:inline-block;border:1px solid var(--ink)}
+.fpairs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:flex-end}
+.fp{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:16px}
+.fp svg circle{fill:#5FA8E8;stroke:#0006}
+.pv{border-collapse:collapse;font-variant-numeric:tabular-nums;max-width:100%}
+.pv th{font-size:12px;font-weight:600;color:var(--soft);padding:2px 4px;border-bottom:2px solid var(--line);white-space:nowrap}
+.pv td{font-size:26px;font-weight:700;text-align:center;padding:2px 6px;min-width:34px;border-right:1px dashed var(--line)}
+.pv td.pt{min-width:10px;border-right:0;padding:0}
+.pv td.lab{font-size:14px;font-weight:400;color:var(--soft);text-align:right;border-right:0}
+.pvwrap{max-width:100%;overflow-x:auto}
+
+/* words */
+.words{display:flex;flex-wrap:wrap;gap:8px}
+.word{background:var(--bubble);border-radius:12px;padding:6px 12px;font-size:16px}
+.word b{display:block;font-size:17px}
+
+/* home extras */
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:16px}
+.tool{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--page);border:2px solid var(--line);text-align:left;min-height:74px}
+.tool:hover{border-color:var(--go)}
+.tool .ic{font-size:34px;line-height:1}
+.tool b{font-size:19px;display:block}
+.tool small{font-size:15px;color:var(--soft);display:block}
+.units.small{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.units.small .unit{padding:10px 12px;gap:6px}
+.units.small .unit b{font-size:17px}
+h2.sec{font-size:22px;margin:18px 0 4px}
+p.secp{margin:0 0 10px;color:var(--soft);font-size:16px}
+
+/* times table */
+.tt{display:grid;grid-template-columns:minmax(0,auto) minmax(260px,1fr);gap:16px;align-items:start}
+.ttgrid{display:grid;grid-template-columns:repeat(11,var(--cell));gap:2px;--cell:min(46px,calc((100vw - 48px)/11))}
+.ttgrid .h,.ttgrid button{height:var(--cell);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-size:clamp(12px,2.6vw,17px)}
+.ttgrid .h{font-weight:700;background:var(--chip);border-radius:6px}
+.ttgrid .h.on{background:var(--go);color:var(--go-ink)}
+.ttgrid button{border:1px solid var(--line);border-radius:6px;background:var(--page);padding:0}
+.ttgrid button.known{background:var(--yes-bg);color:var(--yes);font-weight:600}
+.ttgrid button.learn{background:var(--try-bg);color:var(--try)}
+.ttgrid button.path{box-shadow:inset 0 0 0 2px var(--glow)}
+.ttgrid button.sel{background:var(--go);color:var(--go-ink);font-weight:700}
+.ttgrid button.turn{outline:3px dashed var(--go);outline-offset:-3px}
+.ttgrid button.dim{opacity:.4}
+.ttpanel{background:var(--page);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ttpanel .big{font-size:38px;font-weight:700}
+.ttpanel .mini{display:flex;flex-direction:column;gap:3px}
+.ttpanel .mini div{display:flex;gap:3px}
+.ttpanel .mini i{width:12px;height:12px;border-radius:50%;background:#5FA8E8;border:1px solid #0005;display:block}
+.how{font-size:16px;color:var(--soft);margin:0 0 10px}
+
+/* sprint */
+.sp{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:6px}
+.tbarw{width:100%;max-width:520px;height:14px;border-radius:999px;background:var(--chip);overflow:hidden}
+.tbarw div{height:100%;background:var(--go);transition:width .25s linear}
+.fact{font-size:clamp(40px,9vw,64px);font-weight:700;display:flex;align-items:center;gap:14px;font-variant-numeric:tabular-nums}
+.fact .box{width:120px;height:76px;font-size:44px}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:8px}
+.pad button{height:58px;font-size:26px;border-radius:12px;border:2px solid var(--go);background:var(--page);color:var(--go);font-weight:600}
+.pad button.ok{background:var(--go);color:var(--go-ink)}
+.fix{background:var(--try-bg);color:var(--ink);border-radius:16px;padding:12px 16px;max-width:560px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.fix .f{font-size:34px;font-weight:700;color:var(--try)}
+.chart{width:100%;max-width:520px;height:auto}
+.chart text{fill:var(--ink);font-family:var(--read)}
+@media (max-width:860px){.tt{grid-template-columns:1fr}}
+@media (max-width:560px){.lineb text{font-size:30px}.lineb text[font-size="16"]{font-size:24px}.algo{font-size:24px}.pad{grid-template-columns:repeat(3,68px)}.acell{min-height:58px;font-size:13px}.acell b{font-size:16px}}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="hand" aria-hidden="true">👆</div>
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Settings"></div>
+<script>
+'use strict';
+const GRADE=5;
+const KEY='multpath'+GRADE+'.';
+const store={get(k,d){try{const v=localStorage.getItem(KEY+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch(e){}}};
+const $=s=>document.querySelector(s);
+const h=(t,a={},...k)=>{const e=document.createElement(t);
+  for(const[n,v]of Object.entries(a)){if(n==='class')e.className=v;else if(n==='on')for(const[x,f]of Object.entries(v))e.addEventListener(x,f);else if(n==='html')e.innerHTML=v;else if(v!==false&&v!=null)e.setAttribute(n,v)}
+  for(const c of k.flat())if(c!=null)e.append(c);return e};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const app=$('#app');
+const FAST=()=>window.__FAST?0.04:1;
+/* ---------- warm, slow voice ---------- */
+const TTS='speechSynthesis'in window&&'SpeechSynthesisUtterance'in window?window.speechSynthesis:null;
+const A={voice:store.get('voice',true),slow:store.get('slow',true),vol:store.get('vol',85),uri:store.get('uri',''),calm:store.get('calm',!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)),need:store.get('need',2)};
+const NOVELTY=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Ralph|Fred|Kathy|Grandma|Grandpa|Eddy|Flo|Reed|Rocko|Sandy|Shelley/i;
+const vScore=v=>{let n=0,s=v.name;if(/Natural|Neural/i.test(s))n+=50;if(/Premium|Enhanced/i.test(s))n+=40;if(/Google US English/i.test(s))n+=30;if(/Ava|Samantha|Allison|Susan|Zoe|Aria|Jenny|Serena|Nicky/i.test(s))n+=20;if(/en.US/i.test(v.lang))n+=10;return n};
+let voices=[];
+function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===A.uri))A.uri=voices[0].voiceURI}
+if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
+let sq=[],sbusy=false,srun=0,waiters=[];
+function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();const w=waiters;waiters=[];w.forEach(f=>f())}
+function pump(run){
+  if(run!==srun||sbusy)return;
+  if(!sq.length){const w=waiters;waiters=[];w.forEach(f=>f());return}
+  sbusy=true;const text=sq.shift();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=A.slow?.78:.92;u.pitch=1;u.volume=Math.max(.05,A.vol/100);
+  const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
+  let once=false;const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
+  const t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume();
+}
+function say(text,{queue=false}={}){return new Promise(res=>{
+  if(!TTS||!A.voice||!text){res();return}
+  if(!queue)hush();
+  const parts=spoken(text).split(/(?<=[.?])\s+/).map(x=>x.trim()).filter(Boolean);
+  if(!parts.length){res();return}
+  sq.push(...parts);waiters.push(res);pump(srun)})}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
+/* ---------- boards (the virtual manipulatives) ---------- */
+const BC=['#5FA8E8','#F2A04B','#6DB563','#E58AC8'];
+function subOf(R,si){return R.type==='stack'?R.items[si]:R}
+const resetBtn=si=>`<div class="row" style="justify-content:center"><button type="button" class="quiet" data-s="${si}" data-act="reset">Start over</button></div>`;
+const PVN={6:'1,000,000s',5:'100,000s',4:'10,000s',3:'1,000s',2:'100s',1:'10s',0:'1s','-1':'tenths','-2':'hundredths','-3':'thousandths'};
+function digitsOf(s){s=String(s);const[w,f='']=s.split('.');const o={};[...w].reverse().forEach((d,i)=>o[i]=d);[...f].forEach((d,i)=>o[-(i+1)]=d);return o}
+function miniArr(a,b){const c=Math.max(3,Math.min(10,130/b,90/a));const W=b*c,H=a*c;let s=`<svg width="${W.toFixed(0)}" height="${H.toFixed(0)}" viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
+  for(let i=0;i<a;i++)for(let j=0;j<b;j++)s+=`<circle cx="${(j+.5)*c}" cy="${(i+.5)*c}" r="${c*.36}"/>`;return s+'</svg>'}
+function boardHTML(sp,si,live){
+  const tapOn=live&&sp.mode;
+  switch(sp.type){
+  case 'stack':return `<div class="stk">`+sp.items.map((x,i)=>`<div class="stkit">${x.title?`<div class="btitle">${md(x.title)}</div>`:''}${boardHTML(x,i,live&&x.work)}</div>`).join('')+'</div>';
+  case 'groups':{const can=tapOn&&sp.mode==='count',lab=sp.lab||['group','groups'];let o=`<div class="plates">`;
+    if(!sp.g)o+=`<div class="muted" style="padding:16px">0 ${lab[1]}. There is nothing here.</div>`;
+    const cols=Math.min(5,Math.max(1,sp.n));
+    for(let i=0;i<sp.g;i++){const on=i<(sp.counted||0);
+      const inner=sp.n?Array(sp.n).fill(`<span>${sp.emoji}</span>`).join(''):`<span class="muted" style="font-size:14px">empty</span>`;
+      const body=`<div class="pi" style="grid-template-columns:repeat(${sp.n?cols:1},auto)">${inner}</div><div class="ptag">${on?'= '+(i+1)*sp.n:sp.tag||''}</div>`;
+      o+=can?`<button type="button" class="plate${on?' on':''}" data-s="${si}" data-g="${i}" aria-label="${lab[0]} ${i+1}">${body}</button>`:`<div class="plate${on?' on':''}">${body}</div>`}
+    o+='</div>';
+    if(sp.counted)o+=`<div class="count">Count: ${Array.from({length:sp.counted},(_,i)=>(i+1)*sp.n).join(', ')}</div>`;
+    if(can&&sp.counted)o+=resetBtn(si);
+    return o}
+  case 'array':{const{r,c}=sp,M=Math.max(r,c),ds=M<=5?26:M<=8?21:17;
+    const canRow=tapOn&&sp.mode==='rows',canCut=tapOn&&sp.mode==='split';
+    const bandOf=i=>{if(sp.split!=null)return i<sp.split?0:1;if(sp.bands)for(let b=0;b<sp.bands.length;b++){const B=sp.bands[b];if(i>=B.from&&i<=B.to)return b}return -1};
+    let o=`<div class="arr" style="--ds:${ds}px"><div class="acap">${c} in each row</div>`;
+    for(let i=0;i<r;i++){
+      if(i>0&&canCut)o+=`<button type="button" class="acut${sp.split===i?' on':''}" data-s="${si}" data-cut="${i}" aria-label="Cut after row ${i}"></button>`;
+      else if(i>0&&sp.split===i)o+=`<div class="acut on"></div>`;
+      const b=bandOf(i),col=b<0?BC[0]:BC[b%4],fade=sp.fade&&i>=sp.fade[0]&&i<=sp.fade[1],x=sp.cross&&sp.cross.includes(i);
+      let tag='';
+      if(sp.counted&&i<sp.counted)tag='= '+(i+1)*c;
+      else{if(sp.split!=null&&sp.lab){const k=i===sp.split-1?0:i===r-1?1:-1;if(k>=0&&sp.lab[k])tag=sp.lab[k]}
+        if(sp.bands)for(const B of sp.bands)if(B.show&&i===B.to)tag=B.lab;
+        if(sp.endTag&&i===r-1)tag=sp.endTag}
+      const cls=`adots${fade?' fade':''}${x?' x':''}`,dots=Array(c).fill('<i></i>').join('');
+      const el=canRow?`<button type="button" class="${cls}" style="--c:${col}" data-s="${si}" data-row="${i}" aria-label="row ${i+1}">${dots}</button>`:`<div class="${cls}" style="--c:${col}">${dots}</div>`;
+      o+=`<div class="arow"><span class="rn">${i+1}</span>${el}<span class="atag">${md(tag)}</span></div>`}
+    o+='</div>';
+    if(sp.counted)o+=`<div class="count">Count: ${Array.from({length:sp.counted},(_,i)=>(i+1)*c).join(', ')}</div>`;
+    if(canRow&&sp.counted)o+=resetBtn(si);
+    if(canCut)o+=`<div class="muted" style="font-size:15px">Tap a dashed line to cut the array.</div>`;
+    return o}
+  case 'jumps':{const W=700,x0=34,x1=666,y=96,mx=sp.max,X=v=>x0+(x1-x0)*v/mx,from=sp.from||0,st=sp.step,hops=sp.hops||0;
+    let s=`<svg class="lineb" viewBox="0 0 ${W} 150" role="img" aria-label="number line from 0 to ${mx}">`;
+    for(let k=1;k<=hops;k++){const a=X(from+(k-1)*st),b=X(from+k*st);s+=`<path d="M${a} ${y-4} Q${(a+b)/2} ${y-56} ${b} ${y-4}" style="fill:none;stroke:var(--go);stroke-width:3"/>`;
+      if(hops<=12&&b-a>34)s+=`<text x="${(a+b)/2}" y="${y-36}" text-anchor="middle" font-size="16" style="fill:var(--go)">+${st}</text>`}
+    s+=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" style="stroke:var(--ink);stroke-width:3"/>`;
+    if(mx<=40)for(let v=0;v<=mx;v++)s+=`<line x1="${X(v)}" y1="${y-7}" x2="${X(v)}" y2="${y+7}" style="stroke:var(--ink);stroke-width:1.5"/>`;
+    for(let v=0;v<=mx;v+=st)s+=`<line x1="${X(v)}" y1="${y-14}" x2="${X(v)}" y2="${y+14}" style="stroke:var(--ink);stroke-width:3"/>`;
+    const marks=new Set(sp.marks||[from,...Array.from({length:hops},(_,k)=>from+(k+1)*st)]);if(sp.q!=null)marks.add(sp.q);
+    const fs=marks.size>12?16:22;
+    for(const v of marks){if(v>mx)continue;const isQ=v===sp.q&&!sp.reveal;s+=`<text x="${X(v)}" y="${y+40}" text-anchor="middle" font-size="${fs}" font-weight="700" ${isQ?'style="fill:var(--hot)"':''}>${isQ?'?':v}</text>`}
+    if(hops)s+=`<circle cx="${X(from+hops*st)}" cy="${y}" r="9" style="fill:var(--hot);stroke:var(--page);stroke-width:3"/>`;
+    s+='</svg>';
+    if(tapOn&&sp.mode==='jump')s+=`<div class="row" style="justify-content:center"><button type="button" class="btn" data-s="${si}" data-act="jump">Jump +${st}</button><button type="button" class="quiet" data-s="${si}" data-act="reset">Start over</button></div><div class="count">Jumps: ${hops}</div>`;
+    return s}
+  case 'pairs':{const n=sp.n;let o='<div class="pairs">';
+    if(!sp.paired)o+=`<div class="loose">${Array(n).fill(`<span>${sp.emoji}</span>`).join('')}</div>`;
+    else{for(let i=0;i<Math.floor(n/2);i++)o+=`<div class="pair"><span>${sp.emoji}</span><span>${sp.emoji}</span></div>`;if(n%2)o+=`<div class="pair lone"><span>${sp.emoji}</span><small>no partner</small></div>`}
+    o+='</div>';if(sp.paired)o+=`<div class="count">${Math.floor(n/2)} pairs${n%2?', 1 left over':', none left over'}</div>`;
+    if(tapOn&&sp.mode==='pair'&&!sp.paired)o+=`<button type="button" class="btn" data-s="${si}" data-act="pair">Make pairs</button>`;
+    return o}
+  case 'tens':{let o='<div class="tgroups">';
+    for(let i=0;i<sp.g;i++)o+=`<div class="tg"><div class="tgin">${'<span class="flat"></span>'.repeat(sp.h||0)}${'<span class="rod"></span>'.repeat(sp.t||0)}${'<span class="unit1"></span>'.repeat(sp.o||0)}</div><small>${sp.glab||''}</small></div>`;
+    o+='</div><div class="legend"><span><i style="background:#F2A04B"></i>hundred</span><span><i style="background:#5FA8E8"></i>ten</span><span><i style="background:#6DB563"></i>one</span></div>';
+    if(sp.note)o+=`<div class="count">${md(sp.note)}</div>`;return o}
+  case 'area':{const{rows,cols}=sp,w=cols.map(v=>Math.max(1,Math.sqrt(v)));
+    let o=`<div class="agrid" style="grid-template-columns:auto ${w.map(x=>`minmax(60px,${x.toFixed(2)}fr)`).join(' ')}"><div></div>${cols.map(c=>`<div class="ahead">${fmt(c)}</div>`).join('')}`;
+    rows.forEach((r,ri)=>{o+=`<div class="ahead side">${fmt(r)}</div>`;cols.forEach((c,ci)=>{const k=ri*cols.length+ci,on=sp.done&&sp.done[k];
+      o+=`<div class="acell${on?' on':''}" style="--c:${BC[k%4]}"><span>${fmt(r)} × ${fmt(c)}</span><b>${on?fmt(r*c):'?'}</b></div>`})});
+    o+='</div>';if(sp.sum)o+=`<div class="count">${md(sp.sum)}</div>`;return o}
+  case 'tape':{const L=Math.max(...sp.rows.map(r=>r.len));let o='<div class="tape">';
+    sp.rows.forEach((r,i)=>{const boxes=r.n?Array(r.n).fill(`<div class="tbox" style="--c:${BC[i]}">${r.each}</div>`).join(''):`<div class="tbox" style="--c:${BC[i]}">${r.total}</div>`;
+      o+=`<div class="trow"><div class="tname">${r.name}</div><div class="tarea"><div class="tbar" style="width:${(100*r.len/L).toFixed(1)}%">${boxes}</div>${r.n&&r.total!=null?`<div class="ttot">${r.n>1?'All together: ':''}${r.n>1?r.total:''}</div>`:''}</div></div>`});
+    return o+'</div>'}
+  case 'algo':{const lines=[{t:String(sp.a)},{t:String(sp.b),op:'×'},{hr:1},...sp.rows.map((x,i)=>({t:x.t,ph:x.ph,note:x.note,op:i===1?'+':''})),...(sp.total!=null?[{hr:1},{t:String(sp.total),note:sp.tnote}]:[])];
+    const W=Math.max(...lines.filter(l=>l.t).map(l=>l.t.length));
+    let o='<div class="algo" aria-label="written work">';
+    lines.forEach(l=>{if(l.hr){o+='<div class="hr"></div>';return}const t=l.t.padStart(W,' ');
+      o+=`<div class="ln"><span class="op">${l.op||''}</span>${[...t].map((ch,i)=>`<span class="dg${l.ph&&i===t.length-1?' ph':''}">${ch===' '?'':ch}</span>`).join('')}<span class="note">${l.note||''}</span></div>`});
+    return o+'</div>'}
+  case 'layers':{let o=`<div class="layers" style="--cs:${sp.l>6||sp.w>6?12:16}px">`;
+    for(let k=0;k<sp.h;k++)o+=`<div class="layer${k<(sp.shown||0)?' on':''}"><div class="lg" style="grid-template-columns:repeat(${sp.l},var(--cs))">${'<i></i>'.repeat(sp.l*sp.w)}</div><small>Layer ${k+1}</small></div>`;
+    return o+'</div>'}
+  case 'strips':{let o='<div class="strips">';for(let i=0;i<sp.k;i++)o+=`<div class="strip"><div class="sbar">${Array.from({length:10},(_,j)=>`<i class="${j<sp.t?'on':''}"></i>`).join('')}</div><small>${sp.t} tenth${sp.t>1?'s':''}</small></div>`;
+    o+='</div><div class="muted" style="font-size:15px">Each strip is 1 whole, cut into 10 tenths.</div>';if(sp.note)o+=`<div class="count">${md(sp.note)}</div>`;return o}
+  case 'hund':{const{a,b}=sp,S=20;let s=`<svg class="hund" viewBox="-2 -2 204 204" role="img" aria-label="hundred grid">`;
+    for(let i=0;i<10;i++)for(let j=0;j<10;j++){const A=j<a,B=i<b&&sp.show>=2;const f=A&&B?'#5B4DB0':A?'#9CC9F2':B?'#F7C08A':'var(--page)';s+=`<rect x="${j*S}" y="${i*S}" width="${S}" height="${S}" style="fill:${f};stroke:var(--ink);stroke-width:.6"/>`}
+    s+=`<rect width="200" height="200" style="fill:none;stroke:var(--ink);stroke-width:2.5"/></svg>`;
+    return s+`<div class="legend"><span><i style="background:#9CC9F2"></i>0.${a}: ${a} of 10 columns</span>${sp.show>=2?`<span><i style="background:#F7C08A"></i>0.${b}: ${b} of 10 rows</span><span><i style="background:#5B4DB0"></i>both</span>`:''}</div>`}
+  case 'fpairs':return `<div class="fpairs">${sp.pairs.map(([a,b])=>`<div class="fp">${miniArr(a,b)}<b>${a} × ${b}</b></div>`).join('')}</div>`;
+  case 'pv':{const cols=[];for(let e=sp.hi;e>=sp.lo;e--)cols.push(e);
+    let o=`<div class="pvwrap"><table class="pv"><tr><th></th>${cols.map(e=>(e===-1?'<th></th>':'')+`<th>${PVN[e]}</th>`).join('')}</tr>`;
+    sp.rows.forEach(r=>{const d=digitsOf(r.v);o+=`<tr><td class="lab">${r.lab}</td>${cols.map(e=>(e===-1?`<td class="pt">${String(r.v).includes('.')?'.':''}</td>`:'')+`<td>${d[e]??''}</td>`).join('')}</tr>`});
+    return o+'</table></div>'}
+  }return ''}
+function makeBoard(spec,onChange){
+  const el=h('div',{class:'board'});const B={el,spec,live:false};
+  B.refresh=()=>{el.innerHTML=boardHTML(B.spec,0,B.live)};
+  B.setLive=(live,mode)=>{B.live=!!live;const set=sp=>{if(mode!==undefined&&(sp.work||B.spec.type!=='stack'))sp.mode=mode};if(B.spec.type==='stack')B.spec.items.forEach(set);else set(B.spec);B.refresh()};
+  el.addEventListener('click',e=>{if(!B.live)return;const t=e.target.closest('[data-s]');if(!t)return;const sp=subOf(B.spec,+t.dataset.s);if(!sp)return;
+    const act=t.dataset.act;
+    if(act==='reset'){sp.counted=0;sp.hops=0}
+    else if(act==='jump'){sp.hops=Math.min((sp.hops||0)+1,Math.floor((sp.max-(sp.from||0))/sp.step))}
+    else if(act==='pair')sp.paired=true;
+    else if(t.dataset.g!=null&&sp.mode==='count')sp.counted=Math.min(sp.g,(sp.counted||0)+1);
+    else if(t.dataset.row!=null&&sp.mode==='rows')sp.counted=Math.min(sp.r,(sp.counted||0)+1);
+    else if(t.dataset.cut!=null&&sp.mode==='split'){sp.split=+t.dataset.cut;sp.lab=null}
+    else return;
+    B.refresh();if(onChange)onChange()});
+  B.refresh();return B;
+}
+
+/* ---------- shared word lists ---------- */
+const NAMES=['Ava','Leo','Maya','Sam','Zoe','Omar','Lily','Jay','Nia','Ben','Priya','Theo','Rosa','Kai','Ella','Max','Aria','Finn','Iris','Noah'];
+const ITEMS=[['🍪','cookies'],['🍓','strawberries'],['⚽','balls'],['✏️','pencils'],['🎈','balloons'],['🌸','flowers'],['🍎','apples'],['⭐','stickers'],['🧁','cupcakes'],['🐟','fish'],['🍋','lemons'],['🧸','bears']];
+const HOLD=[['plate','plates'],['bag','bags'],['box','boxes'],['basket','baskets'],['jar','jars']];
+const nm=p=>NAMES[p.nx%NAMES.length],nm2=p=>NAMES[(p.nx+7)%NAMES.length];
+const itm=p=>ITEMS[p.cx%ITEMS.length],hold=p=>HOLD[p.nx%HOLD.length];
+const countUp=n=>n<=6?Array.from({length:n},(_,i)=>i+1).join(', ')+'.':'I count them one at a time.';
+const sk=(s,k,from=1)=>Array.from({length:Math.max(0,k-from+1)},(_,i)=>s*(i+from));
+const skTxt=(s,k)=>sk(s,k).join(', ')+'.';
+const pl=(n,one,many)=>n===1?one:(many||one+'s');
+function rotOpts(list,correct,k){const n=list.length,r=((k%n)+n)%n;return{opts:list.map((_,i)=>list[(i+r)%n]),a:(correct-r+n)%n}}
+const P10=k=>10**k;
+function decRaw(int,places){if(!places)return String(int);const s=String(int).padStart(places+1,'0');return s.slice(0,-places)+'.'+s.slice(-places)}
+function decStr(int,places){const r=decRaw(int,places);return r.includes('.')?r.replace(/0+$/,'').replace(/\.$/,''):r}
+const PLACE={1:'ones',10:'tens',100:'hundreds',1000:'thousands'};
+function partsOf(n){const o=[];let p=1;while(p<=n){const d=Math.floor(n/p)%10;if(d)o.unshift(d*p);p*=10}return o}
+const placeOf=part=>{let p=1;while(part/p>=10)p*=10;return p};
+const factorPairs=n=>{const o=[];for(let a=1;a*a<=n;a++)if(n%a===0)o.push([a,n/a]);return o};
+
+/* ---------- problem kinds ---------- */
+const K={};
+
+/* Grade 2 */
+K.eqgroups={picPool:true,
+  pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[5,7];for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({g,n});return o},
+  make(p,ph){const{g,n}=p,t=g*n,it=itm(p),hd=hold(p),add=Array(g).fill(n).join(' + ');
+    const q=`There are ${g} ${hd[1]}. Each ${hd[0]} has ${n} ${it[1]}. How many ${it[1]} are there in all?`;
+    const explain=`${g} groups of ${n} make ${t}. ${add} = ${t}. A short way to write this is ${g} × ${n} = ${t}.`;
+    const s0={li:0,prompt:`How many ${hd[1]} are there?`,think:`I count the ${hd[1]}. ${countUp(g)} There are ${g} ${hd[1]}. That is ${g} groups.`,input:{t:'num',a:g},cue:`Point to each ${hd[0]} and count it.`};
+    const s1={li:1,prompt:`How many ${it[1]} are in each ${hd[0]}?`,think:`I look in one ${hd[0]}. ${countUp(n)} There are ${n} in each one. Every group has the same number.`,input:{t:'num',a:n},cue:`Look inside just one ${hd[0]} and count.`};
+    if(ph==='pic')return{q,eq:`${add} = ?`,explain,ownMode:'count',list:['Count the groups.','Count how many are in each group.',`Tap each group to count by that number.`,'Say how many in all.'],
+      board:{type:'groups',g,n,emoji:it[0],counted:0,lab:hd},steps:[s0,s1,
+      {li:2,prompt:`Tap each ${hd[0]} to count by ${n}s.`,think:`I count by ${n}s, one ${hd[0]} at a time. ${skTxt(n,g)}`,input:{t:'board',mode:'count',check:R=>R.counted===g},cue:`Tap the ${hd[1]} one at a time. Each tap adds ${n} more.`,act:R=>{R.counted=g}},
+      {li:3,prompt:`How many ${it[1]} in all?`,think:`The last number I said was ${t}. So there are ${t} ${it[1]} in all.`,input:{t:'num',a:t},cue:'Look at the last number you counted.'}]};
+    return{q,explain,list:['Find how many groups.','Find how many in each group.','Add that number again and again, or count by it.'],steps:[s0,s1,
+      {li:2,prompt:`${add} = ?`,think:`I count by ${n}s, ${g} times. ${skTxt(n,g)} So it is ${t}.`,input:{t:'num',a:t},cue:`Count by ${n}s. Say one number for each group: ${sk(n,Math.min(2,g)).join(', ')}, and keep going.`}]}}};
+const ARR_CTX=[(n,r,c)=>[`${n} sets out chairs in ${r} rows. Each row has ${c} chairs. How many chairs are there?`,'chairs'],
+  (n,r,c)=>[`A muffin pan has ${r} rows. Each row has ${c} cups. How many muffins fit in the pan?`,'muffins'],
+  (n,r,c)=>[`${n} puts stickers on a page in ${r} rows, with ${c} stickers in each row. How many stickers are on the page?`,'stickers'],
+  (n,r,c)=>[`A garden has ${r} rows of carrots. There are ${c} carrots in each row. How many carrots are there?`,'carrots']];
+K.arrays2={picPool:true,
+  pool:ph=>{const o=[];const[R,C]=ph==='pic'?[5,6]:[5,7];for(let r=2;r<=R;r++)for(let c=2;c<=C;c++)o.push({r,c});return o},
+  make(p,ph){const{r,c}=p,t=r*c,add=Array(r).fill(c).join(' + ');
+    const explain=`${r} rows of ${c} is ${t}. ${add} = ${t}. We can also write ${r} × ${c} = ${t}.`;
+    const s0={li:0,prompt:'How many rows are there? Rows go across, from left to right.',think:`Rows go across, like a line of chairs. I count the rows. ${countUp(r)} There are ${r} rows.`,input:{t:'num',a:r},cue:'Count the lines that go across. Use the row numbers on the left to help.'};
+    const s1={li:1,prompt:'How many are in each row?',think:`I count one row. ${countUp(c)} There are ${c} in each row. Every row is the same.`,input:{t:'num',a:c},cue:'Count the dots in just the top row.'};
+    if(ph==='pic')return{q:'This is an array. How many dots are in it?',eq:`${add} = ?`,explain,ownMode:'rows',list:['Count the rows. Rows go across.','Count how many are in one row.','Tap each row to count by that number.','Say how many in all.'],
+      board:{type:'array',r,c,counted:0},steps:[s0,s1,
+      {li:2,prompt:`Tap each row to count by ${c}s.`,think:`I count by ${c}s, one row at a time. ${skTxt(c,r)}`,input:{t:'board',mode:'rows',check:R=>R.counted===r},cue:`Tap the rows from the top. Each tap adds ${c} more.`,act:R=>{R.counted=r}},
+      {li:3,prompt:'How many in all?',think:`The last number I said was ${t}. There are ${t} dots.`,input:{t:'num',a:t},cue:'Look at the last number you counted.'}]};
+    const[q]=ARR_CTX[p.cx%ARR_CTX.length](nm(p),r,c);
+    return{q,explain,list:['Find the number of rows.','Find how many in each row.','Add that number for each row, or count by it.'],steps:[s0,s1,
+      {li:2,prompt:`${add} = ?`,think:`I count by ${c}s, ${r} times. ${skTxt(c,r)} So it is ${t}.`,input:{t:'num',a:t},cue:`Count by ${c}s, one number for each row.`}]}}};
+K.skip={
+  pool:()=>{const o=[];for(const s of [2,5,10])for(let st=1;st<=6;st++)for(let m=1;m<=4;m++)o.push({v:'fill',s,st,m});for(const s of [2,5,10])for(let k=3;k<=10;k++)o.push({v:'hops',s,k});return o},
+  make(p,ph){const{s}=p;
+    if(p.v==='fill'){const{st,m}=p,seq=Array.from({length:5},(_,i)=>s*(st+i)),ans=seq[m],[x,y]=m===1?[seq[2],seq[3]]:[seq[0],seq[1]];
+      const board=ph==='pic'?{type:'jumps',from:seq[0],step:s,max:seq[4]+s,hops:4,marks:seq,q:ans}:null;
+      return{q:`Count by ${s}s. What number is missing?`,eq:seq.map((v,i)=>i===m?'?':v).join(', '),board,explain:`${seq[m-1]} + ${s} = ${ans}. Counting by ${s}s: ${seq.join(', ')}.`,list:['Find how much it grows each time.','Count on from the number before the blank.'],steps:[
+        {li:0,prompt:'How much does it grow each time? Look at two numbers next to each other.',think:`From ${x} to ${y} is ${s} more. So we are counting by ${s}s.`,input:{t:'num',a:s},cue:`Start at ${x}. How many more to get to ${y}?`},
+        {li:1,prompt:'What number goes where the question mark is?',think:`The number before it is ${seq[m-1]}. ${seq[m-1]} and ${s} more is ${ans}.`,input:{t:'num',a:ans},cue:`Start at ${seq[m-1]} and count on ${s} more.`,act:R=>{R.reveal=true}}]}}
+    const{k}=p,N=s*k;
+    const q=`Count by ${s}s from 0 to ${N}. How many jumps is that?`,explain=`${k} jumps of ${s} land on ${N}. That means ${k} × ${s} = ${N}.`;
+    const s0={li:0,prompt:'What number are we counting by?',think:`We are counting by ${s}s. Each jump is ${s}.`,input:{t:'num',a:s},cue:'Look at the words "count by".'};
+    if(ph==='pic')return{q,explain,ownMode:'jump',board:{type:'jumps',from:0,step:s,max:N,hops:0},list:['Find the number you count by.','Jump from 0 until you land on the number.','Count your jumps.'],steps:[s0,
+      {li:1,prompt:`Press Jump until you land on ${N}.`,think:`I jump ${s} at a time. ${skTxt(s,k)} I landed on ${N}.`,input:{t:'board',mode:'jump',check:R=>R.hops===k},cue:`Each jump adds ${s}. Stop when you land on ${N}. Press Start over if you go past.`,act:R=>{R.hops=k}},
+      {li:2,prompt:'How many jumps did it take?',think:`I made ${k} jumps.`,input:{t:'num',a:k},cue:'Look at the jump count under the line.'}]};
+    return{q,explain,list:['Find the number you count by.','Count by it from 0, and keep track of how many numbers you say.'],steps:[s0,
+      {li:1,prompt:`Count by ${s}s to ${N}. How many jumps?`,think:`${skTxt(s,k)} I said ${k} numbers, so that is ${k} jumps.`,input:{t:'num',a:k},cue:`Hold up a finger each time you count: ${sk(s,2).join(', ')}, ...`}]}}};
+K.oddeven={picPool:true,
+  pool:ph=>{const o=[];const[a,b]=ph==='pic'?[4,22]:[11,60];for(let n=a;n<=b;n++)o.push({n});return o},
+  make(p,ph){const{n}=p,ev=n%2===0,h2=Math.floor(n/2),it=itm(p);
+    const explain=ev?`${n} = ${h2} + ${h2}. Every one has a partner, so ${n} is even.`:`${n} = ${h2} + ${h2} + 1. One is left without a partner, so ${n} is odd.`;
+    const fin=li=>({li,prompt:`So is ${n} odd or even?`,think:ev?`Every one has a partner. ${n} is even.`:`One is left over with no partner. ${n} is odd.`,input:{t:'choice',opts:['Odd','Even'],a:ev?1:0},cue:'Even: everyone has a partner. Odd: one is left over.'});
+    if(ph==='pic')return{q:`Is the number of ${it[1]} odd or even?`,explain,ownMode:'pair',board:{type:'pairs',n,emoji:it[0],paired:false},list:['Put them in pairs.','Is one left over?','Odd or even?'],steps:[
+      {li:0,prompt:'Press Make pairs to put them in twos.',think:`I put them in pairs, two at a time.`,input:{t:'board',mode:'pair',check:R=>R.paired},cue:'Press the Make pairs button.',act:R=>{R.paired=true}},
+      {li:1,prompt:'Is one left over without a partner?',think:ev?'No. Every one has a partner.':'Yes. One is left over.',input:{t:'choice',opts:['Yes, one is left over','No, every one has a partner'],a:ev?1:0},cue:'Look for one with a dashed red line around it.'},fin(2)]};
+    return{q:`Is ${n} odd or even?`,explain,list:['Look at the ones digit.','Is the ones digit 0, 2, 4, 6, or 8? Then it is even.'],steps:[
+      {li:0,prompt:`What is the ones digit of ${n}?`,think:`The ones digit is the last digit. In ${n} it is ${n%10}.`,input:{t:'num',a:n%10},cue:'The ones digit is the digit on the right.'},
+      {...fin(1),think:`The ones digit is ${n%10}. ${ev?'0, 2, 4, 6, and 8 are even, so':'1, 3, 5, 7, and 9 are odd, so'} ${n} is ${ev?'even':'odd'}.`}]}}};
+
+/* Grade 3 */
+K.meaning={picPool:true,
+  pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[9,9];for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({g,n});return o},
+  make(p,ph){const{g,n}=p,t=g*n,it=itm(p),hd=hold(p),arr=p.cx%2===1,who=nm(p),G=arr?'rows':'groups',E=arr?'in each row':'in each group';
+    const q=arr?`${who} lines up ${it[1]} in ${g} rows, with ${n} in each row. How many ${it[1]} are there?`:`${who} has ${g} ${hd[1]} with ${n} ${it[1]} in each ${hd[0]}. How many ${it[1]} are there?`;
+    const explain=`${g} ${G} of ${n} is ${g} × ${n} = ${t}. The numbers ${g} and ${n} are factors. ${t} is the product.`;
+    if(ph==='pic'){const board=arr?{type:'array',r:g,c:n,counted:0}:{type:'groups',g,n,emoji:it[0],counted:0,lab:hd};
+      return{q,eq:'? × ? = ?',explain,board,ownMode:arr?'rows':'count',list:[`Count the ${G}.`,`Count how many ${E}.`,'Tap to count by that number.',`Write ${G} × ${E} = total.`],steps:[
+        {li:0,prompt:`How many ${G}?`,think:`I count the ${G}. There are ${g}. That is the first factor.`,input:{t:'num',a:g},cue:arr?'Rows go across. Count them.':`Count the ${hd[1]}.`},
+        {li:1,prompt:`How many ${E}?`,think:`There are ${n} ${E}. That is the second factor.`,input:{t:'num',a:n},cue:arr?'Count the dots in the top row.':`Count inside one ${hd[0]}.`},
+        {li:2,prompt:`Tap each ${arr?'row':hd[0]} to count by ${n}s.`,think:`${skTxt(n,g)}`,input:{t:'board',mode:arr?'rows':'count',check:R=>R.counted===g},cue:`Each tap adds ${n} more.`,act:R=>{R.counted=g}},
+        {li:3,prompt:`So ${g} × ${n} = ?`,think:`${g} ${G} of ${n} is ${t}. So ${g} × ${n} = ${t}. ${t} is the product.`,input:{t:'num',a:t},cue:'Use the last number you counted.'}]}}
+    const o=rotOpts([`${g} × ${n}`,`${g} + ${n}`],0,p.cx>>1);
+    return{q,eq:'? × ? = ?',explain,list:[`Find the number of ${G} and how many ${E}.`,`Multiply: ${G} × ${E}.`],steps:[
+      {li:0,prompt:'Which number sentence matches the story?',think:`There are ${g} equal ${G} of ${n}. Equal groups means we multiply: ${g} × ${n}. Adding ${g} + ${n} would only put two numbers together.`,input:{t:'choice',...o},cue:`The story has ${g} equal ${G}. Equal groups means times.`},
+      {li:1,prompt:`${g} × ${n} = ?`,think:`I count by ${n}s, ${g} times. ${skTxt(n,g)} So ${g} × ${n} = ${t}.`,input:{t:'num',a:t},cue:`Count by ${n}s, ${g} times. Or use a fact you know.`}]}}};
+K.breakapart={
+  pool:()=>{const o=[];for(let a=6;a<=9;a++)for(let b=3;b<=9;b++)o.push({a,b});return o},
+  make(p,ph){const{a,b}=p,r=a-5,t=a*b,top=5*b,bot=r*b;
+    const explain=`${a} × ${b} = 5 × ${b} + ${r} × ${b} = ${top} + ${bot} = ${t}.`,eq=`${a} × ${b} = ?`;
+    const labs=[`5 × ${b} = ${top}`,`${r} × ${b} = ${bot}`];
+    const s1={li:1,prompt:`The top part is 5 rows of ${b}. 5 × ${b} = ?`,think:`5 × ${b} is half of 10 × ${b}. Half of ${10*b} is ${top}.`,input:{t:'num',a:top},cue:`Count by ${b}s 5 times, or take half of ${10*b}.`,act:R=>{R.split=5;R.lab=[labs[0],null]}};
+    const s2={li:2,prompt:`The bottom part is ${r} ${pl(r,'row')} of ${b}. ${r} × ${b} = ?`,think:`${r} × ${b} is ${bot}.`,input:{t:'num',a:bot},cue:r===1?`1 row of ${b} is just ${b}.`:`Count by ${b}s, ${r} times.`,act:R=>{R.split=5;R.lab=labs}};
+    const s3={li:3,prompt:`Put the parts back together. ${top} + ${bot} = ?`,think:`${top} plus ${bot} is ${t}. So ${a} × ${b} = ${t}.`,input:{t:'num',a:t},cue:`Add the top part and the bottom part.`};
+    const list=['Break the big factor into 5 and the rest.','Multiply the top part: 5 × the other factor.','Multiply the bottom part.','Add the two parts.'];
+    if(ph==='pic')return{q:`What is ${a} × ${b}? ${a} rows is a lot. Break the array into two smaller facts you know.`,eq,explain,list,board:{type:'array',r:a,c:b,split:null},steps:[
+      {li:0,prompt:`Cut the array after row 5. Tap the dashed line under row 5.`,think:`${a} is 5 and ${r} more. So I cut the array after row 5.`,input:{t:'board',mode:'split',check:R=>R.split===5},cue:'Find row 5 on the left. Tap the dashed line just under it.',act:R=>{R.split=5}},s1,s2,s3]};
+    const o=rotOpts([`5 + ${r}`,`${a} + 5`],0,p.cx);
+    return{q:`What is ${a} × ${b}? Break it into two facts you know.`,eq,explain,list,steps:[
+      {li:0,prompt:`How can we break apart ${a}?`,think:`${a} is 5 and ${r} more: 5 + ${r}. Fives are easy facts.`,input:{t:'choice',...o},cue:`Which one adds up to ${a}?`},s1,s2,s3]}}};
+K.unknown={
+  pool:()=>{const o=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)for(const f of ['right','left','div'])o.push({a,b,f});return o},
+  make(p,ph){const{a,b,f}=p,t=a*b,it=itm(p),hd=hold(p),five=5*a;
+    const eq={right:`${a} × ? = ${t}`,left:`? × ${a} = ${t}`,div:`${t} ÷ ${a} = ?`}[f];
+    const q=f==='div'?`${t} ${it[1]} are shared equally into ${a} ${hd[1]}. How many go in each ${hd[0]}?`:'Find the missing factor.';
+    const explain=`${a} × ${b} = ${t}, so the missing factor is ${b}.`+(f==='div'?` Division asks the same question: ${t} ÷ ${a} = ${b}.`:'');
+    const fin=li=>({li,prompt:`What is the missing factor?`,think:b>5?`I start at ${five} and count on by ${a}s: ${sk(a,b,6).join(', ')}. That is ${b} groups of ${a}.`:b<5?`I count by ${a}s: ${skTxt(a,b)} That is ${b} groups.`:`${t} is exactly 5 groups of ${a}. So it is 5.`,input:{t:'num',a:b},cue:`Count by ${a}s until you reach ${t}. Count how many numbers you say.`});
+    if(ph==='pic')return{q,eq,explain,ownMode:'jump',board:{type:'jumps',from:0,step:a,max:t,hops:0},list:[`Count by ${a}s on the number line.`,'Count the jumps. That is the missing factor.'],steps:[
+      {li:0,prompt:`Count by ${a}s. Press Jump until you land on ${t}.`,think:`I jump ${a} at a time. ${skTxt(a,b)} I landed on ${t}.`,input:{t:'board',mode:'jump',check:R=>R.hops===b},cue:`Each jump adds ${a}. Stop when you land on ${t}.`,act:R=>{R.hops=b}},
+      {...fin(1),prompt:`How many jumps of ${a} did it take?`,think:`I made ${b} jumps. So ${a} × ${b} = ${t}.`}]};
+    return{q,eq,explain,list:['Use 5 groups as a helper. Is the total more or less?','Count on by the factor you know until you reach the total.'],steps:[
+      {li:0,prompt:`5 × ${a} = ${five}. Is ${t} more than, less than, or the same as ${five}?`,think:t>five?`${t} is more than ${five}. So the missing factor is more than 5.`:t<five?`${t} is less than ${five}. So the missing factor is less than 5.`:`${t} is the same as ${five}. So the missing factor is 5.`,input:{t:'choice',opts:['More','Less','The same'],a:t>five?0:t<five?1:2},cue:`Compare ${t} and ${five}. Which is bigger?`},fin(1)]}}};
+K.tens3={
+  pool:()=>{const o=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)o.push({a,b});return o},
+  make(p,ph){const{a,b}=p,ab=a*b,t=ab*10,B=b*10,it=itm(p),who=nm(p);
+    const q=p.cx%2?`${who} buys ${a} packs of ${it[1]}. Each pack has ${B}. How many ${it[1]} is that?`:`What is ${a} × ${B}?`,eq=`${a} × ${B} = ?`;
+    const explain=`${a} × ${b} = ${ab}, so ${a} × ${b} tens = ${ab} tens = ${t}.`;
+    if(ph==='pic')return{q,eq,explain,board:{type:'tens',g:a,t:b,glab:`${b} tens`},list:[`Find how many tens are in ${B}.`,'Multiply to find how many tens in all.','Change the tens into a number.'],steps:[
+      {li:0,prompt:`How many tens are in ${B}?`,think:`${B} is ${b} tens. Each blue stick is one ten.`,input:{t:'num',a:b},cue:`Count the blue sticks in one group.`},
+      {li:1,prompt:`${a} groups of ${b} tens. ${a} × ${b} = ? tens`,think:`${a} × ${b} is ${ab}. So there are ${ab} tens.`,input:{t:'num',a:ab},cue:`Use the fact ${a} × ${b}.`,act:R=>{R.note=`${a} × ${b} tens = ${ab} tens`}},
+      {li:2,prompt:`${ab} tens is what number?`,think:`${ab} tens is ${t}.`,input:{t:'num',a:t},cue:`Count by tens, ${ab} times, or put a 0 in the ones place.`,act:R=>{R.note=`${ab} tens = ${t}`}}]};
+    return{q,eq,explain,list:['Multiply the basic fact.','Make it tens.'],steps:[
+      {li:0,prompt:`First the basic fact. ${a} × ${b} = ?`,think:`${a} × ${b} is ${ab}.`,input:{t:'num',a:ab},cue:`${B} is ${b} tens. Start with ${a} × ${b}.`},
+      {li:1,prompt:`So ${a} × ${b} tens = ${ab} tens. ${a} × ${B} = ?`,think:`${ab} tens is ${t}.`,input:{t:'num',a:t},cue:`${ab} tens: the ${ab} moves over and a 0 goes in the ones place.`}]}}};
+const ROWS3=[g=>[`The class puts desks in ${g} rows.`,'desks','desk'],g=>[`A farmer plants ${g} rows of corn.`,'corn plants','corn plant'],g=>[`The band marches in ${g} rows.`,'players','player']];
+const MEAS3=[(w,g,n)=>[`Each ribbon is ${n} inches long. ${w} has ${g} ribbons.`,`How many inches of ribbon does ${w} have?`],(w,g,n)=>[`A bus ride costs ${n} dollars. ${w} rides the bus ${g} times.`,`How many dollars does ${w} spend?`],(w,g,n)=>[`${w} reads for ${n} minutes every day for ${g} days.`,`How many minutes does ${w} read?`]];
+K.story3={picPool:true,
+  pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[9,9];for(const ty of ph==='pic'?['groups','array']:['groups','array','measure'])for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({ty,g,n});return o},
+  make(p,ph){const{ty,g,n}=p,t=g*n,it=itm(p),hd=hold(p),who=nm(p),arr=ty==='array';
+    let x=2+(g*3+n*5+p.cx)%8;while(x===g||x===n)x=x%9+2;
+    const extra=ph!=='pic'&&p.cx%3===0;
+    let body,ask,unitW;
+    if(ty==='groups'){body=`${who} has ${g} ${hd[1]}. Each ${hd[0]} has ${n} ${it[1]}.`;ask=`How many ${it[1]} does ${who} have in all?`;unitW=it[1]}
+    else if(arr){const r=ROWS3[p.nx%3](g);body=`${r[0]} There are ${n} ${r[1]} in each row.`;ask=`How many ${r[1]} are there?`;unitW=r[1]}
+    else{const m=MEAS3[p.nx%3](who,g,n);body=m[0];ask=m[1]}
+    const xs=[`${who} also has ${x} friends.`,`There are ${x} windows in the room.`,`${who} is ${x} years old.`][p.nx%3];
+    const q=`${body}${extra?' '+xs:''} ${ask}`;
+    const G=arr?'rows':'groups',E=arr?'in each row':'in each group';
+    const list=['What kind of problem is it?',...(extra?['Find any number that does not help.']:[]),`Find the number of ${G} and how many ${E}.`,'Multiply.'];
+    const L=extra?1:0;
+    const steps=[{li:0,prompt:'What kind of problem is this?',think:arr?'The story talks about rows with the same number in each row. That is an array.':ty==='measure'?`There are ${g} of them, with the same amount, ${n}, each time. That is equal groups.`:`There are ${g} ${hd[1]} with the same number in each one. That is equal groups.`,input:{t:'choice',opts:['Equal groups','An array (rows and columns)'],a:arr?1:0},cue:'Does the story talk about rows? Then it is an array. Same amount in each group? Then it is equal groups.'}];
+    if(extra){const o=rotOpts(g===n?[String(x),String(g)]:[String(x),String(g),String(n)],0,p.cx);steps.push({li:1,prompt:'Which number is extra? It does not help answer the question.',think:`The question asks about something else. ${x} is not needed, so I skip it.`,input:{t:'choice',...o},cue:'Read the question again. Which number is about something else?'})}
+    steps.push({li:L+1,prompt:`How many ${G}?`,think:`There are ${g} ${G}.`,input:{t:'num',a:g},cue:`Find the number that tells how many ${G}.`},
+      {li:L+1,prompt:`How many ${E}?`,think:`There are ${n} ${E}.`,input:{t:'num',a:n},cue:`Find the number that is the same each time.`},
+      {li:L+2,prompt:`${g} × ${n} = ?`,think:`${g} × ${n} is ${t}.`,input:{t:'num',a:t},cue:`Count by ${n}s, ${g} times, or use a fact you know.`});
+    const board=ph==='pic'?(arr?{type:'array',r:g,c:n,counted:0}:{type:'groups',g,n,emoji:it[0],counted:0,lab:hd}):null;
+    return{q,eq:'',board,ownMode:ph==='pic'?(arr?'rows':'count'):null,explain:`${g} ${G} of ${n} is ${g} × ${n} = ${t}.`+(extra?` The ${x} was extra information.`:''),list,steps}}};
+
+/* Grade 4 */
+const CMP_IT=[['stickers','stickers'],['books','books'],['points','points'],['shells','shells']];
+K.compare={
+  pool:()=>{const o=[];for(let s=2;s<=9;s++)for(let k=2;k<=9;k++)for(const u of ['big','times','small'])o.push({s,k,u});return o},
+  make(p,ph){const{s,k,u}=p,t=s*k,A=nm(p),B=nm2(p),it=CMP_IT[p.cx%4][0];
+    const q={big:`${A} has ${s} ${it}. ${B} has ${k} times as many ${it} as ${A}. How many ${it} does ${B} have?`,
+      times:`${A} has ${s} ${it}. ${B} has ${t} ${it}. How many times as many ${it} does ${B} have as ${A}?`,
+      small:`${B} has ${t} ${it}. That is ${k} times as many as ${A} has. How many ${it} does ${A} have?`}[u];
+    const eq={big:`${k} × ${s} = ?`,times:`? × ${s} = ${t}`,small:`${k} × ? = ${t}`}[u];
+    const explain={big:`${k} times as many as ${s} is ${k} × ${s} = ${t}.`,times:`${t} is ${k} times as many as ${s}, because ${k} × ${s} = ${t}.`,small:`${t} is ${k} times as many as ${s}, because ${k} × ${s} = ${t}. So ${A} has ${s}.`}[u];
+    const rA={name:A,n:1,each:u==='small'?'?':String(s),len:1};
+    const rB={big:{name:B,n:k,each:String(s),total:'?',len:k},times:{name:B,n:null,total:String(t),len:k},small:{name:B,n:k,each:'?',total:String(t),len:k}}[u];
+    const board=ph==='pic'?{type:'tape',rows:[rA,rB]}:null;
+    const s0={li:0,prompt:'Who has more?',think:`${B} has ${k} times as many, so ${B} has more. ${B}'s bar is longer.`,input:{t:'choice',opts:[A,B],a:1},cue:'Times as many means more. Who has the times as many?'};
+    const list=['Who has more? Their bar is longer.','How many times as many?','Multiply, or find the missing factor.'];
+    if(u==='big')return{q,eq,explain,board,list,steps:[s0,
+      {li:1,prompt:`How many times as many does ${B} have?`,think:`The story says ${k} times as many. So ${B}'s bar is ${k} boxes of ${s}.`,input:{t:'num',a:k},cue:'Find the number right before the words "times as many".'},
+      {li:2,prompt:`${k} × ${s} = ?`,think:`${k} × ${s} is ${t}. So ${B} has ${t} ${it}.`,input:{t:'num',a:t},cue:`Count by ${s}s, ${k} times.`,act:R=>{R.rows[1].total=String(t)}}]};
+    if(u==='times')return{q,eq,explain,board,list,steps:[s0,
+      {li:2,prompt:`How many groups of ${s} make ${t}? ? × ${s} = ${t}`,think:`I count by ${s}s to ${t}. ${skTxt(s,k)} That is ${k} groups. So ${B} has ${k} times as many.`,input:{t:'num',a:k},cue:`Count by ${s}s until you reach ${t}.`,act:R=>{R.rows[1]={name:B,n:k,each:String(s),total:String(t),len:k}}}]};
+    return{q,eq,explain,board,list,steps:[s0,
+      {li:1,prompt:`${B}'s bar has ${k} equal boxes. How many boxes?`,think:`${B} has ${k} times as many, so the bar has ${k} equal boxes. Each box is the same as ${A}'s amount.`,input:{t:'num',a:k},cue:'Find the number right before the words "times as many".'},
+      {li:2,prompt:`The ${k} boxes make ${t}. What is in each box? ${k} × ? = ${t}`,think:`${k} × ${s} = ${t}. So each box is ${s}, and ${A} has ${s} ${it}.`,input:{t:'num',a:s},cue:`Which number times ${k} makes ${t}?`,act:R=>{R.rows[0].each=String(s);R.rows[1].each=String(s)}}]}}};
+K.factors={
+  pool:()=>i=>{const v=['partner','prime','mult'][i%3];
+    if(v==='partner'){for(;;){const a=rint(2,9),b=rint(2,12),n=a*b;if(n>=12&&a!==b)return{v,n,a}}}
+    if(v==='prime')return{v,n:rint(2,50)};
+    const m=rint(3,9),q=rint(3,11);return Math.random()<.5?{v,n:m*q,m}:{v,n:m*q+rint(1,m-1),m}},
+  make(p,ph){const{v,n}=p;
+    if(v==='partner'){const{a}=p,b=n/a;
+      const explain=`${a} × ${b} = ${n}, so ${a} and ${b} are a factor pair of ${n}.`,eq=`${a} × ? = ${n}`;
+      if(ph==='pic')return{q:`Find the other factor. ${n} = ${a} × ?`,eq,explain,ownMode:'jump',board:{type:'jumps',from:0,step:a,max:n,hops:0},list:[`Count by ${a}s on the number line until you land on ${n}.`,'The number of jumps is the other factor.'],steps:[
+        {li:0,prompt:`Press Jump until you land on ${n}.`,think:`${skTxt(a,b)} I landed on ${n}.`,input:{t:'board',mode:'jump',check:R=>R.hops===b},cue:`Each jump adds ${a}.`,act:R=>{R.hops=b}},
+        {li:1,prompt:'How many jumps?',think:`${b} jumps. So ${a} × ${b} = ${n}.`,input:{t:'num',a:b},cue:'Look at the jump count.'}]};
+      return{q:`Find the other factor. ${n} = ${a} × ?`,eq,explain,list:['Count by the factor you know until you reach the number.','The number of counts is the other factor.'],steps:[
+        {li:0,prompt:`${a} × ? = ${n}`,think:`I count by ${a}s: ${skTxt(a,b)} That is ${b} counts. So the other factor is ${b}.`,input:{t:'num',a:b},cue:`Count by ${a}s up to ${n}. Keep track of how many numbers you say.`}]}}
+    if(v==='prime'){const pr=factorPairs(n),comp=pr.length>1;
+      const pairTxt=pr.map(([a,b])=>`${a} × ${b}`).join(', ');
+      const explain=comp?`${n} has more than one factor pair: ${pairTxt}. So ${n} is composite.`:`${n} has only one factor pair: 1 × ${n}. So ${n} is prime.`;
+      const board=ph==='pic'?{type:'fpairs',pairs:[[1,n]]}:null;
+      return{q:`Is ${n} prime or composite?`,eq:'',board,explain,list:['Look for a factor pair other than 1 and the number.','Only 1 and itself: prime. More factor pairs: composite.'],steps:[
+        {li:0,prompt:`Can ${n} be made with a factor pair other than 1 × ${n}?`,think:comp?`Yes. ${pr[1][0]} × ${pr[1][1]} = ${n}. The factor pairs of ${n} are ${pairTxt}.`:`I try 2, 3, 4, and more. None of them go into ${n} evenly. The only factor pair is 1 × ${n}.`,input:{t:'choice',opts:['Yes','No'],a:comp?0:1},cue:n%2===0&&n>2?`Is ${n} even? Then 2 is a factor.`:`Try dividing ${n} by 2, 3, 5, and 7.`,act:R=>{R.pairs=pr}},
+        {li:1,prompt:'So is it prime or composite?',think:comp?`It has more than one factor pair, so ${n} is composite.`:`It only has 1 and itself, so ${n} is prime.`,input:{t:'choice',opts:['Prime','Composite'],a:comp?1:0},cue:'Prime: only 1 and itself. Composite: more factors.'}]}}
+    const{m}=p,q=Math.floor(n/m),r=n%m;
+    const explain=r?`${m} × ${q} = ${m*q} and ${m} × ${q+1} = ${m*(q+1)}. ${n} is in between, so it is not a multiple of ${m}.`:`${m} × ${q} = ${n}, so ${n} is a multiple of ${m}.`;
+    const fin={li:1,prompt:`Is ${n} a multiple of ${m}?`,think:r?`${m} × ${q} = ${m*q}. That is ${r} short of ${n}. ${n} is not on the ${m}s list.`:`${m} × ${q} = ${n} exactly. ${n} is on the ${m}s list.`,input:{t:'choice',opts:['Yes, it is a multiple','No, it is not'],a:r?1:0},cue:`If you land exactly on ${n} when you count by ${m}s, it is a multiple.`};
+    const board=ph==='pic'?{type:'jumps',from:0,step:m,max:n,hops:0,marks:[0,n]}:null;
+    return{q:`Is ${n} a multiple of ${m}?`,eq:'',board,ownMode:ph==='pic'?'jump':null,explain,list:[`Count by ${m}s as close to ${n} as you can.`,`Did you land exactly on ${n}?`],steps:[
+      {li:0,prompt:`Count by ${m}s. How many ${m}s fit in ${n} without going over?`,think:`${skTxt(m,q)} ${m} × ${q} = ${m*q}. ${r?`The next one, ${m*(q+1)}, is too big.`:`That is exactly ${n}.`}`,input:{t:'num',a:q},cue:`Count by ${m}s. Stop before you go past ${n}.`,act:R=>{if(R.type==='jumps')R.hops=q}},fin]}}};
+K.pow10={
+  pool:ph=>i=>{if(i%2===0){const z=rint(1,3);return{v:'p',a:ph==='pic'?rint(2,99):(Math.random()<.3?rint(100,999):rint(2,99)),z}}
+    const z=rint(1,2);return ph==='pic'?{v:'m',a:rint(2,6),b:rint(2,6),z}:{v:'m',a:rint(2,9),b:rint(2,9),z:Math.random()<.4?3:z}},
+  make(p,ph){
+    if(p.v==='p'){const{a,z}=p,P=P10(z),t=a*P,hi=String(t).length-1;
+      const board=ph==='pic'?{type:'pv',hi,lo:0,rows:[{lab:'',v:a}]}:null;
+      return{q:`What is ${a} × ${fmt(P)}?`,eq:`${a} × ${fmt(P)} = ?`,board,explain:`Multiplying by ${fmt(P)} moves each digit ${z} ${pl(z,'place')} to the left. ${a} × ${fmt(P)} = ${fmt(t)}.`,list:[`Count the zeros in ${fmt(P)}.`,'Move each digit that many places to the left. Fill the empty places with zeros.'],steps:[
+        {li:0,prompt:`How many zeros are in ${fmt(P)}?`,think:`${fmt(P)} has ${z} ${pl(z,'zero')}.`,input:{t:'num',a:z},cue:'Count the 0 digits.'},
+        {li:1,prompt:`${a} × ${fmt(P)} = ?`,think:`Each digit moves ${z} ${pl(z,'place')} to the left, and zeros fill the empty places. ${a} becomes ${fmt(t)}.`,input:{t:'num',a:t},cue:`Write ${a}, then add ${z} ${pl(z,'zero')} on the end.`,act:R=>{R.rows.push({lab:`× ${fmt(P)}`,v:t})}}]}}
+    const{a,b,z}=p,P=P10(z),B=b*P,ab=a*b,t=ab*P,PN=PLACE[P];
+    const board=ph==='pic'?(z===1?{type:'tens',g:a,t:b,glab:`${b} tens`}:{type:'tens',g:a,h:b,glab:`${b} hundreds`}):null;
+    return{q:`What is ${a} × ${fmt(B)}?`,eq:`${a} × ${fmt(B)} = ?`,board,explain:`${a} × ${b} = ${ab}, so ${a} × ${b} ${PN} = ${ab} ${PN} = ${fmt(t)}.`,list:['Multiply the basic fact.',`Your answer is that many ${PN}.`],steps:[
+      {li:0,prompt:`${fmt(B)} is ${b} ${PN}. First, ${a} × ${b} = ?`,think:`${a} × ${b} is ${ab}.`,input:{t:'num',a:ab},cue:`Use the fact ${a} × ${b}.`,act:R=>{if(R.type==='tens')R.note=`${a} × ${b} ${PN} = ${ab} ${PN}`}},
+      {li:1,prompt:`${ab} ${PN} is what number?`,think:`${ab} ${PN} is ${fmt(t)}.`,input:{t:'num',a:t},cue:`Write ${ab}, then ${z} ${pl(z,'zero')} for the ${PN}.`,act:R=>{if(R.type==='tens')R.note=`${ab} ${PN} = ${fmt(t)}`}}]}}};
+K.partial1={picPool:true,
+  pool:ph=>()=>{for(;;){let n,d;if(ph==='pic'){n=rint(12,49);d=rint(2,5)}else{const r=Math.random();n=r<.6?rint(101,999):r<.85?rint(1001,4999):rint(23,99);d=rint(2,9)}if(partsOf(n).length>1)return{n,d}}},
+  make(p,ph){const{n,d}=p,parts=partsOf(n),prods=parts.map(x=>x*d),t=n*d,digits=parts.map(x=>x/placeOf(x));
+    const q=p.cx%2?`A school orders ${d} boxes of paper. Each box has ${n} sheets. How many sheets is that?`:`What is ${d} × ${n}?`;
+    const o=rotOpts([parts.join(' + '),String(n).split('').filter(c=>c!=='0').join(' + ')],0,p.cx>>1);
+    const board=ph==='pic'?{type:'area',rows:[d],cols:parts,done:[],sum:''}:null;
+    const steps=[{li:0,prompt:`Break ${n} into ${parts.length===2?'tens and ones':'its places'}. Which one is right?`,think:`${n} is ${parts.map(x=>`${x/placeOf(x)} ${PLACE[placeOf(x)]}`).join(', ')}. That is ${parts.join(' + ')}.`,input:{t:'choice',...o},cue:'Each digit is worth more in a bigger place. The 3 in 300 means 3 hundreds.'}];
+    parts.forEach((x,i)=>steps.push({li:1,prompt:`${d} × ${x} = ?`,think:placeOf(x)===1?`${d} × ${x} is ${prods[i]}.`:`${d} × ${digits[i]} is ${d*digits[i]}. So ${d} × ${digits[i]} ${PLACE[placeOf(x)]} is ${d*digits[i]} ${PLACE[placeOf(x)]}, which is ${fmt(prods[i])}.`,input:{t:'num',a:prods[i]},cue:placeOf(x)===1?`Use the fact ${d} × ${x}.`:`Think ${d} × ${digits[i]}, then make it ${PLACE[placeOf(x)]}.`,act:R=>{R.done[i]=1}}));
+    steps.push({li:2,prompt:`Add the parts: ${prods.map(fmt).join(' + ')} = ?`,think:`${prods.map(fmt).join(' plus ')} is ${fmt(t)}.`,input:{t:'num',a:t},cue:'Line up the places and add.',act:R=>{R.sum=`${prods.map(fmt).join(' + ')} = ${fmt(t)}`}});
+    return{q,eq:`${d} × ${n} = ?`,board,explain:`${d} × ${n} = ${prods.map(fmt).join(' + ')} = ${fmt(t)}.`,list:['Break the big number into hundreds, tens, and ones.','Multiply each part.','Add the parts.'],steps}}};
+K.partial2={picPool:true,
+  pool:ph=>()=>{for(;;){const a=ph==='pic'?rint(11,39):rint(11,99),b=ph==='pic'?rint(11,29):rint(11,99);if(a%10&&b%10)return{a,b}}},
+  make(p,ph){const{a,b}=p,ca=[a-a%10,a%10],rb=[b-b%10,b%10],t=a*b,cells=[];rb.forEach(r=>ca.forEach(c=>cells.push([r,c])));
+    const q=p.cx%2?`A theater has ${b} rows with ${a} seats in each row. How many seats are there?`:`What is ${b} × ${a}?`;
+    const o=rotOpts([`${b} = ${rb[0]} + ${rb[1]} and ${a} = ${ca[0]} + ${ca[1]}`,`${b} = ${rb[0]/10} + ${rb[1]} and ${a} = ${ca[0]/10} + ${ca[1]}`],0,p.cx>>1);
+    const board=ph==='pic'?{type:'area',rows:rb,cols:ca,done:[],sum:''}:null;
+    const steps=[{li:0,prompt:'How do we break both numbers into tens and ones?',think:`${b} is ${rb[0]} and ${rb[1]}. ${a} is ${ca[0]} and ${ca[1]}.`,input:{t:'choice',...o},cue:'The tens digit means that many tens. The 4 in 47 is 40.'}];
+    cells.forEach(([r,c],i)=>steps.push({li:1,prompt:`${r} × ${c} = ?`,think:r>=10&&c>=10?`${r/10} × ${c/10} is ${r*c/100}. Tens times tens makes hundreds, so it is ${r*c}.`:`${r} × ${c} is ${r*c}.`,input:{t:'num',a:r*c},cue:r>=10&&c>=10?`Think ${r/10} × ${c/10}, then add two zeros.`:r>=10||c>=10?`Think ${r>=10?r/10:r} × ${c>=10?c/10:c}, then add one zero.`:`Use the fact ${r} × ${c}.`,act:R=>{R.done[i]=1}}));
+    const pp=cells.map(([r,c])=>r*c);
+    steps.push({li:2,prompt:`Add all four boxes: ${pp.join(' + ')} = ?`,think:`${pp.join(' plus ')} is ${fmt(t)}.`,input:{t:'num',a:t},cue:'Add the biggest numbers first, then the smaller ones.',act:R=>{R.sum=`${pp.join(' + ')} = ${fmt(t)}`}});
+    return{q,eq:`${b} × ${a} = ?`,board,explain:`${b} × ${a} = ${pp.join(' + ')} = ${fmt(t)}.`,list:['Break both numbers into tens and ones.','Multiply to fill each box.','Add all four boxes.'],steps}}};
+
+/* Grade 5 */
+const r10=x=>Math.round(x/10)*10,r100=x=>Math.round(x/100)*100;
+K.algo={picPool:true,
+  pool:ph=>()=>{for(;;){const a=ph==='pic'?rint(12,99):rint(101,999),b=ph==='pic'?rint(12,49):rint(12,99);if(b%10&&a%10)return{a,b}}},
+  make(p,ph){const{a,b}=p,bo=b%10,bt=b-bo,p1=a*bo,p2=a*bt,t=a*b,ra=a<100?r10(a):r100(a),rb=r10(b),est=ra*rb;
+    const AL=R=>R.type==='stack'?R.items[1]:R,AR=R=>R.type==='stack'?R.items[0]:null;
+    const algo={type:'algo',a,b,rows:[],total:null};
+    const board=ph==='pic'?{type:'stack',items:[{type:'area',rows:[bt,bo],cols:[a],done:[],title:'Area model'},{...algo,title:'Written way'}]}:algo;
+    const q=p.cx%2?`A store gets ${b} boxes. Each box has ${a} ${itm(p)[1]}. How many is that in all?`:`What is ${a} × ${b}?`;
+    return{q,eq:`${a} × ${b} = ?`,board,explain:`${a} × ${bo} = ${fmt(p1)} and ${a} × ${bt} = ${fmt(p2)}. ${fmt(p1)} + ${fmt(p2)} = ${fmt(t)}. That is close to the estimate, ${fmt(est)}.`,
+      list:['Estimate first.','Multiply by the ones digit.','Write a zero, then multiply by the tens digit.','Add the two rows. Check it is close to your estimate.'],steps:[
+      {li:0,prompt:`Estimate first. ${a} is about ${ra} and ${b} is about ${rb}. ${ra} × ${rb} = ?`,think:`${ra} × ${rb}: ${ra/(ra%100?10:100)} × ${rb/10} is ${ra/(ra%100?10:100)*rb/10}, then I add the zeros. That makes ${fmt(est)}. My answer should be close to that.`,input:{t:'num',a:est},cue:'Multiply the digits that are not zero, then add all the zeros on the end.'},
+      {li:1,prompt:`Multiply by the ones digit. ${a} × ${bo} = ?`,think:`${a} × ${bo} is ${fmt(p1)}. I write it on the first row.`,input:{t:'num',a:p1},cue:`Multiply ${a} by ${bo}. Start with the ones, then the tens${a>99?', then the hundreds':''}. Carry when you need to.`,act:R=>{AL(R).rows.push({t:String(p1),note:`${a} × ${bo}`});const A=AR(R);if(A)A.done[1]=1}},
+      {li:2,prompt:`Now the tens digit, ${bt/10}. It really means ${bt}. Write a zero first, then multiply. ${a} × ${bt} = ?`,think:`The ${bt/10} means ${bt}, so I write a 0 in the ones place first. ${a} × ${bt/10} is ${fmt(a*bt/10)}. With the 0, it is ${fmt(p2)}.`,input:{t:'num',a:p2},cue:`Multiply ${a} × ${bt/10}, then put a 0 on the end.`,act:R=>{AL(R).rows.push({t:String(p2),ph:true,note:`${a} × ${bt}`});const A=AR(R);if(A)A.done[0]=1}},
+      {li:3,prompt:`Add the two rows. ${fmt(p1)} + ${fmt(p2)} = ?`,think:`${fmt(p1)} plus ${fmt(p2)} is ${fmt(t)}. That is close to my estimate of ${fmt(est)}, so it makes sense.`,input:{t:'num',a:t},cue:'Line up the places and add.',act:R=>{AL(R).total=t}}]}}};
+K.powers={
+  pool:()=>i=>{const v=['times','dec','pow','dec'][i%4];
+    if(v==='pow')return{v,k:rint(1,6),dir:rint(0,1)};
+    if(v==='times')return{v,n:rint(2,99),k:rint(1,3)};
+    for(;;){const d=rint(1,2),N=d===1?rint(11,299):rint(101,2999),k=rint(1,3);if(N%10)return{v,N,d,k}}},
+  make(p,ph){const{v}=p;
+    if(v==='pow'&&p.dir){const{k}=p,t=P10(k);
+      return{q:`Write ${fmt(t)} as a power of 10. ${fmt(t)} = 10 to the power of what?`,eq:`${fmt(t)} = 10^?`,board:ph==='pic'?{type:'pv',hi:k,lo:0,rows:[{lab:'',v:t}]}:null,explain:`${fmt(t)} has ${k} ${pl(k,'zero')}, so ${fmt(t)} = 10^${k}.`,list:['Count the zeros after the 1.','That number is the exponent.'],steps:[
+        {li:0,prompt:`How many zeros come after the 1 in ${fmt(t)}?`,think:`I count the zeros: there ${k===1?'is':'are'} ${k}.`,input:{t:'num',a:k},cue:'Count only the 0 digits.'},
+        {li:1,prompt:`So ${fmt(t)} = 10 to the power of what?`,think:`${k} zeros means ${k} tens multiplied together. ${fmt(t)} = 10^${k}.`,input:{t:'num',a:k},cue:'The exponent is the number of zeros.'}]}}
+    if(v==='pow'){const{k}=p,t=P10(k),tens=Array(k).fill(10).join(' × ');
+      const board=ph==='pic'?{type:'pv',hi:k,lo:0,rows:[]}:null;
+      return{q:`What is 10^${k}?`,eq:`10^${k} = ?`,board,explain:`10^${k} means ${tens}. That is ${fmt(t)}, a 1 with ${k} zeros.`,list:['The small number says how many 10s to multiply.','Each 10 adds one zero.'],steps:[
+        {li:0,prompt:`10^${k} means some 10s multiplied together. How many 10s?`,think:`The small ${k} is the exponent. It means ${k} tens multiplied: ${tens}.`,input:{t:'num',a:k},cue:'Look at the small raised number.'},
+        {li:1,prompt:`So 10^${k} = ?`,think:`Each 10 adds one zero. ${k} zeros after the 1 is ${fmt(t)}.`,input:{t:'num',a:t},cue:`Write 1, then ${k} zeros.`,act:R=>{R.rows=[{lab:`10^${k}`,v:t}]}}]}}
+    if(v==='times'){const{n,k}=p,P=P10(k),t=n*P;
+      const board=ph==='pic'?{type:'pv',hi:String(t).length-1,lo:0,rows:[{lab:'',v:n}]}:null;
+      return{q:`What is ${n} × 10^${k}?`,eq:`${n} × 10^${k} = ?`,board,explain:`10^${k} = ${fmt(P)}. ${n} × ${fmt(P)} = ${fmt(t)}. Each digit moved ${k} ${pl(k,'place')} to the left.`,list:['Write the power of 10 as a number.','Move each digit that many places to the left.'],steps:[
+        {li:0,prompt:`First, 10^${k} = ?`,think:`10^${k} is ${fmt(P)}.`,input:{t:'num',a:P},cue:`Write 1 with ${k} ${pl(k,'zero')}.`},
+        {li:1,prompt:`${n} × ${fmt(P)} = ?`,think:`Each digit moves ${k} ${pl(k,'place')} to the left. ${n} becomes ${fmt(t)}.`,input:{t:'num',a:t},cue:`Write ${n}, then ${k} ${pl(k,'zero')}.`,act:R=>{R.rows.push({lab:`× ${fmt(P)}`,v:t})}}]}}
+    const{N,d,k}=p,x=decRaw(N,d),P=P10(k),ans=decStr(N*P,d),hi=Math.max(String(Math.floor(N*P/P10(d))).length-1,0);
+    const board=ph==='pic'?{type:'pv',hi,lo:-d,rows:[{lab:'',v:x}]}:null;
+    return{q:`What is ${x} × ${fmt(P)}?`,eq:`${x} × ${fmt(P)} = ?`,board,explain:`Multiplying by ${fmt(P)} moves each digit ${k} ${pl(k,'place')} to the left. ${x} × ${fmt(P)} = ${ans}.`,list:[`Count the zeros in ${fmt(P)}.`,'Move each digit that many places to the left. The decimal point stays put.'],steps:[
+      {li:0,prompt:`How many zeros are in ${fmt(P)}?`,think:`${fmt(P)} has ${k} ${pl(k,'zero')}. So each digit moves ${k} ${pl(k,'place')} to the left.`,input:{t:'num',a:k},cue:'Count the 0 digits.'},
+      {li:1,prompt:`${x} × ${fmt(P)} = ?`,think:`I move each digit ${k} ${pl(k,'place')} to the left. ${x} becomes ${ans}.`,input:{t:'dec',a:ans},cue:'Each move to the left makes a digit worth 10 times as much. Use the chart if it helps.',act:R=>{R.rows.push({lab:`× ${fmt(P)}`,v:ans})}}]}}};
+K.decimals={picPool:true,
+  pool:ph=>{const o=[];for(let t=1;t<=9;t++)for(let k=2;k<=(ph==='pic'?5:9);k++)o.push({v:'dw',t,k});for(let a=1;a<=9;a++)for(let b=1;b<=9;b++)o.push({v:'dd',a,b});
+    if(ph!=='pic')for(let w=1;w<=9;w++)for(let t=1;t<=9;t++)for(let k=2;k<=5;k++)o.push({v:'ww',w,t,k});return o},
+  make(p,ph){const{v}=p;
+    const num3=(A,B,prod,places,ans,raw)=>[
+      {li:0,prompt:`Multiply as if there were no decimal points. ${A} × ${B} = ?`,think:`${A} × ${B} is ${prod}.`,input:{t:'num',a:prod},cue:'Ignore the points for now. Multiply the whole numbers.'},
+      {li:1,prompt:'How many digits are after the decimal points in the factors, in all?',think:`I count the digits after each point. That is ${places} in all.`,input:{t:'num',a:places},cue:'Count the digits to the right of each decimal point, then add.'},
+      {li:2,prompt:'Put that many digits after the point in your answer. What is the product?',think:`${prod} with ${places} ${pl(places,'digit')} after the point is ${raw}${raw!==ans?`, which is the same as ${ans}`:''}.`,input:{t:'dec',a:ans},cue:`Start at the right end of ${prod} and count ${places} ${pl(places,'place')} to the left.`}];
+    const numList=['Multiply as if there were no decimal points.','Count the digits after the decimal points in the factors.','Put that many digits after the point in your answer.'];
+    if(v==='dw'){const{t,k}=p,tk=t*k,ans=decStr(tk,1),x=`0.${t}`;
+      const q=p.cx%2?`Each cup holds ${x} liter of water. How many liters are in ${k} cups?`:`What is ${k} × ${x}?`;
+      const explain=`${k} × ${x} is ${k} groups of ${t} tenths. That is ${tk} tenths, or ${ans}.`;
+      if(ph==='pic')return{q,eq:`${k} × ${x} = ?`,explain,board:{type:'strips',k,t},list:['Count all the shaded tenths.','10 tenths make 1 whole. Write the decimal.'],steps:[
+        {li:0,prompt:`${k} groups of ${t} tenths. How many tenths are shaded in all?`,think:`${k} × ${t} is ${tk}. There are ${tk} tenths.`,input:{t:'num',a:tk},cue:`Count by ${t}s, ${k} times.`,act:R=>{R.note=`${tk} tenths`}},
+        {li:1,prompt:`${tk} tenths is how much? Write it as a decimal.`,think:tk>=10?`10 tenths make 1 whole. ${tk} tenths is ${Math.floor(tk/10)} whole and ${tk%10} tenths. That is ${ans}.`:`${tk} tenths is ${ans}.`,input:{t:'dec',a:ans},cue:'10 tenths make 1 whole. The tenths go after the point.',act:R=>{R.note=`${tk} tenths = ${ans}`}}]};
+      return{q,eq:`${k} × ${x} = ?`,explain,list:numList,steps:num3(k,t,tk,1,ans,decRaw(tk,1))}}
+    if(v==='dd'){const{a,b}=p,ab=a*b,ans=decStr(ab,2),x=`0.${a}`,y=`0.${b}`;
+      const explain=`${x} × ${y} = ${ab} hundredths = ${ans}.`;
+      if(ph==='pic')return{q:`What is ${x} × ${y}? Use the grid. The whole grid is 1.`,eq:`${x} × ${y} = ?`,explain,board:{type:'hund',a,b,show:1},list:['Shade one factor going across and one going down.','Count the squares with both colors. Each is 1 hundredth.'],steps:[
+        {li:0,prompt:`The blue columns show ${x}. Now we take ${y} of it: the top ${b} rows. How many small squares have both colors?`,think:`The part with both colors is ${a} squares across and ${b} squares down. ${a} × ${b} is ${ab} squares.`,input:{t:'num',a:ab},cue:`Count across the dark part, then down. Multiply.`,act:R=>{R.show=2}},
+        {li:1,prompt:`Each small square is 1 hundredth. ${ab} hundredths = ?`,think:`${ab} hundredths is ${ans}.`,input:{t:'dec',a:ans},cue:'Hundredths use 2 places after the point.'}]};
+      return{q:`What is ${x} × ${y}?`,eq:`${x} × ${y} = ?`,explain,list:numList,steps:num3(a,b,ab,2,ans,decRaw(ab,2))}}
+    const{w,t,k}=p,W=10*w+t,prod=W*k,ans=decStr(prod,1),x=`${w}.${t}`;
+    return{q:p.cx%2?`A ribbon is ${x} meters long. ${nm(p)} buys ${k} ribbons. How many meters is that?`:`What is ${x} × ${k}?`,eq:`${x} × ${k} = ?`,explain:`${W} × ${k} = ${prod}. With 1 digit after the point, ${x} × ${k} = ${ans}.`,list:numList,steps:num3(W,k,prod,1,ans,decRaw(prod,1))}}};
+K.volume={picPool:true,
+  pool:ph=>{const o=[];const[L,W,H]=ph==='pic'?[5,4,4]:[10,8,6];for(let l=2;l<=L;l++)for(let w=2;w<=W;w++)for(let h=2;h<=H;h++)o.push({l,w,h});return o},
+  make(p,ph){const{l,w,h}=p,lw=l*w,V=lw*h;
+    return{q:`A box is filled with 1-inch cubes. It is ${l} cubes long, ${w} cubes wide, and ${h} cubes tall. How many cubes fill the box?`,eq:`${l} × ${w} × ${h} = ?`,
+      board:ph==='pic'?{type:'layers',l,w,h,shown:0}:null,explain:`Volume = length × width × height = ${l} × ${w} × ${h} = ${V} cubic inches.`,
+      list:['Find the cubes in one layer: length × width.','Find the number of layers: the height.','Multiply one layer by the number of layers.'],steps:[
+      {li:0,prompt:`One layer is ${l} cubes long and ${w} cubes wide. How many cubes are in one layer?`,think:`One layer is ${l} × ${w}. That is ${lw} cubes.`,input:{t:'num',a:lw},cue:`Multiply ${l} × ${w}.`,act:R=>{R.shown=1}},
+      {li:1,prompt:'How many layers tall is the box?',think:`The box is ${h} cubes tall, so it has ${h} layers.`,input:{t:'num',a:h},cue:'The height tells how many layers.',act:R=>{R.shown=h}},
+      {li:2,prompt:`${lw} × ${h} = ?`,think:`${h} layers of ${lw} is ${V} cubes.`,input:{t:'num',a:V},cue:`Count by ${lw}s, ${h} times, or break it apart.`}]}}};
+K.story5={picPool:true,
+  pool:ph=>i=>{const pic=ph==='pic';if(i%2===0)return{v:'gg',n:rint(2,pic?5:9),b:rint(2,pic?5:6),p:rint(2,pic?6:10)};return{v:'ct',s:rint(3,pic?10:15),k:rint(2,pic?5:8)}},
+  make(p,ph){
+    if(p.v==='gg'){const{n,b}=p,pp=p.p,bp=b*pp,t=n*bp,it=itm(p);
+      const o=rotOpts([`How many ${it[1]} are in one box`,`How many boxes there are`],0,p.cx);
+      return{q:`A store has ${n} boxes. Each box holds ${b} packs. Each pack has ${pp} ${it[1]}. How many ${it[1]} are in all the boxes?`,eq:'',
+        board:ph==='pic'?{type:'groups',g:n,n:b,emoji:'📦',counted:0,tag:`${pp} in each pack`,lab:['box','boxes']}:null,
+        explain:`One box: ${b} × ${pp} = ${bp}. ${n} boxes: ${n} × ${bp} = ${t}.`,list:['Plan: what do you need to find first?','Step 1: find one box.','Step 2: find all the boxes.'],steps:[
+        {li:0,prompt:'What should we find first?',think:`We don't know how many ${it[1]} are in one box yet. So we find that first.`,input:{t:'choice',...o},cue:'You need one box before you can find all the boxes.'},
+        {li:1,prompt:`One box has ${b} packs of ${pp}. ${b} × ${pp} = ?`,think:`${b} × ${pp} is ${bp}. One box has ${bp} ${it[1]}.`,input:{t:'num',a:bp},cue:`Use the fact ${b} × ${pp}.`},
+        {li:2,prompt:`${n} boxes of ${bp}. ${n} × ${bp} = ?`,think:`${n} × ${bp} is ${t}.`,input:{t:'num',a:t},cue:bp>10?`Break ${bp} into tens and ones, then multiply each part.`:`Use the fact ${n} × ${bp}.`}]}}
+    const{s,k}=p,ks=k*s,t=s+ks,A=nm(p),B=nm2(p);
+    const o=rotOpts([`How many pages ${B} read`,`The total right away`],0,p.cx);
+    return{q:`${A} read ${s} pages. ${B} read ${k} times as many pages as ${A}. How many pages did they read together?`,eq:'',
+      board:ph==='pic'?{type:'tape',rows:[{name:A,n:1,each:String(s),len:1},{name:B,n:k,each:String(s),total:'?',len:k}]}:null,
+      explain:`${B}: ${k} × ${s} = ${ks}. Together: ${s} + ${ks} = ${t}.`,list:['Plan: what do you need to find first?',`Step 1: find ${B}'s amount.`,'Step 2: add to find the total.'],steps:[
+      {li:0,prompt:'What should we find first?',think:`We don't know how many pages ${B} read. We need that before we can add.`,input:{t:'choice',...o},cue:'Can you add before you know both amounts?'},
+      {li:1,prompt:`${B} read ${k} times as many. ${k} × ${s} = ?`,think:`${k} × ${s} is ${ks}. ${B} read ${ks} pages.`,input:{t:'num',a:ks},cue:`Count by ${s}s, ${k} times.`,act:R=>{if(R.rows)R.rows[1].total=String(ks)}},
+      {li:2,prompt:`Together: ${s} + ${ks} = ?`,think:`${s} plus ${ks} is ${t}.`,input:{t:'num',a:t},cue:`Add ${A}'s pages and ${B}'s pages.`}]}}};
+
+/* ---------- Fact Builder: one strategy per fact family ---------- */
+const SETS=['01','2','10','5','9','4','3','6','8','7'];
+const SETINFO={'01':['×0 and ×1','Times 0 is 0. Times 1 stays the same.'],'2':['×2: doubles','Add the number to itself.'],'10':['×10: tens','The number of tens.'],'5':['×5: half of 10','Find 10 groups, then take half.'],
+  '9':['×9: 10 take away 1','Find 10 groups, then take one away.'],'4':['×4: double double','Double it, then double again.'],'3':['×3: double and 1 more','Double it, then add 1 more group.'],
+  '6':['×6: 5 and 1 more','Find 5 groups, then add 1 more group.'],'8':['×8: double the 4s','Find 4 groups, then double.'],'7':['×7: 5 and 2','Find 5 groups and 2 groups, then add.']};
+function setFacts(id){const o=[];if(id==='01'){for(let n=0;n<=10;n++){o.push({a:0,b:n});if(n){o.push({a:n,b:0});o.push({a:1,b:n})}if(n>1)o.push({a:n,b:1})}return o}
+  const m=+id;for(let x=1;x<=10;x++){o.push({a:m,b:x});if(x!==m)o.push({a:x,b:m})}return o}
+const inSet=(id,x)=>id==='01'?x<=1:+id===x;
+const easiestSet=(a,b)=>SETS.find(id=>inSet(id,a)||inSet(id,b));
+function factHelp(a,b){const id=easiestSet(a,b);const m=id==='01'?(a<=1?a:b):+id,o=(id==='01'?(a<=1?b:a):(a===m?b:a));
+  return{'01':m===0?`Anything times 0 is 0.`:`1 group of ${o} is just ${o}.`,'2':`Double ${o}: ${o} + ${o} = ${2*o}.`,'10':`${o} tens is ${10*o}.`,'5':`Half of 10 × ${o}: half of ${10*o} is ${5*o}.`,
+    '9':`10 × ${o} = ${10*o}, take away one ${o}: ${9*o}.`,'4':`Double, then double again: ${o}, ${2*o}, ${4*o}.`,'3':`2 × ${o} = ${2*o}, plus one more ${o}: ${3*o}.`,'6':`5 × ${o} = ${5*o}, plus one more ${o}: ${6*o}.`,
+    '8':`4 × ${o} = ${4*o}, doubled: ${8*o}.`,'7':`5 × ${o} = ${5*o} and 2 × ${o} = ${2*o}. ${5*o} + ${2*o} = ${7*o}.`}[id]}
+function factKind(id){return{pool:()=>setFacts(id),
+  make(p,ph){const{a,b}=p,t=a*b,eq=`${a} × ${b} = ?`;
+    if(id==='01'){const zero=a===0||b===0;
+      const[pr,th]=zero?(a===0?[`0 groups of ${b}. How many in all?`,`There are no groups at all, so there is nothing. ${a} × ${b} = 0.`]:[`${a} groups with 0 in each. How many in all?`,`Every group is empty. ${a} groups of nothing is 0.`]):(a===1?[`1 group of ${b}. How many?`,`One group of ${b} is just ${b}.`]:[`${a} groups of 1. How many?`,`${a} groups with 1 in each is ${a}.`]);
+      return{q:'Use the rule to find the answer.',eq,explain:`${a} × ${b} = ${t}. ${zero?'Times 0 is always 0.':'Times 1 keeps the number the same.'}`,board:ph==='pic'?{type:'groups',g:a,n:b,emoji:'🍎',counted:0}:null,
+        list:['Times 0 is always 0. Times 1 keeps the number the same.'],steps:[{li:0,prompt:pr,think:th,input:{t:'num',a:t},cue:zero?'If there are no groups, or nothing in each group, there is nothing at all.':'One group of a number is that number.'}]}}
+    const m=+id,turned=a!==m,o=turned?a:b,T=turned?`${a} × ${b} is the same as ${m} × ${o}. `:'';
+    const T2=turned?`Turn it around. ${a} × ${b} is the same as ${m} × ${o}. `:'';
+    const helper10={prompt:`First the helper fact. 10 × ${o} = ?`,think:`10 groups of ${o} is ${o} tens. That is ${10*o}.`,input:{t:'num',a:10*o},cue:`${o} tens.`};
+    const S={
+      '2':{list:['Double the other number: add it to itself.'],bands:[[0,0,`${o}`],[1,1,`${o}`]],steps:[{li:0,prompt:`2 × ${o} means double ${o}. ${o} + ${o} = ?`,think:`2 groups of ${o} is ${o} plus ${o}. That makes ${2*o}.`,input:{t:'num',a:2*o},cue:`Add ${o} and ${o}. Doubles are facts like 4 + 4 and 6 + 6.`}]},
+      '10':{list:['Think of it as tens.','Say the number: that many tens.'],steps:[{li:0,prompt:`10 × ${o} means ${o} tens. How many tens?`,think:`10 × ${o} is the same as ${o} tens.`,input:{t:'num',a:o},cue:'Look at the number that is not 10.'},{li:1,prompt:`${o} tens is what number?`,think:`${o} tens is ${10*o}. The ${o} goes in the tens place, and a 0 goes in the ones place.`,input:{t:'num',a:10*o},cue:`Count by 10s, ${o} times.`,act:R=>{R.endTag=`= ${10*o}`}}]},
+      '5':{list:['Find 10 groups first.','Take half.'],rows:10,steps:[{li:0,...helper10,act:R=>{R.endTag=`10 × ${o} = ${10*o}`}},{li:1,prompt:`5 is half of 10. What is half of ${10*o}?`,think:`5 groups is half of 10 groups. Half of ${10*o} is ${5*o}.`,input:{t:'num',a:5*o},cue:`Split ${10*o} into two equal parts.`,act:R=>{R.endTag='';R.fade=[5,9];R.bands=[{from:0,to:4,lab:`half: ${5*o}`,show:true}]}}]},
+      '9':{list:['Find 10 groups first.','Take away 1 group.'],rows:10,steps:[{li:0,...helper10,act:R=>{R.endTag=`10 × ${o} = ${10*o}`}},{li:1,prompt:`9 groups is 1 group less than 10 groups. ${10*o} − ${o} = ?`,think:`I take away one group of ${o}. ${10*o} minus ${o} is ${9*o}.`,input:{t:'num',a:9*o},cue:`Start at ${10*o} and count back ${o}.`,act:R=>{R.cross=[9];R.endTag=`take away ${o}`}}]},
+      '4':{list:['Double it.','Double it again.'],bands:[[0,1,`2 × ${o} = ${2*o}`],[2,3,`2 × ${o} = ${2*o}`]],steps:[{li:0,prompt:`First, 2 × ${o} = ?`,think:`Double ${o} is ${2*o}.`,input:{t:'num',a:2*o},cue:`${o} + ${o}.`,act:R=>{R.bands[0].show=true}},{li:1,prompt:`4 is double 2. ${2*o} + ${2*o} = ?`,think:`Double ${2*o} is ${4*o}.`,input:{t:'num',a:4*o},cue:`Add ${2*o} and ${2*o}.`,act:R=>{R.bands[1].show=true}}]},
+      '3':{list:['Find 2 groups: double it.','Add 1 more group.'],bands:[[0,1,`2 × ${o} = ${2*o}`],[2,2,`+ ${o}`]],steps:[{li:0,prompt:`First, 2 × ${o} = ?`,think:`Double ${o} is ${2*o}.`,input:{t:'num',a:2*o},cue:`${o} + ${o}.`,act:R=>{R.bands[0].show=true}},{li:1,prompt:`3 groups is 1 more group. ${2*o} + ${o} = ?`,think:`${2*o} plus ${o} is ${3*o}.`,input:{t:'num',a:3*o},cue:`Start at ${2*o} and count on ${o}.`,act:R=>{R.bands[1].show=true}}]},
+      '6':{list:['Find 5 groups.','Add 1 more group.'],bands:[[0,4,`5 × ${o} = ${5*o}`],[5,5,`+ ${o}`]],steps:[{li:0,prompt:`First, 5 × ${o} = ?`,think:`5 groups of ${o} is half of ${10*o}. That is ${5*o}.`,input:{t:'num',a:5*o},cue:`Half of 10 × ${o}, which is half of ${10*o}.`,act:R=>{R.bands[0].show=true}},{li:1,prompt:`6 groups is 1 more group. ${5*o} + ${o} = ?`,think:`${5*o} plus ${o} is ${6*o}.`,input:{t:'num',a:6*o},cue:`Start at ${5*o} and count on ${o}.`,act:R=>{R.bands[1].show=true}}]},
+      '8':{list:['Find 4 groups.','Double it.'],bands:[[0,3,`4 × ${o} = ${4*o}`],[4,7,`4 × ${o} = ${4*o}`]],steps:[{li:0,prompt:`First, 4 × ${o} = ?`,think:`Double ${o} is ${2*o}. Double again is ${4*o}.`,input:{t:'num',a:4*o},cue:`Double ${o}, then double again.`,act:R=>{R.bands[0].show=true}},{li:1,prompt:`8 is double 4. ${4*o} + ${4*o} = ?`,think:`Double ${4*o} is ${8*o}.`,input:{t:'num',a:8*o},cue:`Add ${4*o} and ${4*o}.`,act:R=>{R.bands[1].show=true}}]},
+      '7':{list:['Find 5 groups.','Find 2 groups.','Add them.'],bands:[[0,4,`5 × ${o} = ${5*o}`],[5,6,`2 × ${o} = ${2*o}`]],steps:[{li:0,prompt:`First, 5 × ${o} = ?`,think:`5 groups of ${o} is half of ${10*o}. That is ${5*o}.`,input:{t:'num',a:5*o},cue:`Half of ${10*o}.`,act:R=>{R.bands[0].show=true}},{li:1,prompt:`Next, 2 × ${o} = ?`,think:`Double ${o} is ${2*o}.`,input:{t:'num',a:2*o},cue:`${o} + ${o}.`,act:R=>{R.bands[1].show=true}},{li:2,prompt:`5 groups and 2 groups make 7 groups. ${5*o} + ${2*o} = ?`,think:`${5*o} plus ${2*o} is ${7*o}.`,input:{t:'num',a:7*o},cue:`Add ${5*o} and ${2*o}.`}]}}[id];
+    const steps=S.steps.map((s,i)=>i===0?{...s,prompt:T+s.prompt,think:T2+s.think}:s);
+    const board=ph==='pic'?{type:'array',r:S.rows||m,c:o,bands:(S.bands||[]).map(([f,t2,lab])=>({from:f,to:t2,lab,show:id==='2'}))}:null;
+    const short=easiestSet(a,b)!==id?` Another way: ${factHelp(a,b)}`:'';
+    return{q:`Use the ${SETINFO[id][0].split(': ')[1]||SETINFO[id][0]} strategy.`,eq,board,explain:`${a} × ${b} = ${t}.${turned?` And ${b} × ${a} = ${t} too.`:''}${short}`,list:S.list,steps}}}}
+SETS.forEach(id=>{K['f'+id]=factKind(id)});
+
+/* ---------- units for each grade ---------- */
+const W_FP=[['factor','a number you multiply'],['product','the answer when you multiply']];
+const LESSONS={
+ 2:[{id:'g2a',kind:'eqgroups',title:'Equal groups',sub:'The same number in every group',std:'2.OA.4',words:[['equal groups','groups that each have the same number'],['in all','the total, everything together']]},
+    {id:'g2b',kind:'arrays2',title:'Arrays',sub:'Things lined up in rows',std:'2.OA.4',words:[['array','things lined up in rows and columns'],['row','a line that goes across'],['column','a line that goes up and down']]},
+    {id:'g2c',kind:'skip',title:'Skip counting',sub:'Count by 2s, 5s, and 10s',std:'2.NBT.2',words:[['skip count','count by a number, like 5, 10, 15, 20'],['jump','one step of the same size on a number line']]},
+    {id:'g2d',kind:'oddeven',title:'Odd and even',sub:'Does every one have a partner?',std:'2.OA.3',words:[['even','every one has a partner'],['odd','one is left over with no partner']]}],
+ 3:[{id:'g3a',kind:'meaning',title:'What multiplication means',sub:'Equal groups and arrays as × sentences',std:'3.OA.1',words:[['multiply','put together equal groups'],...W_FP]},
+    {id:'g3b',kind:'breakapart',title:'Break apart a fact',sub:'Split a hard fact into two easy ones',std:'3.OA.5',words:[['break apart','split a number into smaller parts'],...W_FP]},
+    {id:'g3c',kind:'unknown',title:'Missing factors',sub:'4 × ? = 28, and how it links to ÷',std:'3.OA.4',words:[['missing factor','the number you need to find'],['divide','split into equal groups']]},
+    {id:'g3d',kind:'tens3',title:'Times tens',sub:'4 × 60 is 4 × 6 tens',std:'3.NBT.3',words:[['ten','a group of 10 ones'],['tens place','the second digit from the right']]},
+    {id:'g3e',kind:'story3',title:'Story problems',sub:'Name the problem type, then solve',std:'3.OA.3',words:[['equal groups','groups with the same number in each'],['array','rows and columns'],['extra information','a number that does not help']]}],
+ 4:[{id:'g4a',kind:'compare',title:'Times as many',sub:'Compare with a bar picture',std:'4.OA.2',words:[['times as many','the same amount, again and again'],['compare','see which is more, and by how much']]},
+    {id:'g4b',kind:'factors',title:'Factors and multiples',sub:'Factor pairs, multiples, prime, composite',std:'4.OA.4',words:[['factor pair','two numbers that multiply to make a number'],['multiple','a number you land on when you count by a number'],['prime','only 1 and itself as factors'],['composite','more than one factor pair']]},
+    {id:'g4c',kind:'pow10',title:'Times 10, 100, 1,000',sub:'Digits move to bigger places',std:'4.NBT.1',words:[['place value','what a digit is worth because of its place'],['hundreds','groups of 100']]},
+    {id:'g4d',kind:'partial1',title:'Big number × 1 digit',sub:'Break it into places, multiply each',std:'4.NBT.5',words:[['expanded form','a number split by place, like 300 + 40 + 7'],['partial product','the answer for one part']]},
+    {id:'g4e',kind:'partial2',title:'2 digits × 2 digits',sub:'The area model with four boxes',std:'4.NBT.5',words:[['area model','a rectangle split into parts to multiply'],['partial product','the answer for one box']]}],
+ 5:[{id:'g5a',kind:'algo',title:'The written method',sub:'Estimate, multiply each digit, add',std:'5.NBT.5',words:[['estimate','a close guess, using rounded numbers'],['placeholder zero','the 0 you write before multiplying by tens']]},
+    {id:'g5b',kind:'powers',title:'Powers of 10',sub:'10^3, and moving digits',std:'5.NBT.2',words:[['exponent','the small number that says how many 10s to multiply'],['power of 10','10, 100, 1,000, and so on']]},
+    {id:'g5c',kind:'decimals',title:'Multiply decimals',sub:'Tenths, hundredths, and where the point goes',std:'5.NBT.7',words:[['tenth','1 of 10 equal parts of a whole'],['hundredth','1 of 100 equal parts'],['decimal point','the dot between ones and tenths']]},
+    {id:'g5d',kind:'volume',title:'Volume',sub:'Layers of cubes in a box',std:'5.MD.5',words:[['volume','how many cubes fill a space'],['layer','one flat level of cubes']]},
+    {id:'g5e',kind:'story5',title:'Two-step story problems',sub:'Plan the first step, then the second',std:'5.NBT.5',words:[['two-step','you need one answer to find the next'],['plan','decide what to find first']]}]
+}[GRADE];
+const FACTSETS=(GRADE===2?['2','10','5']:SETS).map(id=>({id:'fx'+id,kind:'f'+id,set:id,title:SETINFO[id][0],sub:SETINFO[id][1],std:GRADE===2?'2.NBT.2':'3.OA.7',fact:true,words:W_FP}));
+const UNITS=[...LESSONS,...FACTSETS];
+const unitById=id=>UNITS.find(u=>u.id===id);
+
+/* ---------- math text ---------- */
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function md(s){return esc(s).replace(/10\^(\d+)/g,'10<sup>$1</sup>')}
+function spoken(s){return String(s).replace(/10\^(\d+)/g,'10 to the power of $1').replace(/\? ×/g,'what ×').replace(/× \?/g,'× what').replace(/= \?/g,'equals what?')
+  .replace(/(^|[\s,])\?(?=[\s,]|$)/g,'$1blank').replace(/÷/g,' divided by ').replace(/×/g,' times ').replace(/−/g,' minus ').replace(/\+/g,' plus ').replace(/ = /g,' equals ')
+  .replace(/["“”]/g,'').replace(/!/g,'.').replace(/\s+/g,' ').trim()}
+const fmt=n=>typeof n==='number'&&Math.abs(n)>=10000?n.toLocaleString('en-US'):String(n);
+
+/* ---------- answers ---------- */
+function ansText(inp){switch(inp.t){case 'num':return fmt(inp.a);case 'dec':return inp.a;case 'choice':return inp.opts[inp.a];default:return 'done on the picture'}}
+function isRight(inp,val,B){const clean=x=>String(x??'').trim().replace(/,/g,'');
+  switch(inp.t){
+  case 'num':{const v=clean(val);return /^\d+$/.test(v)&&+v===inp.a}
+  case 'dec':{const v=clean(val);return /^(\d+\.?\d*|\.\d+)$/.test(v)&&Math.abs(parseFloat(v)-parseFloat(inp.a))<1e-9}
+  case 'choice':return val===inp.a;
+  case 'board':return !!B&&inp.check(B.spec);}
+  return false}
+function widget(inp,onSubmit){
+  const wrap=h('div',{class:'ans'});const boxes=[];
+  const len=String(inp.a??'').length;
+  const box=lab=>{const b=h('input',{class:'box'+(len>=4?' wide':''),inputmode:inp.t==='dec'?'decimal':'numeric',autocomplete:'off',maxlength:'10','aria-label':lab});if(len>=6)b.style.width='170px';b.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}});boxes.push(b);return b};
+  const go=()=>{if(boxes.length&&!boxes[0].value.trim()){boxes[0].focus();return}onSubmit(boxes.length?boxes[0].value:null)};
+  const checkBtn=h('button',{class:'btn main',type:'button',on:{click:go}},'Check');
+  if(inp.t==='num'||inp.t==='dec')wrap.append(box('Your answer'),checkBtn);
+  else if(inp.t==='choice'){const ob=inp.opts.map((o,i)=>{const b=h('button',{class:'opt',type:'button',html:md(o),on:{click(){if(b.disabled)return;const ok=onSubmit(i);if(ok===false){b.classList.add('no');b.disabled=true}}}});return b});wrap.append(h('div',{class:'opts'},ob))}
+  else wrap.append(h('div',{class:'lead'},'Use the picture, then press Check.'),checkBtn);
+  wrap.focusFirst=()=>{(boxes[0]||wrap.querySelector('button'))?.focus({preventScroll:true})};
+  wrap.clear=()=>{boxes.forEach(b=>b.value='');boxes[0]?.focus()};
+  return wrap}
+
+/* ---------- facts each child knows ---------- */
+let FST=store.get('facts',{}),SPR=store.get('sprints',[]);
+const fkey=(a,b)=>Math.min(a,b)+'x'+Math.max(a,b);
+function factLog(a,b,ok){const k=fkey(a,b),f=FST[k]||(FST[k]={ok:0,miss:0,streak:0});if(ok){f.ok++;f.streak++}else{f.miss++;f.streak=0}f.at=Date.now();store.set('facts',FST)}
+function factState(a,b){const f=FST[fkey(a,b)];if(f&&f.streak>=3)return 'known';
+  const u=FACTSETS.find(x=>x.set===easiestSet(a,b));if(u&&PROG[u.id]&&PROG[u.id].mastered&&!(f&&f.streak===0&&f.miss))return 'known';
+  return f?'learn':''}
+
+function wordsBox(u){return u.words?h('div',{},h('div',{class:'muted',style:'font-size:15px;margin-bottom:4px'},'Words we use'),h('div',{class:'words'},u.words.map(([w,m])=>h('div',{class:'word'},h('b',{},w),m)))):null}
+/* ---------- never repeat: each problem family remembers what it has used ---------- */
+let USED=store.get('used',{});
+function pickProblems(u,ph,n){
+  const kd=K[u.kind],key=u.kind+(kd.picPool?':'+ph:''),src=kd.pool(ph),J=x=>JSON.stringify(x);
+  const used=new Set(USED[key]||[]),last=new Set(USED['last:'+u.id]||[]),out=[],keys=new Set();
+  const take=p=>{const k=J(p);if(keys.has(k))return;keys.add(k);out.push(p)};
+  let restart=false;
+  if(Array.isArray(src)){
+    const fresh=src.filter(p=>!used.has(J(p)));restart=fresh.length<n;
+    for(const tier of [fresh.filter(p=>!last.has(J(p))),src.filter(p=>!last.has(J(p))),src])for(const p of shuffle(tier)){if(out.length>=n)break;take(p)}
+  }else{let tries=0;while(out.length<n&&tries<40000){tries++;const p=src(out.length),k=J(p),lim=400*(out.length+1);
+    if(!used.has(k)||(tries>lim&&!last.has(k))||tries>3*lim)take(p)}}
+  const ks=out.map(J);USED[key]=[...(restart?[]:(USED[key]||[])),...ks].slice(-3000);USED['last:'+u.id]=ks;store.set('used',USED);
+  return out.map(p=>{const q={...p,cx:rint(0,9999),nx:rint(0,9999)};if(kd.dress)kd.dress(q);return q});
+}
+
+/* ---------- progress ---------- */
+let PROG=store.get('prog',{}),ses=store.get('ses',null);
+const DAY=86400000;
+const pu=id=>PROG[id]||(PROG[id]={pic:0,num:0,mastered:null,due:null,gap:7,boost:false,log:[]});
+const saveProg=()=>store.set('prog',PROG);
+const saveSes=()=>store.set('ses',ses);
+function stateOf(u){const s=pu(u.id),need=A.need;
+  if(s.boost)return{label:'Boost practice',next:{ph:'num',mode:'boost'},chip:'due'};
+  if(s.mastered&&s.due&&Date.now()>=s.due)return{label:'Review is ready',next:{ph:'num',mode:'review'},chip:'due'};
+  if(s.pic<need)return{label:`With pictures: ${s.pic} of ${need}`,next:{ph:'pic',mode:'learn'}};
+  if(s.num<need)return{label:`Numbers only: ${s.num} of ${need}`,next:{ph:'num',mode:'learn'}};
+  return{label:'Mastered',next:{ph:'num',mode:'learn'},chip:'ok',done:true}}
+
+/* ---------- small UI helpers ---------- */
+const PRAISE=['Yes, that is right.','Nice thinking.','You got it.','Great work.','That is it.','Good job.'];
+let ctx=null,STALE={};
+function newCtx(){const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
+const guard=p=>Promise.resolve(p).catch(e=>{if(e!==STALE)throw e});
+async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getBoundingClientRect();hd.style.left=(r.left+r.width/2-10)+'px';hd.style.top=(r.top+Math.min(r.height/2,80))+'px';await c.wait(520)}
+function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
+/* ---------- screens ---------- */
+const PARTS=['Watch me','Try together','On my own'];
+function header(u,phase,partIx,count,idx){
+  const trail=h('div',{class:'trail'});
+  if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of 5`));
+  else PARTS.forEach((p,i)=>trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')},i===partIx?`${p} ${idx+1} of ${count}`:p)));
+  return h('div',{class:'top'},
+    h('button',{class:'quiet',on:{click:()=>{hush();hideHand();newCtx();home()}}},'← Home'),
+    h('div',{class:'ttl'},u.title,h('small',{},ses.mode==='review'?'Quick review, numbers only':phase==='pic'?'With pictures':'Numbers only')),trail,
+    h('button',{class:'quiet',id:'readBtn',on:{click:readAloud}},'🔊 Read'),
+    h('button',{class:'quiet',id:'pauseBtn',on:{click:pauseScreen}},'⏸ Pause'),
+    h('button',{class:'quiet','aria-label':'Settings',on:{click:openSettings}},'⚙'));
+}
+let view=null;
+function readAloud(){if(!view)return;const t=[view.prob.q,view.prob.eq,view.bubbleText].filter(Boolean).join('. ');hush();say(t)}
+function buildView(u,p,ph,mode){
+  const prob=K[u.kind].make(p,ph);
+  const work=h('div',{class:'work'}),bubble=h('div',{class:'bubble','aria-live':'polite'},h('div',{class:'who','aria-hidden':'true'},'🧑‍🏫'),h('div',{class:'txt'}));
+  const list=h('ol');const check=h('div',{class:'check'},h('h2',{},mode==='own'?'My checklist: tap each step when you do it':'Steps'),list);
+  prob.list.forEach((t,i)=>{const n=mode==='own'?h('button',{class:'n',type:'button','aria-label':`Mark step ${i+1} done`},String(i+1)):h('span',{class:'n'},String(i+1));
+    const li=h('li',{},n,h('span',{},t));if(mode==='own')n.addEventListener('click',()=>li.classList.toggle('done'));list.append(li)});
+  work.append(h('div',{class:'q',html:md(prob.q)}));if(prob.eq)work.append(h('div',{class:'eq',html:md(prob.eq)}));
+  let B=null;const spec=mode==='own'&&prob.own?prob.own:prob.board;
+  if(spec){B=makeBoard(spec);work.append(B.el)}
+  const ansSlot=h('div');work.append(ansSlot);
+  const v={prob,B,work,ansSlot,check,list,bubble,bubbleText:'',
+    say(t,speak=true){v.bubbleText=t;bubble.querySelector('.txt').innerHTML=md(t);if(speak)return say(t);return Promise.resolve()},
+    mark(li,state){[...list.children].forEach((x,i)=>{x.classList.toggle('now',state==='now'&&i===li);if(state==='done'&&i===li){x.classList.add('done');x.classList.remove('now')}})},
+    fill(inp){ansSlot.innerHTML='';if(inp.t!=='board'&&inp.t!=='point'){const a=h('div',{class:'ans'},h('div',{class:'filled',html:md(ansText(inp))}));ansSlot.append(a);a.scrollIntoView({block:'nearest'})}},
+    ask(inp,cb){ansSlot.innerHTML='';const w=widget(inp,cb);ansSlot.append(w);w.focusFirst();(inp.t==='board'||inp.t==='point')&&B?B.el.scrollIntoView({block:'nearest'}):w.scrollIntoView({block:'nearest'});return w}};
+  return v;
+}
+function layout(u,ph,partIx,count,idx,v,footBtns){
+  hush();hideHand();app.innerHTML='';
+  app.append(header(u,ph,partIx,count,idx),h('div',{class:'ses'},v.work,v.bubble,v.check),h('div',{class:'foot'},footBtns));
+  window.scrollTo(0,0);view=v;
+}
+function probIndex(){return ses.mode==='review'?ses.i:[0,2,4][ses.part]+ses.i}
+function partLen(){return ses.mode==='review'?5:[2,2,5][ses.part]}
+function show(){
+  screen='ses';if(!ses)return home();saveSes();
+  const u=unitById(ses.u);if(!u){ses=null;saveSes();return home()}
+  if(ses.part===3)return results();
+  if(ses.part===0)return watchScreen(u);
+  if(ses.part===1)return togetherScreen(u);
+  return ownScreen(u);
+}
+function advance(){ses.i++;if(ses.i>=partLen()){ses.part++;ses.i=0}saveSes();show()}
+
+/* Watch me: step-by-step modeling with a spoken think-aloud */
+function watchScreen(u){
+  const c=newCtx();const p=ses.probs[probIndex()],v=buildView(u,p,ses.ph,'watch');
+  let paused=false,resume=null,skip=null;
+  const gate=()=>paused?new Promise(r=>resume=r):Promise.resolve();
+  const pauseBtn=h('button',{class:'btn',on:{click(){paused=!paused;pauseBtn.textContent=paused?'▶ Play':'⏸ Pause';if(paused)hush();else if(resume){const r=resume;resume=null;r()}}}},'⏸ Pause');
+  const nextStep=h('button',{class:'btn',on:{click(){hush();if(skip)skip()}}},'⏭ Next step');
+  const again=h('button',{class:'btn',on:{click:()=>watchScreen(u)}},'↺ Watch again');
+  const last=ses.i===partLen()-1;
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},last?'Try one together':'Next example');
+  layout(u,ses.ph,0,2,ses.i,v,[pauseBtn,nextStep,again,go]);
+  if(v.B)v.B.setLive(false);
+  const talk=async t=>{v.say(t,false);const min=(TTS&&A.voice)?300:Math.max(1800,t.length*48);await Promise.race([Promise.all([say(t),c.wait(min)]),new Promise(r=>skip=r)]);skip=null};
+  guard((async()=>{
+    await talk(ses.i===0?"Watch me first. I will show you each step and say what I am thinking.":"Here is one more. Watch each step.");
+    const S=v.prob.steps;
+    for(let si=0;si<S.length;si++){const st=S[si];await gate();if(!c.alive)return;
+      v.mark(st.li,'now');await talk(st.think);await gate();if(!c.alive)return;
+      if(st.act&&v.B){await pointAt(v.B.el,c);st.act(v.B.spec);v.B.refresh()}else await pointAt(v.ansSlot,c);
+      hideHand();v.fill(st.input);if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');await c.wait(600)}
+    await talk('So the answer is '+ansText(S[S.length-1].input)+'. '+v.prob.explain);
+    pauseBtn.disabled=true;nextStep.disabled=true;go.disabled=false;go.focus();
+  })());
+}
+/* Try together: guided steps with prompts and cues */
+function togetherScreen(u){
+  const c=newCtx();const p=ses.probs[probIndex()],v=buildView(u,p,ses.ph,'together');
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'Now on my own':'Next problem');
+  const helper=h('button',{class:'btn',hidden:true},'Okay, next step');
+  layout(u,ses.ph,1,2,ses.i,v,[helper,go]);
+  const S=v.prob.steps;let si=0;
+  const step=()=>{const st=S[si];let tries=0;v.cur=st;v.mark(st.li,'now');
+    if(v.B)v.B.setLive(st.input.t==='board'||st.input.t==='point',st.input.t==='point'?'point':st.input.mode);
+    v.say((si===0&&ses.i===0?"Let's do this one together. ":'')+st.prompt);
+    v.ask(st.input,val=>{if(!c.alive)return;
+      if(isRight(st.input,val,v.B)){v.say(pick(PRAISE));finish(st,false);return true}
+      tries++;v.ansSlot.firstChild?.classList.add('shake');setTimeout(()=>v.ansSlot.firstChild?.classList.remove('shake'),400);
+      if(tries===1){v.say("Hmm, not quite. That's okay. "+st.cue);if(st.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
+      v.say("Let's do this step together. "+st.think);finish(st,true);return false})};
+  const finish=(st,shown)=>{if(st.act&&v.B){st.act(v.B.spec)}if(v.B)v.B.setLive(false);v.fill(st.input);
+    if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');
+    const next=()=>{helper.hidden=true;si++;if(si<S.length)step();else{v.say(`${pick(PRAISE)} ${v.prob.explain}`);go.disabled=false;go.focus()}};
+    if(shown){helper.hidden=false;helper.onclick=next;helper.focus()}else guard(c.wait(900).then(next))};
+  step();
+}
+/* On my own: independent practice with a self-monitoring checklist */
+function ownScreen(u){
+  const c=newCtx();const idx=probIndex(),p=ses.probs[idx],v=buildView(u,p,ses.mode==='review'?'num':ses.ph,'own');
+  const quiet=ses.mode==='review';
+  const fin=v.prob.steps[v.prob.steps.length-1];v.cur=fin;
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'See how I did':'Next problem');
+  let tries=0,hints=0;
+  const help=h('button',{class:'btn',on:{click(){if(!c.alive)return;hints++;const left=[...v.list.children].findIndex(x=>!x.classList.contains('done'));const li=left<0?v.prob.list.length-1:left;v.mark(li,'now');
+    if(hints===1)v.say(`What is the next step on your checklist? It is step ${li+1}: ${v.prob.list[li]}`);
+    else{const st=v.prob.steps.find(s=>s.li===li)||fin;v.say(st.cue)}}}},'💡 Help');
+  layout(u,ses.mode==='review'?'num':ses.ph,2,5,ses.i,v,quiet?[go]:[help,go]);
+  if(v.B)v.B.setLive(!quiet&&ses.ph==='pic'||fin.input.t==='point',fin.input.t==='point'?'point':v.prob.ownMode||null);
+  v.say(quiet?'Work this one out on your own. I will show you how you did at the end.':ses.i===0?'Your turn. Use your checklist. Tap Help if you get stuck.':pick(['Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.']));
+  const record=ok=>{ses.res[idx]={ok};saveSes();if(u.fact)factLog(p.a,p.b,ok)};
+  v.ask(fin.input,val=>{if(!c.alive)return;const ok=isRight(fin.input,val,v.B);
+    if(quiet){record(ok);v.fill({t:'num',a:'Saved'});v.ansSlot.querySelector('.filled').textContent='Answer saved';go.disabled=false;go.focus();if(v.B)v.B.setLive(false);return true}
+    if(ok){record(tries===0&&hints===0);v.fill(fin.input);v.say(`${tries?'Yes, you fixed it. ':pick(PRAISE)+' '}${v.prob.explain}`);if(v.B)v.B.setLive(false);go.disabled=false;go.focus();help.disabled=true;return true}
+    tries++;
+    if(tries===1){v.say(fin.input.t==='choice'?'Not quite. Look at your checklist and try again.':"Not quite. That's okay. Look at your checklist and try once more.");v.ansSlot.firstChild?.classList.add('shake');if(fin.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
+    record(false);v.fill(fin.input);if(fin.act&&v.B){fin.act(v.B.spec);v.B.setLive(false)}
+    v.say(`Here is how it works. ${v.prob.explain} You are still learning this, and that is okay.`);go.disabled=false;go.focus();help.disabled=true;return false});
+}
+/* Results and mastery */
+function results(){
+  const u=unitById(ses.u),s=pu(u.id),r=ses.res.filter(Boolean),score=r.filter(x=>x.ok).length,pass=score>=4,need=A.need;
+  newCtx();hush();hideHand();app.innerHTML='';
+  let title,msg,nextLabel='Keep going';
+  if(!ses.done){ses.done=true;s.log.push({ph:ses.ph,mode:ses.mode,score,at:Date.now()});
+    if(ses.mode==='review'){if(pass){s.gap=Math.min(60,(s.gap||7)*2);s.due=Date.now()+s.gap*DAY}else{s.boost=true}}
+    else if(ses.mode==='boost'){if(pass){s.boost=false;s.due=Date.now()+(s.gap||7)*DAY}}
+    else if(pass){s[ses.ph]++;if(ses.ph==='num'&&s.num>=need&&!s.mastered){s.mastered=Date.now();s.due=Date.now()+7*DAY;s.gap=7}}
+    saveProg();saveSes()}
+  if(ses.mode==='review'){title=pass?'You still remember it!':'Time for a little boost';msg=pass?`You got ${score} of 5. Your next review will be ready in ${s.gap} days.`:`You got ${score} of 5. That's okay. Skills fade when we don't use them. A short boost lesson will bring it back.`}
+  else if(pass){title=score===5?'Wonderful work!':'Great job!';const st=stateOf(u);msg=`You got ${score} of 5 right on the first try.`+(ses.mode==='boost'?' The skill is back.':s.mastered&&ses.ph==='num'?' You have mastered this unit.':ses.ph==='pic'&&s.pic>=need?' You are ready for numbers only.':` ${st.label}.`)}
+  else{title="Let's practice this one more time";msg=`You got ${score} of 5 right on the first try. Practicing again, with new numbers, is how your brain gets stronger.`;nextLabel='Practice again'}
+  const dots=h('div',{class:'score','aria-label':`${score} of 5`},ses.res.map(x=>h('span',{},x&&x.ok?'⭐':'○')));
+  const next=stateOf(u).next;
+  app.append(h('div',{class:'panel',style:'margin-top:20px'},h('div',{class:'big'},pass?'🌟':'🌱'),h('h1',{},title),dots,h('p',{style:'margin:0'},msg)),
+    h('div',{class:'foot'},h('button',{class:'btn',on:{click:()=>{ses=null;saveSes();home()}}},'Home'),h('button',{class:'btn main',on:{click:()=>start(u,next)}},nextLabel)));
+  say(`${title}. ${msg}`);
+}
+function start(u,next,skipWatch){
+  const n=next.mode==='review'?5:9;ses={u:u.id,ph:next.ph,mode:next.mode,part:next.mode==='review'?2:(skipWatch?1:0),i:0,probs:pickProblems(u,next.ph,n),res:[]};
+  if(next.mode==='review')ses.probs=ses.probs.slice(0,5);
+  saveSes();show();
+}
+function intro(u){
+  screen='intro';const st=stateOf(u),s=pu(u.id);hush();newCtx();app.innerHTML='';
+  const nx=st.next,isReview=nx.mode==='review';
+  const canSkip=!isReview&&(s.log.some(x=>x.ph===nx.ph));
+  const plan=isReview?h('p',{},'5 problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.'):
+    h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},'🤝 Try together: 2 problems, with help on every step.'),h('li',{},'⭐ On my own: 5 problems with your checklist. Get 4 right to move on.'));
+  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home')),
+    h('div',{class:'panel'},h('div',{class:'chip'},`Grade ${GRADE}, ${u.std}, ${nx.mode==='boost'?'Boost':isReview?'Review':nx.ph==='pic'?'With pictures':'Numbers only'}`),h('h1',{},u.title),h('p',{style:'margin:0'},u.sub),plan,wordsBox(u),
+      h('div',{class:'row'},h('button',{class:'btn main',id:'startBtn',on:{click:()=>start(u,nx)}},isReview?'Start review':"Let's start"),canSkip?h('button',{class:'btn',on:{click:()=>start(u,nx,true)}},'Skip watching, I remember'):null,
+        s.pic>=A.need&&nx.ph==='num'&&!isReview?h('button',{class:'quiet',on:{click:()=>start(u,{ph:'pic',mode:'learn'})}},'Practice with pictures again'):null)));
+  say(`${u.title}. ${isReview?'This is a quick review.':"First I'll show you, then we'll try together, then you'll try on your own."}`);
+}
+function pauseScreen(){saveSes();newCtx();hush();hideHand();const u=unitById(ses.u);app.innerHTML='';
+  app.append(h('div',{class:'panel',style:'margin-top:30px;align-items:center;text-align:center'},h('div',{class:'big'},'⏸'),h('h1',{},'Your spot is saved'),
+    h('p',{style:'margin:0'},`${u.title}. When you come back, the same problem will be waiting, with the same numbers. You can close this page now.`),
+    h('div',{class:'row',style:'justify-content:center'},h('button',{class:'btn',on:{click:home}},'Home'),h('button',{class:'btn main',id:'keepGoing',on:{click:show}},'Keep going'))));
+  say("Okay, I've saved your spot. You can stop now, and we'll pick up right here next time.")}
+/* ---------- times table explorer ---------- */
+const ROWPAT={1:'Times 1, the number stays the same.',2:'Every answer is even. These are the doubles.',3:'Count by 3s. Each answer is 3 more.',4:'Every answer is even. Each one is double the 2s.',5:'Every answer ends in 5 or 0.',
+  6:'Every answer is even. Each one is double the 3s.',7:'Count by 7s. Use the 5s and the 2s to help.',8:'Every answer is even. Each one is double the 4s.',9:'The digits of each answer add up to 9. For 63, 6 + 3 = 9.',10:'Every answer ends in 0.'};
+let ttSel=null,ttHide=false,ttRev=false;
+function tableScreen(){
+  screen='table';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  const top=h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home'),h('div',{class:'ttl'},'Times table',h('small',{},'Tap any box to see the fact')),
+    h('button',{class:'quiet','aria-pressed':String(ttHide),on:{click(){ttHide=!ttHide;ttRev=false;tableScreen()}}},'Hide answers'),h('button',{class:'quiet','aria-label':'Settings',on:{click:openSettings}},'⚙'));
+  const S=ttSel||[0,0];
+  const grid=h('div',{class:'ttgrid',role:'group','aria-label':'times table'});
+  grid.append(h('div',{class:'h'},'×'));for(let c=1;c<=10;c++)grid.append(h('div',{class:'h'+(S[1]===c?' on':'')},String(c)));
+  let known=0;
+  for(let r=1;r<=10;r++){grid.append(h('div',{class:'h'+(S[0]===r?' on':'')},String(r)));
+    for(let c=1;c<=10;c++){const st=factState(r,c);if(st==='known')known++;
+      const sel=S[0]===r&&S[1]===c,turn=S[0]===c&&S[1]===r&&!sel,path=ttSel&&((r===S[0]&&c<S[1])||(c===S[1]&&r<S[0]));
+      const dim=GRADE===2&&![1,2,5,10].includes(r)&&![1,2,5,10].includes(c);
+      grid.append(h('button',{type:'button',class:[st,sel?'sel':'',turn?'turn':'',path?'path':'',dim?'dim':''].filter(Boolean).join(' '),'aria-label':`${r} times ${c}`,
+        on:{click(){ttSel=[r,c];ttRev=false;tableScreen();const p=$('.ttpanel');if(p&&window.innerWidth<860)p.scrollIntoView({block:'nearest',behavior:'smooth'});if(!ttHide)say(`${r} times ${c} is ${r*c}. ${factHelp(r,c)}`);else say(`What is ${r} times ${c}? Think first.`)}}},
+        ttHide&&!(sel&&ttRev)?'':String(r*c)))}}
+  const legend=h('div',{class:'legend',style:'margin-top:10px;justify-content:flex-start'},h('span',{},h('i',{style:'background:var(--yes-bg);border-color:var(--yes)'}),'I know it'),h('span',{},h('i',{style:'background:var(--try-bg);border-color:var(--try)'}),'Still learning'),h('span',{},h('i',{style:'background:var(--page)'}),'Not tried yet'));
+  const panel=h('div',{class:'ttpanel','aria-live':'polite'});
+  if(!ttSel){panel.append(h('h2',{},'How to read the table'),h('p',{style:'margin:0'},'To find 3 × 4, put your finger on 3 on the left side. Slide across until you are under the 4 at the top. The answer is in that box.'),
+    h('p',{style:'margin:0'},'Tap any box. You will see the fact as an array of dots, an easy way to work it out, and its turn-around fact.'),
+    h('p',{class:'muted',style:'margin:0'},`You know ${known} of the 100 facts on this table. Green boxes come from Quick practice and the Fact Builder.`),
+    GRADE===2?h('p',{class:'muted',style:'margin:0'},'In grade 2 we focus on the 2s, 5s, and 10s. The other boxes are lighter.'):null)}
+  else{const[a,b]=ttSel,t=a*b,showAns=!ttHide||ttRev;
+    const mini=h('div',{class:'mini','aria-label':`${a} rows of ${b} dots`});for(let i=0;i<a;i++)mini.append(h('div',{},Array.from({length:b},()=>h('i'))));
+    panel.append(h('div',{class:'big'},`${a} × ${b} = ${showAns?t:'?'}`));
+    if(!showAns)panel.append(h('p',{style:'margin:0'},'Think first. Use a strategy you know. Then check.'),h('button',{class:'btn main',on:{click(){ttRev=true;tableScreen();say(`${a} times ${b} is ${t}. ${factHelp(a,b)}`)}}},'Show the answer'));
+    else{panel.append(mini,h('div',{class:'muted'},`${a} ${pl(a,'row')} of ${b}`),h('div',{},h('b',{},'A way to work it out: '),factHelp(a,b)));
+      if(a!==b)panel.append(h('div',{},h('b',{},'Turn-around fact: '),`${b} × ${a} = ${t} too. It has a dashed box on the table.`));
+      panel.append(h('div',{},h('b',{},'Pattern: '),ROWPAT[a]),h('div',{class:'row'},h('button',{class:'quiet',on:{click:()=>say(`${a} times ${b} is ${t}. ${factHelp(a,b)}`)}},'🔊 Hear it')))}}
+  app.append(top,h('div',{class:'tt'},h('div',{},grid,legend),panel));
+}
+
+/* ---------- Quick practice: brief timed practice with meet-or-beat goals ---------- */
+function sprintFacts(){
+  let sets=FACTSETS.filter(u=>{const s=pu(u.id);return s.pic+s.num>0||s.mastered}).map(u=>u.set),note='';
+  if(!sets.length){sets=GRADE===2?['2','10']:['2','10','5'];note=`For now this uses the ${sets.slice(0,-1).join('s, ')}s and ${sets[sets.length-1]}s. Pass a Fact Builder lesson to add its facts here.`}
+  const seen=new Set(),out=[];sets.forEach(id=>setFacts(id).forEach(f=>{const k=fkey(f.a,f.b);if(!seen.has(k)){seen.add(k);out.push(f)}}));
+  return{facts:out,note,sets}}
+function nextFact(list,prevKey,i){
+  const isK=f=>factState(f.a,f.b)==='known',known=list.filter(isK),learn=list.filter(f=>!isK(f));
+  const src=(i%3===0&&learn.length)||!known.length?learn:known;
+  let c=src.filter(f=>fkey(f.a,f.b)!==prevKey);if(!c.length)c=list.filter(f=>fkey(f.a,f.b)!==prevKey);if(!c.length)c=list;
+  const f=pick(c);return Math.random()<.5?{a:f.a,b:f.b}:{a:f.b,b:f.a}}
+function chartSVG(goal){const L=SPR.filter(x=>x.mode==='t').slice(-10);if(!L.length)return '';
+  const W=520,H=210,base=H-34,mx=Math.max(10,goal||0,...L.map(x=>x.ok))+2,gap=10,bw=Math.min(44,(W-40)/L.length-gap),Y=v=>base-(base-26)*v/mx;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Facts right in 1 minute, your last ${L.length} tries: ${L.map(x=>x.ok).join(', ')}">`;
+  L.forEach((x,i)=>{const X=24+i*(bw+gap);s+=`<rect x="${X}" y="${Y(x.ok)}" width="${bw}" height="${base-Y(x.ok)}" rx="4" style="fill:var(--go)"/><text x="${X+bw/2}" y="${Y(x.ok)-6}" text-anchor="middle" font-size="15" font-weight="600">${x.ok}</text>`});
+  if(goal)s+=`<line x1="18" x2="${W-4}" y1="${Y(goal)}" y2="${Y(goal)}" style="stroke:var(--glow);stroke-width:2.5;stroke-dasharray:7 5"/><text x="${W-6}" y="${Y(goal)-6}" text-anchor="end" font-size="14" font-weight="600">goal: ${goal}</text>`;
+  s+=`<line x1="18" x2="${W-4}" y1="${base}" y2="${base}" style="stroke:var(--line);stroke-width:2"/><text x="20" y="${H-10}" font-size="14" style="fill:var(--soft)">Facts right in 1 minute, your last ${L.length} ${pl(L.length,'try','tries')}</text></svg>`;
+  return s}
+const lastTimed=()=>{const L=SPR.filter(x=>x.mode==='t');return L.length?L[L.length-1].ok:0};
+function sprintHome(){
+  screen='sprint';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  const{note,facts}=sprintFacts(),goal=lastTimed();
+  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click:home}},'← Home'),h('div',{class:'ttl'},'Quick practice',h('small',{},`${facts.length} facts from the families you have learned`))),
+    h('div',{class:'panel'},h('h1',{},'Quick practice'),
+      h('p',{style:'margin:0'},'Answer as many facts as you can. Most facts will be ones you know, mixed with a few you are still learning. If you miss one, the clock stops and we fix it together.'),
+      h('p',{style:'margin:0;font-weight:600'},goal?`Your goal: meet or beat ${goal}.`:'This is your first try. Just do your best. Next time you will have a goal to beat.'),
+      goal?h('div',{html:chartSVG(goal),style:'width:100%'}):null,
+      h('div',{class:'row'},h('button',{class:'btn main',id:'sprintGo',on:{click:()=>sprintRun('t')}},'⏱ Start 1 minute'),h('button',{class:'btn',on:{click:()=>sprintRun('n')}},'🐢 No timer, 15 facts')),
+      note?h('p',{class:'muted',style:'margin:0;font-size:15px'},note):null));
+  say(goal?`Quick practice. Your goal is to meet or beat ${goal}.`:'Quick practice. Just do your best.');
+}
+function sprintRun(mode){
+  screen='sprint';const c=newCtx();hush();hideHand();app.innerHTML='';
+  const{facts}=sprintFacts(),LIMIT=60000,N=15,goal=lastTimed();
+  let left=LIMIT,ok=0,tries=0,i=0,prev='',cur=null,running=true,fixing=false,copying=false,last=performance.now();
+  const fill=h('div',{style:'width:100%'}),barW=h('div',{class:'tbarw',hidden:mode!=='t','aria-hidden':'true'},fill);
+  const score=h('div',{class:'count'}),factEl=h('div',{class:'fact','aria-live':'polite'}),msg=h('div',{class:'muted',style:'min-height:26px;text-align:center'}),fixEl=h('div');
+  const box=h('input',{class:'box',inputmode:'none',autocomplete:'off','aria-label':'Your answer',maxlength:'3'});
+  box.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}});
+  const press=k=>{if(k==='⌫')box.value=box.value.slice(0,-1);else if(k==='✓')submit();else if(box.value.length<3)box.value+=k;box.focus({preventScroll:true})};
+  const pad=h('div',{class:'pad'},['1','2','3','4','5','6','7','8','9','⌫','0','✓'].map(k=>h('button',{type:'button',class:k==='✓'?'ok':'','aria-label':k==='⌫'?'Delete':k==='✓'?'Check':k,on:{click:()=>press(k)}},k)));
+  const timer=setInterval(()=>{if(!c.alive){clearInterval(timer);return}const now=performance.now();if(running&&!fixing&&!document.hidden)left-=now-last;last=now;fill.style.width=Math.max(0,100*left/LIMIT)+'%';if(mode==='t'&&left<=0)end()},200);
+  const ask=()=>{cur=nextFact(facts,prev,i);prev=fkey(cur.a,cur.b);i++;factEl.innerHTML='';factEl.append(h('span',{},`${cur.a} × ${cur.b} =`),box);box.value='';box.focus({preventScroll:true});
+    score.textContent=mode==='t'?`Right so far: ${ok}`:`Fact ${Math.min(tries+1,N)} of ${N}. Right so far: ${ok}`};
+  const showFix=()=>{const ans=cur.a*cur.b;fixEl.innerHTML='';const hide=h('button',{class:'btn main'},'I looked. Hide it.');
+    const panel=h('div',{class:'fix'},h('div',{},"Let's fix this one. The clock is stopped."),h('div',{class:'f'},`${cur.a} × ${cur.b} = ${ans}`),h('div',{},factHelp(cur.a,cur.b)),hide);
+    fixEl.append(panel);box.value='';say(`Let's fix this one. ${cur.a} times ${cur.b} is ${ans}. ${factHelp(cur.a,cur.b)}`);
+    hide.onclick=()=>{hush();panel.innerHTML='';panel.append(h('div',{},'Now type it from memory, then press ✓.'));copying=true;box.value='';box.focus({preventScroll:true})};hide.focus()};
+  function submit(){if(!running)return;if(fixing&&!copying)return;const v=box.value.trim();if(!v)return;const right=+v===cur.a*cur.b;
+    if(copying){if(right){copying=false;fixing=false;fixEl.innerHTML='';msg.textContent='Fixed it. Good.';if(mode==='n'&&tries>=N)return end();ask()}else{copying=false;showFix()}return}
+    tries++;factLog(cur.a,cur.b,right);
+    if(right){ok++;msg.textContent=pick(['Yes!','Right.','Good.','Nice.','You got it.']);if(mode==='n'&&tries>=N)return end();ask()}
+    else{fixing=true;msg.textContent='';showFix()}}
+  function end(){if(!running)return;running=false;clearInterval(timer);hush();
+    const rec={at:Date.now(),mode,ok,tries};SPR.push(rec);SPR=SPR.slice(-60);store.set('sprints',SPR);
+    app.innerHTML='';let title,line;
+    if(mode==='t'){if(!goal){title='Great first try!';line=`You got ${ok} right in 1 minute. That is your goal to meet or beat next time.`}
+      else if(ok>goal){title='You beat your goal!';line=`You got ${ok} right. Your goal was ${goal}. Your new goal is ${ok}.`}
+      else if(ok===goal){title='You met your goal!';line=`You got ${ok} right, the same as last time. Next time, try for ${ok+1}.`}
+      else{title='Good practice';line=`You got ${ok} right. Your goal is still ${goal}. Every try makes the facts stronger.`}}
+    else{title='All done!';line=`You got ${ok} of ${tries} right on the first try, and you fixed the rest.`}
+    app.append(h('div',{class:'panel',style:'margin-top:20px'},h('div',{class:'big'},mode==='t'&&ok>=goal&&goal?'🌟':'⭐'),h('h1',{},title),h('p',{style:'margin:0'},line),
+      mode==='t'?h('div',{html:chartSVG(Math.max(goal,ok)),style:'width:100%'}):null),
+      h('div',{class:'foot'},h('button',{class:'btn',on:{click:home}},'Home'),h('button',{class:'btn',on:{click:tableScreen}},'Times table'),h('button',{class:'btn main',on:{click:sprintHome}},'Practice again')));
+    say(`${title} ${line}`)}
+  app.append(h('div',{class:'top'},h('button',{class:'quiet',on:{click(){running=false;clearInterval(timer);sprintHome()}}},'■ Stop'),h('div',{class:'ttl'},'Quick practice',h('small',{},mode==='t'?'1 minute':'No timer'))),
+    h('div',{class:'sp'},barW,score,factEl,msg,fixEl,pad));
+  ask();
+}
+
+/* ---------- home ---------- */
+let screen='home';
+function unitCard(u,i,up){const st=stateOf(u),s=pu(u.id);
+  const chips=h('div',{class:'chips'},h('span',{class:'chip'+(s.pic>=A.need?' ok':'')},`Pictures ${Math.min(s.pic,A.need)}/${A.need}`),h('span',{class:'chip'+(s.num>=A.need?' ok':'')},`Numbers ${Math.min(s.num,A.need)}/${A.need}`),
+    s.mastered?h('span',{class:'chip ok'},'⭐ Mastered'):null,st.chip==='due'?h('span',{class:'chip due'},st.label):null);
+  return h('div',{class:'unit'+(st.done&&st.chip!=='due'?' done':'')+(up?' up':'')},h('div',{class:'t'},h('span',{class:'num'},s.mastered?'⭐':String(i+1)),h('div',{},h('b',{},u.title),h('small',{},u.sub))),chips,
+    h('button',{class:'btn'+(up||st.chip==='due'?' main':''),on:{click:()=>intro(u)}},st.chip==='due'?(st.next.mode==='review'?'Start review':'Start boost'):s.log.length?(st.done?'Practice more':'Keep going'):'Start'))}
+function home(){
+  screen='home';newCtx();hush();hideHand();view=null;app.innerHTML='';
+  const grades=h('nav',{class:'grades','aria-label':'Grades'},[2,3,4,5].map(g=>h('a',{href:`multiplication-grade${g}.html`,'aria-current':g===GRADE?'page':null},`Grade ${g}`)));
+  app.append(h('div',{class:'hero'},h('div',{class:'grow'},h('h1',{},'Multiplication Path'),h('p',{},'Multiplication, one step at a time.')),grades,h('button',{class:'quiet',on:{click:openSettings}},'⚙ Settings')));
+  if(ses&&!ses.done){const u=unitById(ses.u);if(u)app.append(h('div',{class:'card'},h('div',{class:'grow'},h('b',{},'Continue where you stopped'),h('div',{class:'muted',style:'font-size:15px'},`${u.title}: ${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
+  app.append(h('div',{class:'tools'},
+    h('button',{class:'tool',id:'tableBtn',on:{click:tableScreen}},h('span',{class:'ic'},'🔢'),h('span',{},h('b',{},'Times table'),h('small',{},'Tap any fact to see it and learn a way to work it out'))),
+    h('button',{class:'tool',id:'sprintBtn',on:{click:sprintHome}},h('span',{class:'ic'},'⏱'),h('span',{},h('b',{},'Quick practice'),h('small',{},'1 minute of facts. Meet or beat your goal.')))));
+  const upL=LESSONS.find(u=>!stateOf(u).done),upF=FACTSETS.find(u=>!stateOf(u).done);
+  const gl=h('div',{class:'units'});LESSONS.forEach((u,i)=>gl.append(unitCard(u,i,u===upL)));
+  const gf=h('div',{class:'units small'});FACTSETS.forEach((u,i)=>gf.append(unitCard(u,i,u===upF)));
+  app.append(h('h2',{class:'sec'},'Lessons'),h('p',{class:'secp'},upL?`Up next: ${upL.title}`:'Every lesson is mastered. Reviews keep the skills fresh.'),gl,
+    h('h2',{class:'sec'},'Fact Builder'),h('p',{class:'secp'},GRADE===2?'Learn the 2s, 10s, and 5s with a strategy for each one. Go in order.':'Learn the facts one family at a time, with a strategy for each. Go in order: later families use the earlier ones.'),gf,notes());
+  say('');
+}
+function notes(){return h('details',{},h('summary',{},'For teachers and parents: how this follows the research'),
+  h('ul',{},
+    h('li',{},'The design follows the six recommendations in the What Works Clearinghouse practice guide, Assisting Students Struggling with Mathematics: Intervention in the Elementary Grades (Fuchs and colleagues, 2021). All six are rated as having strong evidence.'),
+    h('li',{},'Systematic instruction: every lesson has 2 worked examples with a spoken think-aloud (Watch me), 2 guided problems with a prompt on every step (Try together), and 5 problems on your own with a checklist. "With pictures" uses smaller numbers, then "Numbers only" uses bigger ones. Lessons are in order, and each builds on the last.'),
+    h('li',{},'Mathematical language: each lesson starts with its key words and kid-friendly meanings, and the same words (factor, product, rows, equal groups) are used every time.'),
+    h('li',{},'Representations: equal groups, arrays, number lines, base-ten blocks, area models, bar pictures, and cube layers appear next to the number sentence. Students then move to numbers only, like the concrete-representational-abstract sequence.'),
+    h('li',{},'Number lines: skip counting, missing factors, and multiples use jumps on a number line.'),
+    h('li',{},'Word problems: students name the problem type (equal groups, array, or compare) before solving. Some problems include a number that does not help, to practice ignoring it. Two-step problems start with a plan question.'),
+    h('li',{},'Timed activities: Quick practice is short (1 minute) and comes after a strategy is taught. A chart shows past scores with a "meet or beat" goal, and each mistake is fixed right away using the strategy. A no-timer option is there for children who find the clock stressful.'),
+    h('li',{},'Strategies before speed: Woodward (2006) found that 4th graders, including students with learning disabilities, did better on later checks when strategy teaching was combined with timed practice than with timed practice alone. The Fact Builder teaches one strategy per fact family (doubles, tens, half of ten, ten take away one group, and so on).'),
+    h('li',{},'From pictures to the written method: Flores, Hinton, and Schweck (2014) taught 2-digit multiplication to students with learning disabilities by moving from base-ten blocks to drawings to numbers, with a step-by-step strategy. All four students reached mastery. The grade 4 and 5 lessons follow the same path, with a short checklist: estimate, multiply the ones, write a zero and multiply the tens, add.'),
+    h('li',{},'Mixing known and new facts: in Quick practice, about 2 of every 3 facts are ones the child already knows, mixed with 1 still being learned. This borrows from incremental rehearsal (Burns, 2005; Codding, Archer, and Connell, 2010).'),
+    h('li',{},'Fixing mistakes: a missed fact is shown with its answer, then hidden, then typed from memory, like Cover-Copy-Compare (Skinner and colleagues, 1989).'),
+    h('li',{},'Mastery and review: 4 of 5 right on the first try passes a session. A unit needs passing sessions with pictures and with numbers only. Seven days after mastery, a 5-problem review appears. A score of 3 or less unlocks a boost lesson, and reviews then space out over time.'),
+    h('li',{},'Numbers do not repeat between sessions. Each problem family remembers what it has used in this browser and picks new numbers until it runs out. Fact families are small (about 17 facts), so facts do come back in later sessions on purpose, in a new order and mix.'),
+    h('li',{},'Keep in mind: some of these studies are small (one had 4 students, another had 1). The practice guide is the strongest evidence. Use Quick practice scores to show a child their own growth, never to compare children.'),
+    h('li',{},'Progress is saved in this browser on this device.')))}
+
+function openSettings(){
+  const box=h('div',{class:'sheet',tabindex:'-1'});
+  const sw=(on,f,l)=>{const b=h('button',{class:'quiet','aria-pressed':on,'aria-label':l,on:{click(){f();b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');b.textContent=b.getAttribute('aria-pressed')==='true'?'On':'Off'}}},on?'On':'Off');return b};
+  const test=()=>say("Hi there. I'm so glad you're here. Let's learn multiplication together, one step at a time.");
+  const seg=(vals,cur,set)=>h('div',{class:'row'},vals.map(([v,l])=>h('button',{class:'quiet','aria-pressed':cur===v,on:{click(e){set(v);e.currentTarget.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===e.currentTarget))}}},l)));
+  const sel=h('select',{class:'inp','aria-label':'Choose a voice',on:{change(e){A.uri=e.target.value;store.set('uri',A.uri);test()}}},voices.map(v=>h('option',{value:v.voiceURI},v.name)));sel.value=A.uri;
+  let arm=false;const reset=h('button',{class:'quiet',on:{click(){if(!arm){arm=true;reset.textContent='Tap again to erase all progress';return}PROG={};ses=null;USED={};FST={};SPR=[];store.set('facts',FST);store.set('sprints',SPR);store.set('prog',PROG);store.set('ses',null);store.set('used',USED);close();home()}}},'Erase progress');
+  box.append(h('div',{class:'row'},h('h2',{class:'grow'},'Settings'),h('button',{class:'quiet',on:{click:close}},'Close')),
+    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Teacher voice'),sw(A.voice,()=>{A.voice=!A.voice;store.set('voice',A.voice);if(!A.voice)hush();else test()},'Teacher voice')):h('div',{class:'muted'},'This browser has no talking voice.'),
+    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):null,
+    TTS?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):null,
+    TTS&&voices.length>1?h('div',{},h('div',{class:'muted'},'Which voice'),sel):null,
+    h('div',{class:'row'},h('span',{class:'grow'},'Calm motion (no moving hand)'),sw(A.calm,()=>{A.calm=!A.calm;store.set('calm',A.calm)},'Calm motion')),
+    h('div',{},h('div',{},'Passing sessions needed in each phase'),h('div',{class:'muted',style:'font-size:15px'},'The research study used 3.'),seg([[1,'1'],[2,'2'],[3,'3']],A.need,v=>{A.need=v;store.set('need',v)})),
+    h('div',{class:'muted',style:'font-size:15px'},'Voices come from this device. If it sounds robotic, pick another one.'),reset);
+  const sh=$('#sheet');sh.innerHTML='';sh.append(box);sh.hidden=false;box.focus();
+  function close(){sh.hidden=true;if(screen==='home')home()}
+  sh.onclick=e=>{if(e.target===sh)close()};
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden){$('#sheet').hidden=true}});
+window.__T={K,UNITS,LESSONS,FACTSETS,pickProblems,isRight,show:()=>show(),get ses(){return ses},get view(){return view},start,unitById,stateOf,PROG:()=>PROG,factState,factLog,setFacts,factHelp,sprintRun,sprintHome,tableScreen,home,FST:()=>FST,SPR:()=>SPR,spoken,md};
+home();
+</script>
+</body>
+</html>
