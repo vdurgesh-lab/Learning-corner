@@ -4,63 +4,148 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Learning Corner</title>
+<script src="lc/catalog.js"></script>
+<script src="lc/nav.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
 <style>
-:root{--bg:#EEF3F6;--card:#FFFFFF;--ink:#1A2B3C;--soft:#55677A;--line:#CFDAE2;--go:#25558F;--money:#2E7D4F}
-@media (prefers-color-scheme:dark){:root{--bg:#111B24;--card:#1A2732;--ink:#E9F0F5;--soft:#A5B6C4;--line:#33444F;--go:#7FB2EA;--money:#7CDBB0;color-scheme:dark}}
+:root{--bg:#EEF3F6;--card:#FFFFFF;--ink:#1A2B3C;--soft:#55677A;--line:#CFDAE2;--go:#25558F;--go-ink:#FFFFFF;--ok:#2E7D4F;--warn:#9A3B1B;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#111B24;--card:#1A2732;--ink:#E9F0F5;--soft:#A5B6C4;--line:#33444F;--go:#7FB2EA;--go-ink:#0E1A26;--ok:#7CDBB0;--warn:#FFB59A;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Lexend",Verdana,Tahoma,sans-serif;line-height:1.5}
-main{max-width:860px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left)) 40px max(16px,env(safe-area-inset-right))}
-h1{font-size:clamp(32px,6vw,46px);margin:0 0 6px;line-height:1.15}
-p.lead{margin:0 0 28px;color:var(--soft);font-size:19px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
-a.card{display:flex;flex-direction:column;gap:8px;padding:26px;border-radius:20px;background:var(--card);border:2px solid var(--line);color:inherit;text-decoration:none;min-height:200px}
-a.card:hover,a.card:focus-visible{border-color:var(--go);outline:none;box-shadow:0 0 0 4px rgba(37,85,143,.18)}
-.icon{font-size:54px;line-height:1}
-a.card b{font-size:26px}
-a.card span{color:var(--soft);font-size:17px}
-a.card .go{margin-top:auto;font-weight:600;color:var(--go)}
-a.money .go{color:var(--money)}
-h2.sec{font-size:24px;margin:30px 0 14px}
-a.frac .go{color:#B05A00}
-@media (prefers-color-scheme:dark){a.frac .go{color:#FFC67A}}
-a.mult .go{color:#6B3FA0}
-@media (prefers-color-scheme:dark){a.mult .go{color:#C9A8F2}}
-footer{margin-top:30px;color:var(--soft);font-size:15px}
+main{max-width:900px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left)) 40px max(16px,env(safe-area-inset-right))}
+h1{font-size:clamp(30px,6vw,42px);margin:0;line-height:1.15}
+h2{margin:0;font-size:22px}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.lead{margin:4px 0 0;color:var(--soft);font-size:18px}
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:20px 0 18px}
+.who>span{color:var(--soft);font-size:16px;margin-right:4px}
+.kid{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:6px 16px 6px 8px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-size:17px;font-weight:600}
+.kid .av{font-size:28px;line-height:1}
+.kid[aria-pressed="true"]{border-color:var(--go);box-shadow:0 0 0 3px color-mix(in srgb,var(--go) 22%,transparent)}
+.kid.add{font-weight:400;color:var(--soft);padding-left:14px;text-decoration:none}
+.cont{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:var(--card);border:2px solid var(--go);text-decoration:none;margin-bottom:22px}
+.cont .ic{font-size:40px;line-height:1}
+.cont b{display:block;font-size:20px}
+.cont small{display:block;color:var(--soft);font-size:16px}
+.cont .go{margin-left:auto;background:var(--go);color:var(--go-ink);border-radius:12px;padding:10px 18px;font-weight:600;white-space:nowrap}
+.shelf{margin:0 0 24px}
+.shelf h2{display:flex;align-items:center;gap:10px;padding-left:12px;border-left:6px solid var(--sc);margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+a.card{display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:18px;background:var(--card);border:2px solid var(--line);text-decoration:none;min-height:150px}
+a.card:hover,a.card:focus-visible{border-color:var(--sc);outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 20%,transparent)}
+a.card .ic{font-size:44px;line-height:1.1}
+a.card b{font-size:22px}
+a.card small{color:var(--soft);font-size:15px}
+a.card .lab{margin-top:auto;font-weight:600;color:var(--sc);font-size:15px}
+.badge{display:inline-block;background:color-mix(in srgb,var(--sc) 14%,var(--card));color:var(--sc);border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;width:max-content}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--go);font-weight:600;text-decoration:none;font-size:16px}
+.crumb{color:var(--soft);font-size:16px;margin:16px 0 4px}
+.grades{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:18px}
+a.grade{display:flex;flex-direction:column;gap:6px;padding:20px;border-radius:18px;background:var(--card);border:2px solid var(--line);text-decoration:none;min-height:150px}
+a.grade:hover,a.grade:focus-visible{border-color:var(--sc);outline:none}
+a.grade b{font-size:30px}
+a.grade small{color:var(--soft);font-size:15px}
+a.grade.mine{border-color:var(--sc);border-width:3px}
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;color:var(--soft);font-size:15px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+.panel h2{margin-bottom:10px}
+.lrow{display:grid;grid-template-columns:1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.lrow:first-of-type{border-top:0}
+.fields{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fields input,.fields select{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:6px 10px;font-size:16px}
+.fields input{width:min(240px,100%)}
+.avs{display:flex;flex-wrap:wrap;gap:4px}
+.avs button{font-size:24px;width:44px;height:44px;border-radius:10px;border:2px solid transparent;background:transparent;padding:0}
+.avs button[aria-pressed="true"]{border-color:var(--go);background:var(--bg)}
+.btn{min-height:44px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:15px}
+.btn.main{background:var(--go);border-color:var(--go);color:var(--go-ink);font-weight:600}
+.btn.warn{color:var(--warn);border-color:var(--warn)}
+.note{color:var(--soft);font-size:15px;margin:6px 0 0}
+.saved{color:var(--ok);font-size:14px;font-weight:600;min-height:20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:560px){.cont{flex-wrap:wrap}.cont .go{margin-left:0}a.card{min-height:128px}}
 </style>
 </head>
 <body>
-<main>
-  <h1>Learning Corner</h1>
-  <p class="lead">Pick what you want to practice today.</p>
-  <div class="grid">
-    <a class="card money" href="money-time.html">
-      <div class="icon">🪙</div>
-      <b>Money Time</b>
-      <span>Coins and dollars, adding and taking away, sharing, and saving.</span>
-      <span class="go">Start Money Time</span>
-    </a>
-    <a class="card" href="story-shelf.html">
-      <div class="icon">📚</div>
-      <b>Story Shelf</b>
-      <span>30 stories with new words, questions, a lesson, and spelling.</span>
-      <span class="go">Open Story Shelf</span>
-    </a>
-  </div>
-  <h2 class="sec">Fraction Path: fractions and division</h2>
-  <div class="grid">
-    <a class="card frac" href="fractions-grade3.html"><div class="icon">🍕</div><b>Grade 3</b><span>What a fraction is, number lines, equal fractions, comparing, and division as sharing.</span><span class="go">Open Grade 3</span></a>
-    <a class="card frac" href="fractions-grade4.html"><div class="icon">🧩</div><b>Grade 4</b><span>Equivalent fractions, adding and subtracting, mixed numbers, and division with remainders.</span><span class="go">Open Grade 4</span></a>
-    <a class="card frac" href="fractions-grade5.html"><div class="icon">📐</div><b>Grade 5</b><span>Different bottom numbers, fractions as division, multiplying fractions, and 2-digit division.</span><span class="go">Open Grade 5</span></a>
-  </div>
-  <h2 class="sec">Multiplication Path</h2>
-  <div class="grid">
-    <a class="card mult" href="multiplication-grade2.html"><div class="icon">🧺</div><b>Grade 2</b><span>Equal groups, arrays, skip counting, odd and even, and the 2s, 5s, and 10s.</span><span class="go">Open Grade 2</span></a>
-    <a class="card mult" href="multiplication-grade3.html"><div class="icon">🔢</div><b>Grade 3</b><span>What multiplication means, break-apart facts, missing factors, and all the facts with strategies.</span><span class="go">Open Grade 3</span></a>
-    <a class="card mult" href="multiplication-grade4.html"><div class="icon">🧱</div><b>Grade 4</b><span>Times as many, factors and multiples, times 10s, and bigger numbers with the area model.</span><span class="go">Open Grade 4</span></a>
-    <a class="card mult" href="multiplication-grade5.html"><div class="icon">📦</div><b>Grade 5</b><span>The written method, powers of 10, decimals, volume, and two-step problems.</span><span class="go">Open Grade 5</span></a>
-  </div>
-  <footer>Progress is saved in this browser on this device.</footer>
-</main>
+<main id="app"></main>
+<script>
+'use strict';
+const app=document.getElementById('app');
+const dark=matchMedia('(prefers-color-scheme:dark)');
+const col=s=>dark.matches?s.dark:s.color;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const gname=g=>g===0?'Kindergarten':`Grade ${g}`;
+const GRADES=[[null,'Not set'],[0,'Kindergarten'],[1,'Grade 1'],[2,'Grade 2'],[3,'Grade 3'],[4,'Grade 4'],[5,'Grade 5'],[6,'Grade 6']];
+function topicHref(t){return t.grades?`#topic/${t.id}`:t.url}
+function topicLabel(t){const me=LC.current();return t.grades&&me&&me.grade!=null&&t.grades[me.grade]?`Your grade: ${me.grade}`:t.label}
+
+function home(){
+  const me=LC.current(),last=LC.last();document.title='Learning Corner';
+  let o=`<h1>Learning Corner</h1><p class="lead">Pick what you want to practice today.</p>`;
+  o+=`<div class="who" role="group" aria-label="Who's learning?"><span>Who's learning?</span>`+LC.learners().map(p=>`<button class="kid" data-kid="${p.id}" aria-pressed="${me&&p.id===me.id}"><span class="av" aria-hidden="true">${p.avatar}</span>${esc(p.name)}</button>`).join('')+
+     `<a class="kid add" href="#grownups">+ Add a learner</a></div>`;
+  if(last){const t=last.topicObj,s=LC.subject(t.subject);
+    o+=`<a class="cont" href="${esc(last.url)}" style="--sc:${col(s)}"><span class="ic" aria-hidden="true">${t.icon}</span><span><b>Keep going</b><small>${esc(t.title)}${last.grade!=null?' · '+gname(last.grade):''}</small></span><span class="go">▶ Continue</span></a>`}
+  for(const s of LC.subjects){const ts=LC.topics.filter(t=>t.subject===s.id);if(!ts.length)continue;
+    o+=`<section class="shelf" style="--sc:${col(s)}"><h2><span aria-hidden="true">${s.icon}</span>${esc(s.name)}</h2><div class="grid">`+
+      ts.map(t=>`<a class="card" href="${topicHref(t)}"><span class="ic" aria-hidden="true">${t.icon}</span><b>${esc(t.title)}</b><small>${esc(t.sub)}</small><span class="lab">${esc(topicLabel(t))}</span></a>`).join('')+`</div></section>`}
+  o+=`<footer><a class="back" href="#grownups">👪 Grown-ups</a><span>Progress is saved in this browser. Each learner has their own.</span></footer>`;
+  app.innerHTML=o;
+  app.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{LC.setCurrent(b.dataset.kid);location.reload()});
+}
+
+function topicPage(id){
+  const t=LC.topic(id);if(!t){location.hash='';return}
+  if(!t.grades){location.href=t.url;return}
+  const s=LC.subject(t.subject),me=LC.current();document.title=`${t.title} · Learning Corner`;
+  let o=`<a class="back" href="#">🏠 Learning Corner</a><div class="crumb">${esc(s.name)} › ${esc(t.title)}</div>`;
+  o+=`<h1><span aria-hidden="true">${t.icon}</span> ${esc(t.title)}</h1><p class="lead">Pick your grade.</p><div class="grades" style="--sc:${col(s)}">`;
+  o+=Object.entries(t.grades).map(([g,u])=>{const mine=me&&me.grade===+g;
+    return `<a class="grade${mine?' mine':''}" href="${esc(u)}">${mine?'<span class="badge">⭐ Your grade</span>':''}<b>${gname(+g)}</b><small>${esc((t.gradeInfo||{})[g]||'')}</small></a>`}).join('');
+  o+=`</div>`;
+  app.innerHTML=o;app.querySelector('a.grade.mine')?.focus({preventScroll:true});
+}
+
+let armed=null;
+function grownups(){
+  document.title='Grown-ups · Learning Corner';
+  const ls=LC.learners(),me=LC.current();
+  let o=`<a class="back" href="#">🏠 Learning Corner</a><h1 style="margin-top:14px">Grown-ups</h1>`;
+  o+=`<section class="panel"><h2>Learners</h2><p class="note" style="margin-top:0">Each learner has their own progress, stars, and saved spots. Kids pick their name on the home page.</p>`;
+  for(const p of ls){
+    o+=`<div class="lrow" data-id="${p.id}"><div class="fields"><label class="sr" for="n-${p.id}">Name</label><input id="n-${p.id}" data-f="name" value="${esc(p.name)}" maxlength="20" autocomplete="off">
+      <label class="sr" for="g-${p.id}">Grade</label><select id="g-${p.id}" data-f="grade">${GRADES.map(([v,l])=>`<option value="${v??''}" ${p.grade===v?'selected':''}>${l}</option>`).join('')}</select>
+      ${me&&me.id===p.id?'<span class="badge" style="--sc:var(--go)">Learning now</span>':''}</div>
+      <div class="avs" role="group" aria-label="Picture for ${esc(p.name)}">${LC.AVATARS.map(a=>`<button type="button" data-av="${a}" aria-pressed="${p.avatar===a}" aria-label="${a}">${a}</button>`).join('')}</div>
+      <div class="fields"><button class="btn warn" data-act="erase">${armed==='erase'+p.id?'Tap again to erase':'Erase progress'}</button>
+      ${ls.length>1?`<button class="btn warn" data-act="remove">${armed==='remove'+p.id?'Tap again to remove':'Remove learner'}</button>`:''}<span class="saved" aria-live="polite"></span></div></div>`}
+  o+=`</section><section class="panel"><h2>Add a learner</h2><div class="fields"><label class="sr" for="newName">Name</label><input id="newName" placeholder="Name" maxlength="20" autocomplete="off">
+     <label class="sr" for="newGrade">Grade</label><select id="newGrade">${GRADES.map(([v,l])=>`<option value="${v??''}">${l}</option>`).join('')}</select>
+     <button class="btn main" id="addBtn">Add learner</button></div><p class="note" id="addMsg"></p></section>`;
+  o+=`<section class="panel"><h2>Good to know</h2><p class="note" style="margin-top:0">Progress is saved in this browser on this device. A different computer, browser, or private window starts fresh.</p>
+     <p class="note">Each lesson page has a "For teachers and parents" section that explains the research it follows.</p>
+     <p class="note">To add a new topic to this home page, add one entry to <code>lc/catalog.js</code>. The shelves and grade pickers update on their own.</p></section>`;
+  app.innerHTML=o;
+  app.querySelectorAll('.lrow').forEach(row=>{const id=row.dataset.id,msg=row.querySelector('.saved');const ok=()=>{msg.textContent='Saved';setTimeout(()=>msg.textContent='',1500)};
+    row.querySelector('[data-f=name]').onchange=e=>{LC.update(id,{name:e.target.value});ok()};
+    row.querySelector('[data-f=grade]').onchange=e=>{LC.update(id,{grade:e.target.value===''?null:+e.target.value});ok()};
+    row.querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>{LC.update(id,{avatar:b.dataset.av});row.querySelectorAll('[data-av]').forEach(x=>x.setAttribute('aria-pressed',x===b));ok()});
+    row.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const k=b.dataset.act+id;
+      if(armed!==k){armed=k;grownups();setTimeout(()=>{if(armed===k){armed=null;if(location.hash==='#grownups')grownups()}},4000);return}
+      armed=null;
+      if(b.dataset.act==='erase'){LC.erase(id);grownups();app.querySelector(`[data-id="${id}"] .saved`).textContent='Progress erased'}
+      else{const was=LC.current()?.id===id;LC.remove(id);if(was)location.reload();else grownups()}})});
+  const nm=document.getElementById('newName'),am=document.getElementById('addMsg');
+  document.getElementById('addBtn').onclick=()=>{if(!nm.value.trim()){am.textContent='Type a name first.';nm.focus();return}
+    const g=document.getElementById('newGrade').value;const p=LC.add(nm.value,null,g===''?null:+g);armed=null;grownups();document.getElementById('addMsg').textContent=`Added ${p.name}. They can pick their name on the home page.`};
+  nm.oninput=()=>{am.textContent=''};
+}
+
+function route(){const h=location.hash.slice(1);window.scrollTo(0,0);
+  if(h.startsWith('topic/'))topicPage(h.slice(6));else if(h==='grownups')grownups();else home()}
+addEventListener('hashchange',route);dark.addEventListener('change',route);route();
+</script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"></head><body style="margin:0"><title>Story Shelf</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><script src="lc/catalog.js"></script><script src="lc/nav.js"></script></head><body style="margin:0"><title>Story Shelf</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap">
@@ -325,7 +325,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden
 /* ---------- shelf ---------- */
 let filter={topic:'All',q:''},tab='stories';
 function topBar(){
-  return h('div',{class:'top'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),h('h1',{class:'grow'},'Story Shelf'),
+  return h('div',{class:'top'},h('a',{class:'quiet lc',href:'index.html','aria-label':'Learning Corner'},'🏠',h('span',{class:'lw'},' Learning Corner')),window.LC&&LC.chipEl?LC.chipEl('quiet'):null,h('h1',{class:'grow'},'Story Shelf'),
     h('div',{class:'tabs'},
       h('button',{class:'quiet','aria-pressed':tab==='stories',on:{click(){tab='stories';location.hash='';route()}}},'Stories'),
       h('button',{class:'quiet','aria-pressed':tab==='words',on:{click(){location.hash='words'}}},'All words'),
@@ -352,7 +352,7 @@ function shelf(){
   const recent=Object.entries(spots).filter(([id])=>byId(id)).sort((a,b)=>b[1].at-a[1].at).slice(0,3);
   const cont=recent.length?h('div',{style:'margin-bottom:8px'},h('h2',{style:'margin-bottom:8px'},'Continue reading'),recent.map(([id,sp])=>h('div',{class:'spotrow'},h('div',{class:'t'},h('b',{},byId(id).title),h('small',{},where(sp))),
     h('button',{class:'btn main contbtn',on:{click(){location.hash='story-'+id}}},'▶ Continue'),h('button',{class:'quiet',on:{click(){delete spots[id];saveProgress();shelf()}}},'Start over')))):null;
-  app.append(topBar(),cont,h('p',{class:'muted',style:'margin:0 0 10px'},`${count} of ${all.length} stories read. Each one takes about 10 minutes.`),search,chips,list,
+  app.append(topBar(),...(cont?[cont]:[]),h('p',{class:'muted',style:'margin:0 0 10px'},`${count} of ${all.length} stories read. Each one takes about 10 minutes.`),search,chips,list,
     h('p',{style:'margin-top:22px'},h('button',{class:'quiet',on:{click(){location.hash='add'}}},'Grown-ups: add a story')));
   draw();
 }
