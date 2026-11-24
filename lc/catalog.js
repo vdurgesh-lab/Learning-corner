@@ -4,7 +4,8 @@
    - subject: one of the SUBJECTS ids
    - url: for a topic with one page
    - grades: {grade: page} for a topic with one page per grade (gets a grade picker)
-   - label: short text under the title (grade range or ages) */
+   - label: short text under the title (grade range or ages)
+   - related: optional list of topic ids shown as "Also try" on a topic's grade picker */
 window.LC_SUBJECTS=[
   {id:'math',name:'Math',icon:'🔢',color:'#6B3FA0',dark:'#C9A8F2'},
   {id:'reading',name:'Reading',icon:'📖',color:'#25558F',dark:'#7FB2EA'},
@@ -18,7 +19,10 @@ window.LC_TOPICS=[
   {id:'fractions',subject:'math',title:'Fractions',icon:'🍕',label:'Grades 3–5',
    sub:'Parts of a whole, comparing, adding, and division',
    grades:{3:'fractions-grade3.html',4:'fractions-grade4.html',5:'fractions-grade5.html'},
-   gradeInfo:{3:'What a fraction is, number lines, equal fractions, sharing',4:'Equivalent fractions, adding, mixed numbers, remainders',5:'Different bottom numbers, multiplying, 2-digit division'}},
+   gradeInfo:{3:'What a fraction is, number lines, equal fractions, sharing',4:'Equivalent fractions, adding, mixed numbers, remainders',5:'Different bottom numbers, multiplying, 2-digit division'},
+   related:['fraction-steps']},
+  {id:'fraction-steps',subject:'math',title:'Fraction Steps',icon:'🪜',label:'Grades 3–5',
+   sub:'One small step at a time: equal parts, sharing, number lines, adding and subtracting',url:'fraction-steps.html'},
   {id:'story-shelf',subject:'reading',title:'Story Shelf',icon:'📚',label:'Grade 3',
    sub:'30 stories with new words, questions, and spelling',url:'story-shelf.html'},
   {id:'money-time',subject:'life',title:'Money Time',icon:'🐷',label:'Ages 5–8',

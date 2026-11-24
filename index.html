@@ -105,6 +105,8 @@ function topicPage(id){
   o+=Object.entries(t.grades).map(([g,u])=>{const mine=me&&me.grade===+g;
     return `<a class="grade${mine?' mine':''}" href="${esc(u)}">${mine?'<span class="badge">⭐ Your grade</span>':''}<b>${gname(+g)}</b><small>${esc((t.gradeInfo||{})[g]||'')}</small></a>`}).join('');
   o+=`</div>`;
+  const rel=(t.related||[]).map(LC.topic).filter(Boolean);
+  if(rel.length)o+=`<h2 style="margin:26px 0 12px">Also try</h2><div class="grid" style="--sc:${col(s)}">`+rel.map(r=>`<a class="card" href="${topicHref(r)}"><span class="ic" aria-hidden="true">${r.icon}</span><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><span class="lab">${esc(r.label)}</span></a>`).join('')+`</div>`;
   app.innerHTML=o;app.querySelector('a.grade.mine')?.focus({preventScroll:true});
 }
 
