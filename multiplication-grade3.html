@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lc/catalog.js"></script><script src="lc/nav.js"></script>
+<script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script>
 <title>Multiplication Path Grade 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
@@ -163,6 +163,11 @@ details li{margin:6px 0}
 .fbx svg{max-width:100%;height:auto}
 .dots .d{fill:var(--go)}
 .pt.xtra{background:var(--try-bg);color:var(--try)}
+.natv{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.natv .note{font-size:15px;color:var(--soft);margin:0}
+.pbar{height:10px;border-radius:999px;background:var(--chip);overflow:hidden;width:100%}
+.pbar i{display:block;height:100%;background:var(--go);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.pbar i{transition:none}}
 /* boards */
 .board{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
 .btitle{font-size:15px;color:var(--soft);text-align:center;margin-bottom:4px}
@@ -348,18 +353,30 @@ let voices=[];
 function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===A.uri))A.uri=voices[0].voiceURI}
 if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
 let sq=[],sbusy=false,srun=0,waiters=[];
-function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();const w=waiters;waiters=[];w.forEach(f=>f())}
+const natural=()=>!!(window.LCVoice&&LCVoice.active());
+const natSpeed=()=>A.slow?.85:.95;
+function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();if(window.LCVoice)LCVoice.stop();const w=waiters;waiters=[];w.forEach(f=>f())}
 function pump(run){
   if(run!==srun||sbusy)return;
   if(!sq.length){const w=waiters;waiters=[];w.forEach(f=>f());return}
-  sbusy=true;const text=sq.shift();
-  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=A.slow?.78:.92;u.pitch=1;u.volume=Math.max(.05,A.vol/100);
-  const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
-  let once=false;const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
-  const t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume();
+  sbusy=true;const text=sq.shift();let t=null,once=false;
+  const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
+  const device=()=>{if(!TTS){done();return}
+    const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=A.slow?.78:.92;u.pitch=1;u.volume=Math.max(.05,A.vol/100);
+    const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
+    t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume()};
+  if(natural())LCVoice.speakPart(text,{speed:natSpeed(),volume:A.vol/100}).then(done,()=>{if(run===srun)device()});
+  else device();
 }
+const sents=t=>spoken(t).split(/(?<=[.?])\s+/).map(x=>x.trim()).filter(Boolean);
+function prefetchLines(lines){if(natural())LCVoice.prefetch(lines.filter(Boolean).flatMap(sents),{speed:natSpeed()})}
+function prefetchCommon(){prefetchLines([...PRAISE,"Watch me first. I will show you each step and say what I am thinking.","Here is one more. Watch each step.","Let's do this one together.",
+  'Your turn. Use your checklist. Tap Help if you get stuck.','Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.',
+  "Not quite. That's okay. Look at your checklist and try once more.",'Not quite. Look at your checklist and try again.',"Hmm, not quite. That's okay.",'Yes, you fixed it.',
+  'You are still learning this, and that is okay.','Here is one more like the one that was tricky. You can do this.'])}
+if(window.LCVoice){LCVoice.onChange(st=>{if(st.state==='ready')prefetchCommon()});if(LCVoice.active())setTimeout(prefetchCommon,0)}
 function say(text,{queue=false}={}){return new Promise(res=>{
-  if(!TTS||!A.voice||!text){res();return}
+  if((!TTS&&!natural())||!A.voice||!text){res();return}
   if(!queue)hush();
   const parts=spoken(text).split(/(?<=[.?])\s+/).map(x=>x.trim()).filter(Boolean);
   if(!parts.length){res();return}
@@ -994,6 +1011,9 @@ let view=null;
 function readAloud(){if(!view)return;const t=[view.prob.q,view.prob.eq,view.bubbleText].filter(Boolean).join('. ');hush();say(t)}
 function buildView(u,p,ph,mode){
   const prob=K[u.kind].make(p,ph);
+  if(natural()){const S=prob.steps,last=S[S.length-1];
+    prefetchLines(mode==='watch'?[...S.map(x=>x.think),'So the answer is '+ansText(last.input)+'. '+prob.explain]
+      :mode==='together'?[...S.map(x=>x.prompt),prob.explain,...S.map(x=>x.cue)]:[prob.explain,...S.map(x=>x.cue)])}
   const work=h('div',{class:'work'}),bubble=h('div',{class:'bubble','aria-live':'polite'},h('div',{class:'who','aria-hidden':'true'},'🧑‍🏫'),h('div',{class:'txt'}));
   const list=h('ol');const check=h('div',{class:'check'},h('h2',{},mode==='own'?'My checklist: tap each step when you do it':'Steps'),list);
   prob.list.forEach((t,i)=>{const n=mode==='own'?h('button',{class:'n',type:'button','aria-label':`Mark step ${i+1} done`},String(i+1)):h('span',{class:'n'},String(i+1));
@@ -1303,7 +1323,8 @@ function home(){
   if(live){const u=unitById(ses.u);app.append(h('div',{class:'upnext'},h('div',{},h('div',{class:'k'},'Continue where you stopped'),h('b',{},u.title),h('small',{},`${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
   const due=UNITS.find(u=>stateOf(u).chip==='due'),upL=LESSONS.find(u=>!stateOf(u).done),upF=FACTSETS.find(u=>!stateOf(u).done),nx=due||upL||upF;
   if(!live&&nx){const st=stateOf(nx);app.append(h('div',{class:'upnext'},h('div',{},h('div',{class:'k'},due?(st.next.mode==='review'?'Review is ready':'Boost practice'):'Up next'),h('b',{},nx.title),h('small',{},`${nx.sub}. ${st.label}.`)),h('button',{class:'btn main',id:'upBtn',on:{click:()=>intro(nx)}},'Start')))}
-  app.append(h('div',{class:'minitools'},h('button',{class:'quiet',id:'tableBtn',on:{click:tableScreen}},'🔢 Times table'),h('button',{class:'quiet',id:'sprintBtn',on:{click:sprintHome}},'⏱ Quick practice')));
+  app.append(h('div',{class:'minitools'},h('button',{class:'quiet',id:'tableBtn',on:{click:tableScreen}},'🔢 Times table'),h('button',{class:'quiet',id:'sprintBtn',on:{click:sprintHome}},'⏱ Quick practice'),
+    window.LCVoice&&LCVoice.supported()?h('button',{class:'quiet',id:'voiceBtn',on:{click:openSettings}},natural()?'🎧 Natural voice: on':'🎧 Natural voice'):null));
   app.append(h('h2',{class:'sec'},'Lessons'),h('ol',{class:'list'},LESSONS.map((u,i)=>lrow(u,i,u===upL))),
     h('h2',{class:'sec'},'Fact Builder'),h('p',{class:'secp'},GRADE===2?'Learn the 2s, 10s, and 5s with a strategy for each. Go in order.':'Learn the facts one family at a time, with a strategy for each. Go in order: later families use the earlier ones.'),
     h('ol',{class:'list two'},FACTSETS.map((u,i)=>lrow(u,i,u===upF))),notes());
@@ -1327,6 +1348,7 @@ function notes(){return h('details',{},h('summary',{},'For teachers and parents:
     h('li',{},`Mastery and review: ${OWN_PASS} of ${OWN_N} right on the first try passes a session. A unit needs passing sessions with pictures and with numbers only. Seven days after mastery, a ${REVIEW_N}-problem review appears. Fewer than ${REVIEW_PASS} right unlocks a boost lesson, and reviews then space out over time.`),
     h('li',{},'Questions do not repeat. Each lesson remembers the problems it has used for each learner in this browser and picks new ones, including new stories and pictures for the same skill, until it has used them all. Fact families ask each fact in several ways (a number sentence, an equal-groups story, an array story, and from grade 3 a missing factor), so a fact comes back on purpose, but as a different question.'),
     h('li',{},'Keep in mind: some of these studies are small (one had 4 students, another had 1). The practice guide is the strongest evidence. Use Quick practice scores to show a child their own growth, never to compare children.'),
+    h('li',{},'Voice: the optional natural voice (Kokoro, voice "Heart", open source) is made inside the browser, so no text is sent anywhere. It downloads once (about 92 MB). Slow and calm speed is the default, with pauses between sentences. Reading aloud supports children who find reading the problems hard.'),
     h('li',{},'Progress is saved in this browser on this device, separately for each learner.')))}
 
 function openSettings(){
@@ -1335,17 +1357,31 @@ function openSettings(){
   const test=()=>say("Hi there. I'm so glad you're here. Let's learn multiplication together, one step at a time.");
   const seg=(vals,cur,set)=>h('div',{class:'row'},vals.map(([v,l])=>h('button',{class:'quiet','aria-pressed':cur===v,on:{click(e){set(v);e.currentTarget.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===e.currentTarget))}}},l)));
   const sel=h('select',{class:'inp','aria-label':'Choose a voice',on:{change(e){A.uri=e.target.value;store.set('uri',A.uri);test()}}},voices.map(v=>h('option',{value:v.voiceURI},v.name)));sel.value=A.uri;
+  const V=window.LCVoice,natOK=!!(V&&V.supported()),talk=TTS||natOK;let offV=null;
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const nat=h('div',{class:'natv'});
+  const drawNat=()=>{nat.innerHTML='';nat.append(h('div',{class:'row'},h('b',{class:'grow'},'Natural voice'),natural()?h('span',{class:'chip ok'},'On'):null));
+    if(!natOK){nat.append(h('p',{class:'note'},'This browser cannot run the natural voice, so the device voice is used.'));return}
+    const st=V.state,pc=Math.round(V.progress*100);
+    if(V.wanted()&&st==='loading'){nat.append(h('p',{class:'note'},`Getting the voice ready: ${pc}%. You can keep learning. The device voice is used until it is ready.`),h('div',{class:'pbar',role:'progressbar','aria-valuenow':pc,'aria-valuemin':0,'aria-valuemax':100,'aria-label':'Natural voice download'},h('i',{style:`width:${pc}%`})));return}
+    if(V.wanted()&&st==='error'){nat.append(h('p',{class:'note'},'The natural voice could not load on this device, so the device voice is used.'),h('div',{class:'row'},h('button',{class:'quiet',on:{click(){V.enable();drawNat()}}},'Try again'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice')));return}
+    if(natural()){nat.append(h('p',{class:'note'},'A calm voice made right on this device. On older computers it may pause for a moment before some sentences.'+(ios?' On iPhone and iPad, turn off silent mode to hear it.':'')),
+      h('div',{class:'row'},h('button',{class:'quiet',on:{click:test}},'▶ Hear it'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice instead')));return}
+    nat.append(h('p',{class:'note'},`A calm, natural voice that sounds the same on every device. It downloads once (about ${V.sizeMB} MB), then also works offline. Best on Wi-Fi.`),
+      h('button',{class:'btn main',on:{click(){V.enable();drawNat()}}},'Turn on natural voice'))};
+  drawNat();if(V)offV=V.onChange(drawNat);
   let arm=false;const reset=h('button',{class:'quiet',on:{click(){if(!arm){arm=true;reset.textContent='Tap again to erase all progress';return}PROG={};ses=null;USED={};FST={};SPR=[];store.set('facts',FST);store.set('sprints',SPR);store.set('prog',PROG);store.set('ses',null);store.set('used',USED);close();home()}}},'Erase progress');
   box.append(h('div',{class:'row'},h('h2',{class:'grow'},'Settings'),h('button',{class:'quiet',on:{click:close}},'Close')),
-    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Teacher voice'),sw(A.voice,()=>{A.voice=!A.voice;store.set('voice',A.voice);if(!A.voice)hush();else test()},'Teacher voice')):h('div',{class:'muted'},'This browser has no talking voice.'),
-    TTS?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):null,
-    TTS?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):null,
-    TTS&&voices.length>1?h('div',{},h('div',{class:'muted'},'Which voice'),sel):null,
+    talk?h('div',{class:'row'},h('span',{class:'grow'},'Teacher voice'),sw(A.voice,()=>{A.voice=!A.voice;store.set('voice',A.voice);if(!A.voice)hush();else test()},'Teacher voice')):h('div',{class:'muted'},'This browser has no talking voice.'),
+    natOK||TTS?nat:'',
+    talk?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):'',
+    talk?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):'',
+    TTS&&voices.length>1&&!natural()?h('div',{},h('div',{class:'muted'},'Which device voice'),sel):'',
     h('div',{class:'row'},h('span',{class:'grow'},'Calm motion (no moving hand)'),sw(A.calm,()=>{A.calm=!A.calm;store.set('calm',A.calm)},'Calm motion')),
     h('div',{},h('div',{},'Passing sessions needed in each phase'),h('div',{class:'muted',style:'font-size:15px'},'The research study used 3.'),seg([[1,'1'],[2,'2'],[3,'3']],A.need,v=>{A.need=v;store.set('need',v)})),
-    h('div',{class:'muted',style:'font-size:15px'},'Voices come from this device. If it sounds robotic, pick another one.'),reset);
+    natural()?'':h('div',{class:'muted',style:'font-size:15px'},'Device voices come from this device. If it sounds robotic, turn on the natural voice.'),reset);
   const sh=$('#sheet');sh.innerHTML='';sh.append(box);sh.hidden=false;box.focus();
-  function close(){sh.hidden=true;if(screen==='home')home()}
+  function close(){sh.hidden=true;if(offV)offV();if(screen==='home')home()}
   sh.onclick=e=>{if(e.target===sh)close()};
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden){$('#sheet').hidden=true}});
