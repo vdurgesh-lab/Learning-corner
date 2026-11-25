@@ -45,11 +45,20 @@
 
   /* ---------- audio ---------- */
   let ctx=null,cur=null,runId=0;
-  function audio(){if(!ctx){const C=window.AudioContext||window.webkitAudioContext;ctx=new C()}if(ctx.state==='suspended')ctx.resume().catch(()=>{});return ctx}
-  ['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{if(state!=='off')audio()},{passive:true}));
+  function audio(){if(!ctx){const C=window.AudioContext||window.webkitAudioContext;ctx=new C()}if(ctx.state!=='running')ctx.resume().catch(()=>{});return ctx}
+  /* Safari (Mac, iPhone, iPad) only lets sound start inside a click, a finished touch, or a key press.
+     Unlock on those events (before the page's own handlers run) by playing a tiny silent sound. */
+  let unlocked=false;
+  function unlock(){if(state==='off')return;let c;try{c=audio()}catch(e){return}
+    if(!unlocked){try{const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);s.start(0);unlocked=true}catch(e){}}}
+  ['click','touchend','keydown','mousedown','pointerup'].forEach(ev=>addEventListener(ev,unlock,{passive:true,capture:true}));
+  /* wait briefly for sound to be allowed; if it is not, the page uses the device voice for this sentence instead of playing silence */
+  async function running(){const c=audio();if(c.state==='running')return c;
+    for(let i=0;i<6&&c.state!=='running';i++){try{await Promise.race([c.resume(),new Promise(r=>setTimeout(r,60))])}catch(e){}}
+    if(c.state!=='running')throw new Error('Sound is blocked until the page is tapped.');return c}
   function trim(pcm,sr){const th=.004,pad=Math.round(sr*.04);let a=0,b=pcm.length-1;while(a<b&&Math.abs(pcm[a])<th)a++;while(b>a&&Math.abs(pcm[b])<th)b--;
     return pcm.subarray(Math.max(0,a-pad),Math.min(pcm.length,b+pad))}
-  function play(pcm,sr,vol){return new Promise(res=>{const c=audio(),buf=c.createBuffer(1,pcm.length,sr);buf.copyToChannel(pcm,0);
+  async function play(pcm,sr,vol){const c=await running();return new Promise(res=>{const buf=c.createBuffer(1,pcm.length,sr);buf.copyToChannel(pcm,0);
     const src=c.createBufferSource(),g=c.createGain(),t0=c.currentTime,dur=pcm.length/sr,v=Math.max(.05,Math.min(1,vol??.85));
     g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.012);g.gain.setValueAtTime(v,t0+Math.max(.012,dur-.02));g.gain.linearRampToValueAtTime(0,t0+dur);
     src.buffer=buf;src.connect(g);g.connect(c.destination);let done=false;const fin=()=>{if(done)return;done=true;if(cur===src)cur=null;res()};
