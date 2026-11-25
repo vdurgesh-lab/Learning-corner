@@ -1409,7 +1409,8 @@ function openSettings(){
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   const nat=h('div',{class:'natv'});
   const drawNat=()=>{nat.innerHTML='';nat.append(h('div',{class:'row'},h('b',{class:'grow'},'Natural voice'),natural()?h('span',{class:'chip ok'},'On'):null));
-    if(!natOK){nat.append(h('p',{class:'note'},'This browser cannot run the natural voice, so the device voice is used.'));return}
+    if(!natOK){nat.append(h('p',{class:'note'},'This browser cannot run the natural voice, so the device voice is used. Open this page in Chrome or Firefox to use it.'));return}
+    nat.append(h('p',{class:'note',style:'color:var(--go);font-weight:600'},V.browserTip()));
     const st=V.state,pc=Math.round(V.progress*100);
     if(V.wanted()&&st==='loading'){nat.append(h('p',{class:'note'},`Getting the voice ready: ${pc}%. You can keep learning. The device voice is used until it is ready.`),h('div',{class:'pbar',role:'progressbar','aria-valuenow':pc,'aria-valuemin':0,'aria-valuemax':100,'aria-label':'Natural voice download'},h('i',{style:`width:${pc}%`})));return}
     if(V.wanted()&&st==='error'){nat.append(h('p',{class:'note'},'The natural voice could not load on this device, so the device voice is used.'),h('p',{class:'note',style:'font-size:13px'},'Details: '+(V.error||'unknown')),h('div',{class:'row'},h('button',{class:'quiet',on:{click(){V.enable();drawNat()}}},'Try again'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice')));return}

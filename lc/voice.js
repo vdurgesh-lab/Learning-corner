@@ -168,7 +168,8 @@
         if(run!==runId)return;
         if(i<list.length-1)await new Promise(r=>setTimeout(r,/\?\s*$/.test(x.src)?480:300))}},
     /* A settings section any page can show: turn on, progress, errors, test. test() should speak through the page. */
-    panel({test}={}){return panel(test)}
+    panel({test}={}){return panel(test)},
+    browserTip(){return browserTip()}
   };
   /* split text at sentence ends, keeping where each piece starts in the original */
   function segments(raw){const out=[];let st=0,m;const re=/[.?!]+["”')]*\s+/g;
@@ -178,12 +179,15 @@
   function words(x,dur,cb,run){const ws=[];let m;const re=/\S+/g;while((m=re.exec(x.src)))ws.push({i:x.off+m.index,w:m[0].replace(/[^\p{L}\p{N}]/gu,'').length+2+(/[,;:]$/.test(m[0])?3:0)});
     const tot=ws.reduce((s,a)=>s+a.w,0)||1;let acc=0;
     for(const a of ws){const t=dur*acc/tot*1000;acc+=a.w;setTimeout(()=>{if(run===runId)cb(a.i)},t)}}
+  /* ---------- which browser works best ---------- */
+  const isSafari=()=>{const u=navigator.userAgent;return /Safari\//.test(u)&&!/Chrome|Chromium|CriOS|FxiOS|Firefox|Edg|OPR|Android/.test(u)};
+  function browserTip(){return isSafari()?'Tip: the natural voice works best in Chrome or Firefox. In Safari it can be slow or silent. For the best sound, open this page in Chrome or Firefox.':'The natural voice works best in Chrome or Firefox.'}
   /* ---------- shared settings section ---------- */
   function panel(test){
     if(!document.getElementById('lcv-css')){const st=document.createElement('style');st.id='lcv-css';st.textContent=
       '.lcv{display:grid;gap:8px;padding:12px 14px;border:2px solid #d5dee8;border-radius:12px;background:#f6f9fc;font-size:16px;line-height:1.4;text-align:left}'+
       '.lcv .lcv-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}.lcv .lcv-on{background:#e1f4e7;color:#1d6e3f;border-radius:99px;padding:1px 10px;font-size:14px;font-weight:600}'+
-      '.lcv p{margin:0;color:#4a5568;font-size:15px}.lcv .lcv-row{display:flex;flex-wrap:wrap;gap:8px}'+
+      '.lcv p{margin:0;color:#4a5568;font-size:15px}.lcv p.lcv-tip{color:#2c5c94;font-weight:600}.lcv .lcv-row{display:flex;flex-wrap:wrap;gap:8px}'+
       '.lcv button{font:inherit;font-size:16px;min-height:44px;padding:6px 14px;border-radius:10px;border:2px solid #2c5c94;background:#fff;color:#2c5c94;cursor:pointer}'+
       '.lcv button.lcv-main{background:#2c5c94;color:#fff}.lcv button:focus-visible{outline:3px solid #f5c542;outline-offset:2px}'+
       '.lcv .lcv-bar{height:10px;border-radius:99px;background:#e2e8f0;overflow:hidden}.lcv .lcv-bar i{display:block;height:100%;background:#2f855a;transition:width .3s}';
@@ -192,7 +196,8 @@
     const E=(t,a,...k)=>{const e=document.createElement(t);for(const n in a||{}){if(n==='class')e.className=a[n];else if(n==='onclick')e.onclick=a[n];else e.setAttribute(n,a[n])}e.append(...k.filter(x=>x!=null));return e};
     const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     const draw=()=>{el.textContent='';el.append(E('div',{class:'lcv-h'},'Natural voice',LCVoice.active()?E('span',{class:'lcv-on'},'On'):null));
-      if(!supported()){el.append(E('p',{},'This browser cannot run the natural voice, so the device voice is used.'));return}
+      if(!supported()){el.append(E('p',{},'This browser cannot run the natural voice, so the device voice is used. Open this page in Chrome or Firefox to use it.'));return}
+      el.append(E('p',{class:'lcv-tip'},browserTip()));
       const pc=Math.round(progress*100);
       if(LCVoice.wanted()&&state==='loading'){el.append(E('p',{},`Getting the voice ready: ${pc}%. You can keep going. The device voice is used until it is ready.`),
         E('div',{class:'lcv-bar',role:'progressbar','aria-valuenow':pc,'aria-valuemin':0,'aria-valuemax':100,'aria-label':'Natural voice download'},E('i',{style:`width:${pc}%`})));return}
