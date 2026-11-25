@@ -108,7 +108,16 @@ details li{margin:6px 0}
 .foot .main{margin-left:auto;min-width:180px}
 .shake{animation:shake .35s}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-#hand{position:fixed;left:-80px;top:-80px;font-size:42px;pointer-events:none;z-index:60;transition:left .45s ease,top .45s ease;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+/* Watch me: the part being worked on gets a soft outline, and new numbers are written into place */
+.spot{outline:3px solid #F5C542;outline-offset:6px;border-radius:12px}
+.wr{animation:wr 1.3s ease-out both,hl 3s ease-out}
+.fadein{animation:fadein 1.2s ease-out both}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s ease-in-out forwards}
+.ch{display:inline-block;white-space:pre;animation:wr .55s ease-out both}
+@keyframes wr{from{-webkit-clip-path:inset(0 100% 0 0);clip-path:inset(0 100% 0 0)}to{-webkit-clip-path:inset(0 0 0 0);clip-path:inset(0 0 0 0)}}
+@keyframes hl{from{background-color:#FFE98A}to{background-color:transparent}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes draw{to{stroke-dashoffset:0}}
 
 /* sheets */
 #sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,20,30,.45)}
@@ -132,7 +141,7 @@ details li{margin:6px 0}
   .foot .main{min-width:0;flex:1 1 auto}
   .top .trail{width:100%}
 }
-@media (prefers-reduced-motion:reduce){#hand{transition:none}.shake{animation:none}}
+@media (prefers-reduced-motion:reduce){.wr,.fadein,.ch,.shake{animation:none}.draw{animation:none;stroke-dashoffset:0}}
 .navb{gap:5px}
 .upnext{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--page);border:2px solid var(--go);border-radius:18px;padding:16px 18px;margin:4px 0 12px}
 .upnext .k{font-size:15px;font-weight:600;color:var(--go)}
@@ -326,7 +335,6 @@ body.at-home #navHome{display:none}
 <body>
 <nav id="nav" aria-label="Go to"><a class="navb" href="index.html">🏠 Learning Corner</a><button class="navb" id="navHome" type="button">🔢 Multiplication<span class="nw"> home</span></button></nav>
 <div id="app"></div>
-<div id="hand" aria-hidden="true">👆</div>
 <div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Settings"></div>
 <script>
 'use strict';
@@ -403,7 +411,7 @@ function boardHTML(sp,si,live){
       const body=`<div class="pi" style="grid-template-columns:repeat(${sp.n?cols:1},auto)">${inner}</div><div class="ptag">${on?'= '+(i+1)*sp.n:sp.tag||''}</div>`;
       o+=can?`<button type="button" class="plate${on?' on':''}" data-s="${si}" data-g="${i}" aria-label="${lab[0]} ${i+1}">${body}</button>`:`<div class="plate${on?' on':''}">${body}</div>`}
     o+='</div>';
-    if(sp.counted)o+=`<div class="count">Count: ${Array.from({length:sp.counted},(_,i)=>(i+1)*sp.n).join(', ')}</div>`;
+    if(sp.counted)o+=`<div class="count tally">Count: ${Array.from({length:sp.counted},(_,i)=>`<span class="cn">${(i+1)*sp.n}</span>`).join(', ')}</div>`;
     if(can&&sp.counted)o+=resetBtn(si);
     return o}
   case 'array':{const{r,c}=sp,M=Math.max(r,c),ds=M<=5?26:M<=8?21:17;
@@ -423,13 +431,13 @@ function boardHTML(sp,si,live){
       const el=canRow?`<button type="button" class="${cls}" style="--c:${col}" data-s="${si}" data-row="${i}" aria-label="row ${i+1}">${dots}</button>`:`<div class="${cls}" style="--c:${col}">${dots}</div>`;
       o+=`<div class="arow"><span class="rn">${i+1}</span>${el}<span class="atag">${md(tag)}</span></div>`}
     o+='</div>';
-    if(sp.counted)o+=`<div class="count">Count: ${Array.from({length:sp.counted},(_,i)=>(i+1)*c).join(', ')}</div>`;
+    if(sp.counted)o+=`<div class="count tally">Count: ${Array.from({length:sp.counted},(_,i)=>`<span class="cn">${(i+1)*c}</span>`).join(', ')}</div>`;
     if(canRow&&sp.counted)o+=resetBtn(si);
     if(canCut)o+=`<div class="muted" style="font-size:15px">Tap a dashed line to cut the array.</div>`;
     return o}
   case 'jumps':{const W=700,x0=34,x1=666,y=96,mx=sp.max,X=v=>x0+(x1-x0)*v/mx,from=sp.from||0,st=sp.step,hops=sp.hops||0;
     let s=`<svg class="lineb" viewBox="0 0 ${W} 150" role="img" aria-label="number line from 0 to ${mx}">`;
-    for(let k=1;k<=hops;k++){const a=X(from+(k-1)*st),b=X(from+k*st);s+=`<path d="M${a} ${y-4} Q${(a+b)/2} ${y-56} ${b} ${y-4}" style="fill:none;stroke:var(--go);stroke-width:3"/>`;
+    for(let k=1;k<=hops;k++){const a=X(from+(k-1)*st),b=X(from+k*st);s+=`<path pathLength="1" d="M${a} ${y-4} Q${(a+b)/2} ${y-56} ${b} ${y-4}" style="fill:none;stroke:var(--go);stroke-width:3"/>`;
       if(hops<=12&&b-a>34)s+=`<text x="${(a+b)/2}" y="${y-36}" text-anchor="middle" font-size="16" style="fill:var(--go)">+${st}</text>`}
     s+=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" style="stroke:var(--ink);stroke-width:3"/>`;
     if(mx<=40)for(let v=0;v<=mx;v++)s+=`<line x1="${X(v)}" y1="${y-7}" x2="${X(v)}" y2="${y+7}" style="stroke:var(--ink);stroke-width:1.5"/>`;
@@ -992,8 +1000,28 @@ const PRAISE=['Yes, that is right.','Nice thinking.','You got it.','Great work.'
 let ctx=null,STALE={};
 function newCtx(){document.body.classList.remove('at-home');const tok={};ctx=tok;return{get alive(){return ctx===tok},wait(ms){return new Promise((res,rej)=>setTimeout(()=>ctx===tok?res():rej(STALE),ms*FAST()))}}}
 const guard=p=>Promise.resolve(p).catch(e=>{if(e!==STALE)throw e});
-async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getBoundingClientRect();hd.style.left=(r.left+r.width/2-10)+'px';hd.style.top=(r.top+Math.min(r.height/2,80))+'px';await c.wait(520)}
-function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
+/* Watch me pacing (ms). Slow voice setting = slower examples. */
+const PACE=()=>{const k=(A.slow?1:.75)*FAST();return{look:900*k,piece:1500*k,ch:330*k,after:1200*k,step:1900*k}};
+async function pointAt(el,c){if(!el)return;el.classList.add('spot');el.scrollIntoView({block:'nearest'});await c.wait(PACE().look/FAST())}
+function hideHand(){document.querySelectorAll('.spot').forEach(e=>e.classList.remove('spot'))}
+/* redraw a board and write in only what is new */
+const NEWSEL='.ptag,.atag,.tally .cn,.count:not(.tally),.acell b,.algo .ln,.lineb text,.lineb path,.ttot,.tbox,.layer.on,.pair,.fp,.pv td,.strip';
+function redraw(B){const old=new Map();B.el.querySelectorAll(NEWSEL).forEach(e=>{const k=e.outerHTML;old.set(k,(old.get(k)||0)+1)});
+  B.refresh();if(A.calm)return;
+  B.el.querySelectorAll(NEWSEL).forEach(e=>{const k=e.outerHTML,n=old.get(k);if(n){old.set(k,n-1);return}
+    if(!e.textContent.trim()&&e.tagName!=='path'&&!e.matches('.layer,.pair,.fp,.strip,.tbox'))return;
+    e.classList.add(e.tagName==='path'?'draw':e.tagName==='text'||e.matches('.layer,.pair,.fp,.strip,.tbox')?'fadein':'wr')})}
+/* do one example step on the board slowly: counts, jumps and layers go one at a time */
+async function playAct(B,act,c,gate){let prev;try{prev=JSON.parse(JSON.stringify(B.spec))}catch(e){prev=null}
+  act(B.spec);if(!prev){redraw(B);return}
+  const subs=sp=>sp.type==='stack'?sp.items:[sp],now=subs(B.spec),was=subs(prev),plan=[];
+  now.forEach((sp,i)=>{const p=was[i]||{};for(const k of ['counted','hops','shown']){const a=+(p[k]||0),b=+(sp[k]||0);if(b>a+1){plan.push({sp,k,b});sp[k]=a+1}}});
+  redraw(B);
+  for(const x of plan)while(x.sp[x.k]<x.b){await c.wait(PACE().piece/FAST());if(gate)await gate();x.sp[x.k]++;redraw(B)}
+  await c.wait(PACE().after/FAST())}
+/* write the answer into its box, one character at a time */
+function inkIn(el){let i=0;const ch=PACE().ch;const walk=n=>{for(const x of [...n.childNodes]){if(x.nodeType===3){const f=document.createDocumentFragment();
+  for(const t of x.textContent){if(/\s/.test(t)){f.append(t);continue}const sp=document.createElement('span');sp.className='ch';sp.style.animationDelay=(i++*ch)+'ms';sp.textContent=t;f.append(sp)}x.replaceWith(f)}else walk(x)}};walk(el);return i}
 /* ---------- screens ---------- */
 const PARTS=['Watch me','Try together','On my own'];
 const OWN_N=10,OWN_PASS=8,REVIEW_N=8,REVIEW_PASS=6,TOG_N=3,MAX_EXTRA=3;
@@ -1040,6 +1068,7 @@ function buildView(u,p,ph,mode){
   const v={prob,B,work,ansSlot,check,list,bubble,bubbleText:'',
     say(t,speak=true){v.bubbleText=t;bubble.querySelector('.txt').innerHTML=md(t);if(speak)return say(t);return Promise.resolve()},
     mark(li,state){[...list.children].forEach((x,i)=>{x.classList.toggle('now',state==='now'&&i===li);if(state==='done'&&i===li){x.classList.add('done');x.classList.remove('now')}})},
+    async write(inp,c){this.fill(inp);const f=ansSlot.querySelector('.filled');if(!f||A.calm)return;const n=inkIn(f);await c.wait((n*PACE().ch+PACE().after)/FAST())},
     fill(inp){ansSlot.innerHTML='';if(inp.t!=='board'&&inp.t!=='point'){const a=h('div',{class:'ans'},h('div',{class:'filled',html:md(ansText(inp))}));ansSlot.append(a);a.scrollIntoView({block:'nearest'})}},
     ask(inp,cb){ansSlot.innerHTML='';const w=widget(inp,cb);ansSlot.append(w);w.focusFirst();(inp.t==='board'||inp.t==='point')&&B?B.el.scrollIntoView({block:'nearest'}):w.scrollIntoView({block:'nearest'});return w}};
   return v;
@@ -1079,9 +1108,13 @@ function watchScreen(u){
     await talk(ses.i===0?"Watch me first. I will show you each step and say what I am thinking.":"Here is one more. Watch each step.");
     const S=v.prob.steps;
     for(let si=0;si<S.length;si++){const st=S[si];await gate();if(!c.alive)return;
-      v.mark(st.li,'now');await talk(st.think);await gate();if(!c.alive)return;
-      if(st.act&&v.B){await pointAt(v.B.el,c);st.act(v.B.spec);v.B.refresh()}else await pointAt(v.ansSlot,c);
-      hideHand();v.fill(st.input);if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');await c.wait(600)}
+      v.mark(st.li,'now');
+      /* the picture changes while the teacher explains it, one piece at a time */
+      if(st.act&&v.B){v.B.el.classList.add('spot');v.B.el.scrollIntoView({block:'nearest'});
+        await Promise.all([talk(st.think),c.wait(PACE().look/FAST()).then(()=>playAct(v.B,st.act,c,gate))]);hideHand()}
+      else await talk(st.think);
+      await gate();if(!c.alive)return;
+      await v.write(st.input,c);if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');await c.wait(PACE().step/FAST())}
     await talk('So the answer is '+ansText(S[S.length-1].input)+'. '+v.prob.explain);
     pauseBtn.disabled=true;nextStep.disabled=true;go.disabled=false;go.focus();
   })());
@@ -1392,7 +1425,7 @@ function openSettings(){
     talk?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):'',
     talk?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):'',
     TTS&&voices.length>1&&!natural()?h('div',{},h('div',{class:'muted'},'Which device voice'),sel):'',
-    h('div',{class:'row'},h('span',{class:'grow'},'Calm motion (no moving hand)'),sw(A.calm,()=>{A.calm=!A.calm;store.set('calm',A.calm)},'Calm motion')),
+    h('div',{class:'row'},h('span',{class:'grow'},'Calm motion (numbers appear without the writing effect)'),sw(A.calm,()=>{A.calm=!A.calm;store.set('calm',A.calm)},'Calm motion')),
     h('div',{},h('div',{},'Passing sessions needed in each phase'),h('div',{class:'muted',style:'font-size:15px'},'The research study used 3.'),seg([[1,'1'],[2,'2'],[3,'3']],A.need,v=>{A.need=v;store.set('need',v)})),
     natural()?'':h('div',{class:'muted',style:'font-size:15px'},'Device voices come from this device. If it sounds robotic, turn on the natural voice.'),reset);
   const sh=$('#sheet');sh.innerHTML='';sh.append(box);sh.hidden=false;box.focus();
