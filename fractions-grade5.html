@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lc/catalog.js"></script><script src="lc/nav.js"></script>
+<script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script>
 <title>Fraction Path Grade 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --bg:#EEF3F6; --page:#FFFFFF; --ink:#1A2B3C; --soft:#55677A; --line:#CFDAE2;
@@ -247,21 +247,27 @@ let voices=[];
 function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===A.uri))A.uri=voices[0].voiceURI}
 if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
 let sq=[],sbusy=false,srun=0,waiters=[];
-function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();const w=waiters;waiters=[];w.forEach(f=>f())}
+/* natural voice (lc/voice.js) when it is on and ready; the device voice otherwise */
+const natural=()=>!!(window.LCVoice&&LCVoice.active()),devRate=()=>A.slow?.78:.92;
+function hush(){srun++;sq=[];sbusy=false;if(TTS)TTS.cancel();if(window.LCVoice)LCVoice.stop();const w=waiters;waiters=[];w.forEach(f=>f())}
 function pump(run){
   if(run!==srun||sbusy)return;
   if(!sq.length){const w=waiters;waiters=[];w.forEach(f=>f());return}
-  sbusy=true;const text=sq.shift();
-  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=A.slow?.78:.92;u.pitch=1;u.volume=Math.max(.05,A.vol/100);
-  const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
-  let once=false;const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
-  const t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume();
+  sbusy=true;const text=sq.shift();let once=false,t=0;
+  const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==srun)return;sbusy=false;setTimeout(()=>pump(run),(/\?$/.test(text)?560:340)*FAST())};
+  const dev=()=>{if(run!==srun)return;if(!TTS){done();return}
+    const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=devRate();u.pitch=1;u.volume=Math.max(.05,A.vol/100);
+    const v=voices.find(x=>x.voiceURI===A.uri);if(v)u.voice=v;
+    t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume()};
+  if(natural()){LCVoice.utter(text,{rate:devRate(),volume:A.vol/100}).then(done,dev);return}
+  dev();
 }
 function say(text,{queue=false}={}){return new Promise(res=>{
-  if(!TTS||!A.voice||!text){res();return}
+  if(!(TTS||natural())||!A.voice||!text){res();return}
   if(!queue)hush();
   const parts=(spoken(text).match(/[^.?]+[.?]*/g)||[]).map(x=>x.trim()).filter(Boolean);
   if(!parts.length){res();return}
+  if(natural())LCVoice.prefetch(parts,{speed:LCVoice.speedFor(devRate()),urgent:true});
   sq.push(...parts);waiters.push(res);pump(srun)})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
 
@@ -912,6 +918,7 @@ function openSettings(){
   let arm=false;const reset=h('button',{class:'quiet',on:{click(){if(!arm){arm=true;reset.textContent='Tap again to erase all progress';return}PROG={};ses=null;USED={};store.set('prog',PROG);store.set('ses',null);store.set('used',USED);close();home()}}},'Erase progress');
   box.append(h('div',{class:'row'},h('h2',{class:'grow'},'Settings'),h('button',{class:'quiet',on:{click:close}},'Close')),
     TTS?h('div',{class:'row'},h('span',{class:'grow'},'Teacher voice'),sw(A.voice,()=>{A.voice=!A.voice;store.set('voice',A.voice);if(!A.voice)hush();else test()},'Teacher voice')):h('div',{class:'muted'},'This browser has no talking voice.'),
+    window.LCVoice?LCVoice.panel({test}):null,
     TTS?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),seg([[true,'Slow'],[false,'A bit faster']],A.slow,v=>{A.slow=v;store.set('slow',v);test()})):null,
     TTS?h('div',{},h('div',{class:'muted'},'Volume'),h('input',{type:'range',min:'10',max:'100',step:'5',value:A.vol,'aria-label':'Volume',style:'width:100%;accent-color:var(--go)',on:{input(e){A.vol=+e.target.value;store.set('vol',A.vol)},change:test}})):null,
     TTS&&voices.length>1?h('div',{},h('div',{class:'muted'},'Which voice'),sel):null,
@@ -926,6 +933,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden
 window.__T={K,UNITS,pickProblems,isRight,show:()=>show(),get ses(){return ses},get view(){return view},start,unitById,stateOf,PROG:()=>PROG};
 $('#navHome').addEventListener('click',()=>home());
 home();
+if(window.LCVoice&&LCVoice.justTurnedOn())setTimeout(openSettings,300);
 </script>
 </body>
 </html>

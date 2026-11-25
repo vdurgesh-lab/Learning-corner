@@ -1,10 +1,11 @@
 /* Learning Corner voice helper (service worker).
    Lets the natural voice use several processor cores instead of one, which makes it much faster.
    Browsers allow that only on "cross-origin isolated" pages, which needs two response headers that
-   GitHub Pages cannot send. This file adds them, but only to the multiplication pages and the voice
+   GitHub Pages cannot send. This file adds them, but only to the pages that talk and the voice
    worker. Every other page and file passes through untouched.
    Installed by lc/voice.js when someone turns on the natural voice; removed when they turn it off. */
-const PAGES = /\/multiplication-grade[2-5](\.html)?$/;
+/* pages that use the natural voice (lc/voice.js) */
+const PAGES = /\/(multiplication-grade[2-5]|fractions-grade[3-5]|fraction-steps|money-time|story-shelf)(\.html)?$/;
 const WORKER = /\/lc\/voice-worker\.js$/;
 
 self.addEventListener('install', () => self.skipWaiting());

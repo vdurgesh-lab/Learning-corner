@@ -1,7 +1,7 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><script src="lc/catalog.js"></script><script src="lc/nav.js"></script></head><body style="margin:0"><title>Story Shelf</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script></head><body style="margin:0"><title>Story Shelf</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap">
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap">
 <style>
 /* Layout: one calm reading column. The only loud thing on the page is the yellow marker on words to learn. */
 :root{
@@ -238,27 +238,33 @@ let voices=[];
 function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===A.voice))A.voice=voices[0].voiceURI}
 if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
 const keep=[];let sQ=[],sBusy=false,speechRun=0;
-function stopSpeech(){speechRun++;sQ=[];sBusy=false;if(TTS)TTS.cancel();keep.length=0}
+/* natural voice (lc/voice.js) when it is on and ready; the device voice otherwise */
+const natural=()=>!!(window.LCVoice&&LCVoice.active());
+const natSay=(list,rate)=>{if(natural())LCVoice.prefetch(list,{speed:LCVoice.speedFor(rate||RATES[A.speed]),urgent:true})};
+function stopSpeech(){speechRun++;sQ=[];sBusy=false;if(TTS)TTS.cancel();if(window.LCVoice)LCVoice.stop();keep.length=0}
 function pumpSpeech(run){
   if(run!==speechRun||sBusy||!sQ.length)return;
-  sBusy=true;const it=sQ.shift();
-  const u=new SpeechSynthesisUtterance(it.text);u.lang='en-US';u.rate=it.rate||RATES[A.speed];u.pitch=1;u.volume=Math.max(.05,A.vol/100);
-  const v=voices.find(x=>x.voiceURI===A.voice);if(v)u.voice=v;
-  if(it.boundary)u.onboundary=e=>{if(run===speechRun&&(!e.name||e.name==='word'))it.boundary(e.charIndex)};
-  let once=false;
+  sBusy=true;const it=sQ.shift();let once=false,t=0,u=null;
   const done=()=>{if(once)return;once=true;clearTimeout(t);const i=keep.indexOf(u);if(i>=0)keep.splice(i,1);if(run!==speechRun)return;sBusy=false;
     setTimeout(()=>{if(run!==speechRun)return;if(it.onend)it.onend();pumpSpeech(run)},it.pause==null?380:it.pause)};
-  const t=setTimeout(done,it.text.length*170+3500);
-  keep.push(u);u.onend=done;u.onerror=done;if(it.onstart)it.onstart();TTS.speak(u);if(TTS.paused)TTS.resume();
+  const dev=()=>{if(run!==speechRun)return;if(!TTS){if(it.onstart)it.onstart();done();return}
+    u=new SpeechSynthesisUtterance(it.text);u.lang='en-US';u.rate=it.rate||RATES[A.speed];u.pitch=1;u.volume=Math.max(.05,A.vol/100);
+    const v=voices.find(x=>x.voiceURI===A.voice);if(v)u.voice=v;
+    if(it.boundary)u.onboundary=e=>{if(run===speechRun&&(!e.name||e.name==='word'))it.boundary(e.charIndex)};
+    t=setTimeout(done,it.text.length*170+3500);
+    keep.push(u);u.onend=done;u.onerror=done;if(it.onstart)it.onstart();TTS.speak(u);if(TTS.paused)TTS.resume()};
+  if(natural()){LCVoice.utter(it.text,{rate:it.rate||RATES[A.speed],volume:A.vol/100,onstart:it.onstart,boundary:it.boundary&&(ci=>{if(run===speechRun)it.boundary(ci)})}).then(done,dev);return}
+  dev();
 }
 function speakTxt(text,{rate,onend,queue=false,boundary,onstart,pause}={}){
-  if(!TTS){if(onend)onend();return}
+  if(!TTS&&!natural()){if(onend)onend();return}
   if(!queue)stopSpeech();
-  sQ.push({text:String(text).replace(/["“”]/g,''),rate,onend,boundary,onstart,pause});pumpSpeech(speechRun);
+  const clean=String(text).replace(/["“”]/g,'');natSay([clean],rate);
+  sQ.push({text:clean,rate,onend,boundary,onstart,pause});pumpSpeech(speechRun);
 }
 /* the warm voice for encouragement: sentence by sentence, with room to breathe */
 function talk(t,{queue=false}={}){
-  if(!TTS||!A.talk)return;
+  if(!(TTS||natural())||!A.talk)return;
   if(!queue)stopSpeech();
   (String(t).match(/[^.?!]+[.?!]*/g)||[]).map(x=>x.trim()).filter(Boolean).forEach(x=>speakTxt(x.replace(/!/g,'.'),{queue:true}));
 }
@@ -274,6 +280,7 @@ function openSound(){
   const box=h('div',{class:'sheet',tabindex:'-1'},
     h('div',{class:'row'},h('h2',{class:'grow'},'Sound settings'),h('button',{class:'quiet','aria-label':'Close sound settings',on:{click:closeWord}},'Close')),
     TTS?h('div',{class:'row'},h('span',{class:'grow'},'Friendly voice that talks to you'),tog):h('div',{class:'muted'},'This browser has no talking voice.'),
+    window.LCVoice?LCVoice.panel({test:talkTest}):null,
     TTS?h('div',{class:'row'},h('span',{class:'grow'},'Voice speed'),s1,s2):null,
     TTS?h('div',{},h('div',{class:'label'},'Volume'),vol):null,
     TTS&&voices.length>1?h('div',{},h('div',{class:'label'},'Which voice'),sel):null,
@@ -446,6 +453,7 @@ function readPage(){
     const go=i=>{if(!reading)return;
       if(i>=sn.length){if(run.page<s.pages.length-1){run.page++;run.word=0;run.autoRead=true;readPage()}else{stopRead();setLine(lines.length-1);talk("That's the end of the story. Nicely done.")}return}
       const inS=[...sn[i].querySelectorAll('.w')],base=words.indexOf(inS[0]);setLine(lineOf(base));
+      natSay(sn.slice(i+1,i+4).map(x=>x.textContent.replace(/["“”]/g,'').trim()));
       const text=sn[i].textContent.replace(/["“”]/g,'').trim(),offs=[];text.replace(/[A-Za-z]+(?:['’][A-Za-z]+)*/g,(m,o)=>{offs.push(o);return m});
       speakTxt(text,{queue:true,pause:480,boundary(ci){let k=0;while(k+1<offs.length&&offs[k+1]<=ci)k++;const L=lineOf(base+k);if(L!==line)setLine(L)},onend(){go(i+1)}})};
     go(idx)};
@@ -640,5 +648,6 @@ function route(){
 window.addEventListener('hashchange',()=>{run=null;$('#sheet').hidden=true;route()});
 document.documentElement.style.setProperty('--size',local.get('size',22)+'px');
 buildDict();route();connect();
+if(window.LCVoice&&LCVoice.justTurnedOn())setTimeout(openSound,300);
 </script>
 </body></html>
