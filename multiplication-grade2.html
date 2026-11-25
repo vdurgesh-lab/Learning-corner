@@ -380,6 +380,7 @@ function say(text,{queue=false}={}){return new Promise(res=>{
   if(!queue)hush();
   const parts=spoken(text).split(/(?<=[.?])\s+/).map(x=>x.trim()).filter(Boolean);
   if(!parts.length){res();return}
+  if(natural())LCVoice.prefetch(parts,{speed:natSpeed(),urgent:true});
   sq.push(...parts);waiters.push(res);pump(srun)})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
 /* ---------- boards (the virtual manipulatives) ---------- */
@@ -1008,12 +1009,26 @@ function header(u,phase,partIx,count,idx){
     h('button',{class:'quiet','aria-label':'Settings',on:{click:openSettings}},'⚙'));
 }
 let view=null;
-function readAloud(){if(!view)return;const t=[view.prob.q,view.prob.eq,view.bubbleText].filter(Boolean).join('. ');hush();say(t)}
+let reading=false;
+const endDot=x=>{x=String(x).trim();return /[.?!]$/.test(x)?x:x+'.'};
+/* what Read says for a problem: the question, the number sentence, and the checklist, like a teacher would */
+function readParts(P){const unknowns=(String(P.eq||'').match(/\?/g)||[]).length,o=[endDot(P.q)];
+  if(P.eq&&unknowns<=1)o.push(endDot('The number sentence is '+String(P.eq).trim()));
+  if(P.list&&P.list.length)o.push('Here is your checklist.',...P.list.map((x,i)=>endDot(`Step ${i+1}: ${String(x).trim().replace(/[.]$/,'')}`)));
+  return o}
+function readLabel(){const b=$('#readBtn');if(b)b.textContent=reading?'⏹ Stop reading':'🔊 Read'}
+function readAloud(){if(!view)return;
+  if(reading){reading=false;hush();readLabel();return}
+  const P=view.prob,parts=readParts(P);
+  if(view.bubbleText&&view.bubbleText!==P.q)parts.push(endDot(view.bubbleText));
+  const t=parts.join(' ');
+  hush();reading=true;readLabel();
+  say(t).then(()=>{reading=false;readLabel()})}
 function buildView(u,p,ph,mode){
   const prob=K[u.kind].make(p,ph);
   if(natural()){const S=prob.steps,last=S[S.length-1];
-    prefetchLines(mode==='watch'?[...S.map(x=>x.think),'So the answer is '+ansText(last.input)+'. '+prob.explain]
-      :mode==='together'?[...S.map(x=>x.prompt),prob.explain,...S.map(x=>x.cue)]:[prob.explain,...S.map(x=>x.cue)])}
+    prefetchLines(mode==='watch'?[...S.map(x=>x.think),'So the answer is '+ansText(last.input)+'. '+prob.explain,...readParts(prob)]
+      :mode==='together'?[...S.map(x=>x.prompt),...readParts(prob),prob.explain]:[...readParts(prob),prob.explain])}
   const work=h('div',{class:'work'}),bubble=h('div',{class:'bubble','aria-live':'polite'},h('div',{class:'who','aria-hidden':'true'},'🧑‍🏫'),h('div',{class:'txt'}));
   const list=h('ol');const check=h('div',{class:'check'},h('h2',{},mode==='own'?'My checklist: tap each step when you do it':'Steps'),list);
   prob.list.forEach((t,i)=>{const n=mode==='own'?h('button',{class:'n',type:'button','aria-label':`Mark step ${i+1} done`},String(i+1)):h('span',{class:'n'},String(i+1));

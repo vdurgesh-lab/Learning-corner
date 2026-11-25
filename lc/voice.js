@@ -54,7 +54,7 @@
     g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.012);g.gain.setValueAtTime(v,t0+Math.max(.012,dur-.02));g.gain.linearRampToValueAtTime(0,t0+dur);
     src.buffer=buf;src.connect(g);g.connect(c.destination);let done=false;const fin=()=>{if(done)return;done=true;if(cur===src)cur=null;res()};
     src.onended=fin;cur=src;src.start();setTimeout(fin,dur*1000+400)})}
-  function stopAudio(){runId++;if(cur){try{cur.stop()}catch(e){}cur=null}}
+  function stopAudio(){runId++;if(cur){try{cur.stop()}catch(e){}cur=null}while(urgent.length)later.unshift(urgent.pop())}
 
   /* ---------- generation: one job at a time, spoken lines before prefetched ones ---------- */
   const cache=new Map(),urgent=[],later=[],jobs=new Map();let busy=false,nextId=1;
@@ -97,7 +97,8 @@
     async speak(text,{speed=.85,volume=.85}={}){const parts=sentences(text),run=++runId;parts.forEach(p=>synth(p,speed,true).catch(()=>{}));
       for(const p of parts){let a;try{a=await synth(p,speed,true)}catch(e){return}if(run!==runId)return;await play(a.pcm,a.sr,volume);if(run!==runId)return;
         await new Promise(r=>setTimeout(r,/\?$/.test(p)?520:320))}},
-    prefetch(list,{speed=.85}={}){if(!ready)return;for(const t of list){const p=prepare(t);if(p)synth(p,speed,false).catch(()=>{})}},
+    /* make sentences ahead of time; urgent ones (about to be spoken) go before background ones */
+    prefetch(list,{speed=.85,urgent=false}={}){if(!ready)return;for(const t of list){const p=prepare(t);if(p)synth(p,speed,urgent).catch(()=>{})}},
     stop:stopAudio
   };
   if(LCVoice.wanted()&&supported())start();

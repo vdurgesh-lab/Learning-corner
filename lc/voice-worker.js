@@ -25,7 +25,7 @@ self.onmessage = async ({ data: m }) => {
   if (m.type === 'synth') {
     try {
       const a = await tts.generate(m.text, { voice: m.voice, speed: m.speed });
-      const pcm = a.audio instanceof Float32Array ? a.audio : new Float32Array(a.audio);
+      const pcm = new Float32Array(a.audio); // a copy, so the library's buffer is never moved away
       self.postMessage({ type: 'audio', id: m.id, pcm, sr: a.sampling_rate || 24000 }, [pcm.buffer]);
     } catch (e) {
       self.postMessage({ type: 'audio', id: m.id, err: String((e && e.message) || e) });
