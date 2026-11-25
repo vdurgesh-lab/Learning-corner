@@ -6,7 +6,7 @@
 <script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script>
 <title>Multiplication Path Grade 4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --bg:#EEF3F6; --page:#FFFFFF; --ink:#1A2B3C; --soft:#55677A; --line:#CFDAE2;
@@ -374,7 +374,7 @@ function prefetchCommon(){prefetchLines([...PRAISE,"Watch me first. I will show 
   'Your turn. Use your checklist. Tap Help if you get stuck.','Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.',
   "Not quite. That's okay. Look at your checklist and try once more.",'Not quite. Look at your checklist and try again.',"Hmm, not quite. That's okay.",'Yes, you fixed it.',
   'You are still learning this, and that is okay.','Here is one more like the one that was tricky. You can do this.'])}
-if(window.LCVoice){LCVoice.onChange(st=>{if(st.state==='ready')prefetchCommon()});if(LCVoice.active())setTimeout(prefetchCommon,0)}
+if(window.LCVoice){LCVoice.onChange(st=>{if(st.state==='ready')prefetchCommon()});if(LCVoice.active())setTimeout(prefetchCommon,0);if(LCVoice.justTurnedOn())setTimeout(()=>openSettings(),300)}
 function say(text,{queue=false}={}){return new Promise(res=>{
   if((!TTS&&!natural())||!A.voice||!text){res();return}
   if(!queue)hush();
@@ -1379,8 +1379,8 @@ function openSettings(){
     if(!natOK){nat.append(h('p',{class:'note'},'This browser cannot run the natural voice, so the device voice is used.'));return}
     const st=V.state,pc=Math.round(V.progress*100);
     if(V.wanted()&&st==='loading'){nat.append(h('p',{class:'note'},`Getting the voice ready: ${pc}%. You can keep learning. The device voice is used until it is ready.`),h('div',{class:'pbar',role:'progressbar','aria-valuenow':pc,'aria-valuemin':0,'aria-valuemax':100,'aria-label':'Natural voice download'},h('i',{style:`width:${pc}%`})));return}
-    if(V.wanted()&&st==='error'){nat.append(h('p',{class:'note'},'The natural voice could not load on this device, so the device voice is used.'),h('div',{class:'row'},h('button',{class:'quiet',on:{click(){V.enable();drawNat()}}},'Try again'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice')));return}
-    if(natural()){nat.append(h('p',{class:'note'},'A calm voice made right on this device. On older computers it may pause for a moment before some sentences.'+(ios?' On iPhone and iPad, turn off silent mode to hear it.':'')),
+    if(V.wanted()&&st==='error'){nat.append(h('p',{class:'note'},'The natural voice could not load on this device, so the device voice is used.'),h('p',{class:'note',style:'font-size:13px'},'Details: '+(V.error||'unknown')),h('div',{class:'row'},h('button',{class:'quiet',on:{click(){V.enable();drawNat()}}},'Try again'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice')));return}
+    if(natural()){nat.append(h('p',{class:'note'},'A calm voice made right on this device'+(V.fast?', using several processor cores':'')+'. Sentences that never change play instantly. On older computers it may pause for a moment before some sentences.'+(ios?' On iPhone and iPad, turn off silent mode to hear it.':'')),
       h('div',{class:'row'},h('button',{class:'quiet',on:{click:test}},'▶ Hear it'),h('button',{class:'quiet',on:{click(){V.disable();drawNat()}}},'Use the device voice instead')));return}
     nat.append(h('p',{class:'note'},`A calm, natural voice that sounds the same on every device. It downloads once (about ${V.sizeMB} MB), then also works offline. Best on Wi-Fi.`),
       h('button',{class:'btn main',on:{click(){V.enable();drawNat()}}},'Turn on natural voice'))};
