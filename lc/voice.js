@@ -4,6 +4,9 @@
    - Pages keep their own speaking code. They ask LCVoice.active() and, if true, call
      LCVoice.speakPart(sentence) instead of the device voice. If the natural voice is off,
      still loading, or fails, the page keeps using the device voice, so there is never silence.
+   - Sentences that never change are pre-made with the same voice (lc/voice-clips, made by
+     tools/make_voice_clips.py) and play instantly; everything else is made live.
+   - A small helper (voice-sw.js) lets the live voice use several processor cores.
    - To change how the voice is made later (recorded clips, a cloud voice), change only this file.
    Load it in <head> with: <script src="lc/voice.js"></script> */
 (function(){
@@ -37,6 +40,22 @@
       .replace(/[“”"]/g,'').replace(/\s+([.,?!])/g,'$1').replace(/\s+/g,' ').trim()}
   const sentences=t=>prepare(t).split(/(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean);
 
+  /* ---------- pre-made clips for sentences that never change ---------- */
+  const CLIPBASE=new URL('voice-clips/',BASE);let CLIPS=null;
+  fetch(new URL('manifest.json',CLIPBASE)).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.speeds){CLIPS={};for(const k in m.speeds)CLIPS[k]=new Set(m.speeds[k])}}).catch(()=>{});
+  function fnv(s){let h=0x811c9dc5;for(const b of new TextEncoder().encode(s)){h^=b;h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')}
+  function clipURL(text,speed){if(!CLIPS)return null;const tag=String(Math.round(speed*100)),set=CLIPS[tag];if(!set)return null;
+    const c=fnv(tag+'|'+text);return set.has(c)?new URL(tag+'/'+c+'.mp3',CLIPBASE).href:null}
+  function decode(buf){const c=audio();return new Promise((res,rej)=>{try{const p=c.decodeAudioData(buf,res,rej);if(p&&p.then)p.then(res,rej)}catch(e){rej(e)}})}
+
+  /* ---------- helper for several processor cores (see voice-sw.js) ---------- */
+  const SW=new URL('../voice-sw.js',BASE),SCOPE=new URL('../',BASE).pathname;
+  const swOK=()=>'serviceWorker' in navigator&&window.isSecureContext;
+  function isolate(){if(window.crossOriginIsolated||!swOK())return Promise.resolve(false);
+    return navigator.serviceWorker.register(SW.href,{scope:SCOPE}).then(()=>navigator.serviceWorker.ready).then(()=>true).catch(()=>false)}
+  function unisolate(){if(!swOK())return;navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>{const a=r.active||r.waiting||r.installing;if(a&&a.scriptURL===SW.href)r.unregister()})).catch(()=>{})}
+  const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+
   /* ---------- state ---------- */
   let worker=null,state='off',progress=0,err='',files={},ready=false;
   const listeners=new Set();
@@ -68,8 +87,11 @@
   /* ---------- generation: one job at a time, spoken lines before prefetched ones ---------- */
   const cache=new Map(),urgent=[],later=[],jobs=new Map();let busy=false,nextId=1;
   const key=(t,s)=>s.toFixed(2)+'|'+t;
-  function synth(text,speed,prio){const k=key(text,speed);
+  function synth(text,speed,prio,noClip){const k=key(text,speed);
     if(cache.has(k)){const v=cache.get(k);cache.delete(k);cache.set(k,v);if(prio&&v.job&&!v.started){const i=later.indexOf(v.job);if(i>=0){later.splice(i,1);urgent.push(v.job)}}return v.p}
+    const url=noClip?null:clipURL(text,speed);
+    if(url){const p=fetch(url).then(r=>{if(!r.ok)throw new Error('clip');return r.arrayBuffer()}).then(decode).then(b=>({pcm:trim(b.getChannelData(0),b.sampleRate),sr:b.sampleRate}))
+      .catch(()=>{cache.delete(k);return synth(text,speed,true,true)});cache.set(k,{p,job:null,started:true});return p}
     let job;const p=new Promise((resolve,reject)=>{job={text,speed,resolve,reject}});const entry={p,job,started:false};job.entry=entry;
     (prio?urgent:later).push(job);cache.set(k,entry);while(cache.size>400)cache.delete(cache.keys().next().value);pumpJobs();return p}
   function pumpJobs(){if(busy||!ready||!worker)return;const job=urgent.shift()||later.shift();if(!job)return;busy=true;job.entry.started=true;
@@ -97,8 +119,15 @@
     get state(){return state},get progress(){return progress},get error(){return err},
     wanted:()=>ls.get(PREF)==='natural',
     active:()=>ls.get(PREF)==='natural'&&ready,
-    enable(){ls.set(PREF,'natural');audio();if(state==='error'){worker=null}start()},
-    disable(){ls.set(PREF,'device');stopAudio();emit()},
+    enable(){ls.set(PREF,'natural');audio();if(state==='error'){worker=null}
+      /* first install the helper for more cores; the page then reloads once and the voice starts with it */
+      if(!window.crossOriginIsolated&&swOK()&&!ss.get('lc.voice.reloaded')){state='loading';progress=0;emit();
+        isolate().then(ok=>{if(ok&&!window.crossOriginIsolated){ss.set('lc.voice.reloaded','1');ss.set('lc.voice.reopen','1');location.reload()}else start()});return}
+      start()},
+    disable(){ls.set(PREF,'device');stopAudio();unisolate();emit()},
+    /* true once, right after the reload that switched the helper on (the page can reopen its settings) */
+    justTurnedOn(){const v=ss.get('lc.voice.reopen')==='1';ss.del('lc.voice.reopen');return v},
+    get fast(){return !!window.crossOriginIsolated},
     onChange(f){listeners.add(f);return()=>listeners.delete(f)},
     /* speed: 1 is normal; 0.85 is calm and slow */
     async speakPart(text,{speed=.85,volume=.85}={}){const t=prepare(text);if(!t)return;const run=runId;
@@ -110,5 +139,5 @@
     prefetch(list,{speed=.85,urgent=false}={}){if(!ready)return;for(const t of list){const p=prepare(t);if(p)synth(p,speed,urgent).catch(()=>{})}},
     stop:stopAudio
   };
-  if(LCVoice.wanted()&&supported())start();
+  if(LCVoice.wanted()&&supported()){start();if(!window.crossOriginIsolated)isolate()}
 })();
