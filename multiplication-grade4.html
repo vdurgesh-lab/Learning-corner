@@ -133,6 +133,36 @@ details li{margin:6px 0}
   .top .trail{width:100%}
 }
 @media (prefers-reduced-motion:reduce){#hand{transition:none}.shake{animation:none}}
+.navb{gap:5px}
+.upnext{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--page);border:2px solid var(--go);border-radius:18px;padding:16px 18px;margin:4px 0 12px}
+.upnext .k{font-size:15px;font-weight:600;color:var(--go)}
+.upnext b{display:block;font-size:24px;line-height:1.2}
+.upnext small{display:block;color:var(--soft);font-size:16px}
+.upnext .btn{margin-left:auto;min-width:160px}
+.minitools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.minitools .quiet{min-height:46px;font-size:16px;padding:6px 14px}
+.list{display:grid;gap:8px;margin:0 0 6px;padding:0;list-style:none}
+.list.two{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.lrow{width:100%;display:flex;align-items:center;gap:12px;padding:10px 14px;min-height:58px;border-radius:14px;border:1.5px solid var(--line);background:var(--page);text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.lrow:hover,.lrow:focus-visible{border-color:var(--go)}
+.lrow .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.lrow.done .num{background:var(--yes-bg);color:var(--yes)}
+.lrow.up{border-color:var(--go);border-width:2px}
+.lrow .tx{flex:1;min-width:0}
+.lrow .tx b{display:block;font-size:17px;line-height:1.25}
+.lrow .tx small{display:block;color:var(--soft);font-size:14px;line-height:1.3}
+.lrow .st{flex:none;font-size:13px;font-weight:600;color:var(--soft);text-align:right;max-width:110px}
+.lrow .st.ok{color:var(--yes)}
+.lrow .st.due{color:var(--try)}
+.fbx{scroll-margin-bottom:180px;scroll-margin-top:12px;width:100%;display:grid;gap:8px;justify-items:center;text-align:center;background:var(--chip);border-radius:14px;padding:12px 14px;margin-top:4px}
+.fbx.no{background:var(--try-bg)}
+.fbx .why{font-size:15px;font-weight:700}
+.fbx .sayit{font-size:17px;max-width:46ch}
+.fbx .sayit b{color:var(--go)}
+.fbx .cap{font-size:15px;color:var(--soft)}
+.fbx svg{max-width:100%;height:auto}
+.dots .d{fill:var(--go)}
+.pt.xtra{background:var(--try-bg);color:var(--try)}
 /* boards */
 .board{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
 .btitle{font-size:15px;color:var(--soft);text-align:center;margin-bottom:4px}
@@ -473,7 +503,7 @@ const factorPairs=n=>{const o=[];for(let a=1;a*a<=n;a++)if(n%a===0)o.push([a,n/a
 const K={};
 
 /* Grade 2 */
-K.eqgroups={picPool:true,
+K.eqgroups={picPool:true,ctx:6,
   pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[5,7];for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({g,n});return o},
   make(p,ph){const{g,n}=p,t=g*n,it=itm(p),hd=hold(p),add=Array(g).fill(n).join(' + ');
     const q=`There are ${g} ${hd[1]}. Each ${hd[0]} has ${n} ${it[1]}. How many ${it[1]} are there in all?`;
@@ -490,13 +520,13 @@ const ARR_CTX=[(n,r,c)=>[`${n} sets out chairs in ${r} rows. Each row has ${c} c
   (n,r,c)=>[`A muffin pan has ${r} rows. Each row has ${c} cups. How many muffins fit in the pan?`,'muffins'],
   (n,r,c)=>[`${n} puts stickers on a page in ${r} rows, with ${c} stickers in each row. How many stickers are on the page?`,'stickers'],
   (n,r,c)=>[`A garden has ${r} rows of carrots. There are ${c} carrots in each row. How many carrots are there?`,'carrots']];
-K.arrays2={picPool:true,
+K.arrays2={picPool:true,ctx:4,
   pool:ph=>{const o=[];const[R,C]=ph==='pic'?[5,6]:[5,7];for(let r=2;r<=R;r++)for(let c=2;c<=C;c++)o.push({r,c});return o},
   make(p,ph){const{r,c}=p,t=r*c,add=Array(r).fill(c).join(' + ');
     const explain=`${r} rows of ${c} is ${t}. ${add} = ${t}. We can also write ${r} × ${c} = ${t}.`;
     const s0={li:0,prompt:'How many rows are there? Rows go across, from left to right.',think:`Rows go across, like a line of chairs. I count the rows. ${countUp(r)} There are ${r} rows.`,input:{t:'num',a:r},cue:'Count the lines that go across. Use the row numbers on the left to help.'};
     const s1={li:1,prompt:'How many are in each row?',think:`I count one row. ${countUp(c)} There are ${c} in each row. Every row is the same.`,input:{t:'num',a:c},cue:'Count the dots in just the top row.'};
-    if(ph==='pic')return{q:'This is an array. How many dots are in it?',eq:`${add} = ?`,explain,ownMode:'rows',list:['Count the rows. Rows go across.','Count how many are in one row.','Tap each row to count by that number.','Say how many in all.'],
+    if(ph==='pic')return{q:ARR_CTX[p.cx%ARR_CTX.length](nm(p),r,c)[0]+' Use the array.',eq:`${add} = ?`,explain,ownMode:'rows',list:['Count the rows. Rows go across.','Count how many are in one row.','Tap each row to count by that number.','Say how many in all.'],
       board:{type:'array',r,c,counted:0},steps:[s0,s1,
       {li:2,prompt:`Tap each row to count by ${c}s.`,think:`I count by ${c}s, one row at a time. ${skTxt(c,r)}`,input:{t:'board',mode:'rows',check:R=>R.counted===r},cue:`Tap the rows from the top. Each tap adds ${c} more.`,act:R=>{R.counted=r}},
       {li:3,prompt:'How many in all?',think:`The last number I said was ${t}. There are ${t} dots.`,input:{t:'num',a:t},cue:'Look at the last number you counted.'}]};
@@ -519,8 +549,8 @@ K.skip={
       {li:2,prompt:'How many jumps did it take?',think:`I made ${k} jumps.`,input:{t:'num',a:k},cue:'Look at the jump count under the line.'}]};
     return{q,explain,list:['Find the number you count by.','Count by it from 0, and keep track of how many numbers you say.'],steps:[s0,
       {li:1,prompt:`Count by ${s}s to ${N}. How many jumps?`,think:`${skTxt(s,k)} I said ${k} numbers, so that is ${k} jumps.`,input:{t:'num',a:k},cue:`Hold up a finger each time you count: ${sk(s,2).join(', ')}, ...`}]}}};
-K.oddeven={picPool:true,
-  pool:ph=>{const o=[];const[a,b]=ph==='pic'?[4,22]:[11,60];for(let n=a;n<=b;n++)o.push({n});return o},
+K.oddeven={picPool:true,ctx:ph=>ph==='pic'?6:1,
+  pool:ph=>{const o=[];const[a,b]=ph==='pic'?[4,22]:[11,99];for(let n=a;n<=b;n++)o.push({n});return o},
   make(p,ph){const{n}=p,ev=n%2===0,h2=Math.floor(n/2),it=itm(p);
     const explain=ev?`${n} = ${h2} + ${h2}. Every one has a partner, so ${n} is even.`:`${n} = ${h2} + ${h2} + 1. One is left without a partner, so ${n} is odd.`;
     const fin=li=>({li,prompt:`So is ${n} odd or even?`,think:ev?`Every one has a partner. ${n} is even.`:`One is left over with no partner. ${n} is odd.`,input:{t:'choice',opts:['Odd','Even'],a:ev?1:0},cue:'Even: everyone has a partner. Odd: one is left over.'});
@@ -532,7 +562,7 @@ K.oddeven={picPool:true,
       {...fin(1),think:`The ones digit is ${n%10}. ${ev?'0, 2, 4, 6, and 8 are even, so':'1, 3, 5, 7, and 9 are odd, so'} ${n} is ${ev?'even':'odd'}.`}]}}};
 
 /* Grade 3 */
-K.meaning={picPool:true,
+K.meaning={picPool:true,ctx:6,
   pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[9,9];for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({g,n});return o},
   make(p,ph){const{g,n}=p,t=g*n,it=itm(p),hd=hold(p),arr=p.cx%2===1,who=nm(p),G=arr?'rows':'groups',E=arr?'in each row':'in each group';
     const q=arr?`${who} lines up ${it[1]} in ${g} rows, with ${n} in each row. How many ${it[1]} are there?`:`${who} has ${g} ${hd[1]} with ${n} ${it[1]} in each ${hd[0]}. How many ${it[1]} are there?`;
@@ -547,7 +577,8 @@ K.meaning={picPool:true,
     return{q,eq:'? × ? = ?',explain,list:[`Find the number of ${G} and how many ${E}.`,`Multiply: ${G} × ${E}.`],steps:[
       {li:0,prompt:'Which number sentence matches the story?',think:`There are ${g} equal ${G} of ${n}. Equal groups means we multiply: ${g} × ${n}. Adding ${g} + ${n} would only put two numbers together.`,input:{t:'choice',...o},cue:`The story has ${g} equal ${G}. Equal groups means times.`},
       {li:1,prompt:`${g} × ${n} = ?`,think:`I count by ${n}s, ${g} times. ${skTxt(n,g)} So ${g} × ${n} = ${t}.`,input:{t:'num',a:t},cue:`Count by ${n}s, ${g} times. Or use a fact you know.`}]}}};
-K.breakapart={
+const BA_CTX=[null,(a,b)=>`A muffin pan has ${a} rows with ${b} cups in each row.`,(a,b)=>`A garden has ${a} rows of ${b} plants.`,(a,b)=>`The class sets out ${a} rows of ${b} chairs.`,(a,b)=>`A sticker sheet has ${a} rows with ${b} stickers in each row.`];
+K.breakapart={ctx:5,
   pool:()=>{const o=[];for(let a=6;a<=9;a++)for(let b=3;b<=9;b++)o.push({a,b});return o},
   make(p,ph){const{a,b}=p,r=a-5,t=a*b,top=5*b,bot=r*b;
     const explain=`${a} × ${b} = 5 × ${b} + ${r} × ${b} = ${top} + ${bot} = ${t}.`,eq=`${a} × ${b} = ?`;
@@ -556,10 +587,11 @@ K.breakapart={
     const s2={li:2,prompt:`The bottom part is ${r} ${pl(r,'row')} of ${b}. ${r} × ${b} = ?`,think:`${r} × ${b} is ${bot}.`,input:{t:'num',a:bot},cue:r===1?`1 row of ${b} is just ${b}.`:`Count by ${b}s, ${r} times.`,act:R=>{R.split=5;R.lab=labs}};
     const s3={li:3,prompt:`Put the parts back together. ${top} + ${bot} = ?`,think:`${top} plus ${bot} is ${t}. So ${a} × ${b} = ${t}.`,input:{t:'num',a:t},cue:`Add the top part and the bottom part.`};
     const list=['Break the big factor into 5 and the rest.','Multiply the top part: 5 × the other factor.','Multiply the bottom part.','Add the two parts.'];
-    if(ph==='pic')return{q:`What is ${a} × ${b}? ${a} rows is a lot. Break the array into two smaller facts you know.`,eq,explain,list,board:{type:'array',r:a,c:b,split:null},steps:[
+    const pre=BA_CTX[p.cx%BA_CTX.length]?BA_CTX[p.cx%BA_CTX.length](a,b)+' ':'';
+    if(ph==='pic')return{q:`${pre}What is ${a} × ${b}? ${a} rows is a lot. Break the array into two smaller facts you know.`,eq,explain,list,board:{type:'array',r:a,c:b,split:null},steps:[
       {li:0,prompt:`Cut the array after row 5. Tap the dashed line under row 5.`,think:`${a} is 5 and ${r} more. So I cut the array after row 5.`,input:{t:'board',mode:'split',check:R=>R.split===5},cue:'Find row 5 on the left. Tap the dashed line just under it.',act:R=>{R.split=5}},s1,s2,s3]};
     const o=rotOpts([`5 + ${r}`,`${a} + 5`],0,p.cx);
-    return{q:`What is ${a} × ${b}? Break it into two facts you know.`,eq,explain,list,steps:[
+    return{q:`${pre}What is ${a} × ${b}? Break it into two facts you know.`,eq,explain,list,steps:[
       {li:0,prompt:`How can we break apart ${a}?`,think:`${a} is 5 and ${r} more: 5 + ${r}. Fives are easy facts.`,input:{t:'choice',...o},cue:`Which one adds up to ${a}?`},s1,s2,s3]}}};
 K.unknown={
   pool:()=>{const o=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)for(const f of ['right','left','div'])o.push({a,b,f});return o},
@@ -573,7 +605,7 @@ K.unknown={
       {...fin(1),prompt:`How many jumps of ${a} did it take?`,think:`I made ${b} jumps. So ${a} × ${b} = ${t}.`}]};
     return{q,eq,explain,list:['Use 5 groups as a helper. Is the total more or less?','Count on by the factor you know until you reach the total.'],steps:[
       {li:0,prompt:`5 × ${a} = ${five}. Is ${t} more than, less than, or the same as ${five}?`,think:t>five?`${t} is more than ${five}. So the missing factor is more than 5.`:t<five?`${t} is less than ${five}. So the missing factor is less than 5.`:`${t} is the same as ${five}. So the missing factor is 5.`,input:{t:'choice',opts:['More','Less','The same'],a:t>five?0:t<five?1:2},cue:`Compare ${t} and ${five}. Which is bigger?`},fin(1)]}}};
-K.tens3={
+K.tens3={ctx:2,
   pool:()=>{const o=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)o.push({a,b});return o},
   make(p,ph){const{a,b}=p,ab=a*b,t=ab*10,B=b*10,it=itm(p),who=nm(p);
     const q=p.cx%2?`${who} buys ${a} packs of ${it[1]}. Each pack has ${B}. How many ${it[1]} is that?`:`What is ${a} × ${B}?`,eq=`${a} × ${B} = ?`;
@@ -587,7 +619,7 @@ K.tens3={
       {li:1,prompt:`So ${a} × ${b} tens = ${ab} tens. ${a} × ${B} = ?`,think:`${ab} tens is ${t}.`,input:{t:'num',a:t},cue:`${ab} tens: the ${ab} moves over and a 0 goes in the ones place.`}]}}};
 const ROWS3=[g=>[`The class puts desks in ${g} rows.`,'desks','desk'],g=>[`A farmer plants ${g} rows of corn.`,'corn plants','corn plant'],g=>[`The band marches in ${g} rows.`,'players','player']];
 const MEAS3=[(w,g,n)=>[`Each ribbon is ${n} inches long. ${w} has ${g} ribbons.`,`How many inches of ribbon does ${w} have?`],(w,g,n)=>[`A bus ride costs ${n} dollars. ${w} rides the bus ${g} times.`,`How many dollars does ${w} spend?`],(w,g,n)=>[`${w} reads for ${n} minutes every day for ${g} days.`,`How many minutes does ${w} read?`]];
-K.story3={picPool:true,
+K.story3={picPool:true,ctx:ph=>ph==='pic'?6:1,
   pool:ph=>{const o=[];const[G,N]=ph==='pic'?[5,6]:[9,9];for(const ty of ph==='pic'?['groups','array']:['groups','array','measure'])for(let g=2;g<=G;g++)for(let n=2;n<=N;n++)o.push({ty,g,n});return o},
   make(p,ph){const{ty,g,n}=p,t=g*n,it=itm(p),hd=hold(p),who=nm(p),arr=ty==='array';
     let x=2+(g*3+n*5+p.cx)%8;while(x===g||x===n)x=x%9+2;
@@ -710,7 +742,7 @@ K.algo={picPool:true,
       {li:2,prompt:`Now the tens digit, ${bt/10}. It really means ${bt}. Write a zero first, then multiply. ${a} × ${bt} = ?`,think:`The ${bt/10} means ${bt}, so I write a 0 in the ones place first. ${a} × ${bt/10} is ${fmt(a*bt/10)}. With the 0, it is ${fmt(p2)}.`,input:{t:'num',a:p2},cue:`Multiply ${a} × ${bt/10}, then put a 0 on the end.`,act:R=>{AL(R).rows.push({t:String(p2),ph:true,note:`${a} × ${bt}`});const A=AR(R);if(A)A.done[0]=1}},
       {li:3,prompt:`Add the two rows. ${fmt(p1)} + ${fmt(p2)} = ?`,think:`${fmt(p1)} plus ${fmt(p2)} is ${fmt(t)}. That is close to my estimate of ${fmt(est)}, so it makes sense.`,input:{t:'num',a:t},cue:'Line up the places and add.',act:R=>{AL(R).total=t}}]}}};
 K.powers={
-  pool:()=>i=>{const v=['times','dec','pow','dec'][i%4];
+  pool:()=>i=>{const v=['times','dec','times','dec','pow'][i%5];
     if(v==='pow')return{v,k:rint(1,6),dir:rint(0,1)};
     if(v==='times')return{v,n:rint(2,99),k:rint(1,3)};
     for(;;){const d=rint(1,2),N=d===1?rint(11,299):rint(101,2999),k=rint(1,3);if(N%10)return{v,N,d,k}}},
@@ -758,11 +790,16 @@ K.decimals={picPool:true,
       return{q:`What is ${x} × ${y}?`,eq:`${x} × ${y} = ?`,explain,list:numList,steps:num3(a,b,ab,2,ans,decRaw(ab,2))}}
     const{w,t,k}=p,W=10*w+t,prod=W*k,ans=decStr(prod,1),x=`${w}.${t}`;
     return{q:p.cx%2?`A ribbon is ${x} meters long. ${nm(p)} buys ${k} ribbons. How many meters is that?`:`What is ${x} × ${k}?`,eq:`${x} × ${k} = ?`,explain:`${W} × ${k} = ${prod}. With 1 digit after the point, ${x} × ${k} = ${ans}.`,list:numList,steps:num3(W,k,prod,1,ans,decRaw(prod,1))}}};
-K.volume={picPool:true,
+const VOL_CTX=[(l,w,h)=>[`A box is filled with 1-inch cubes. It is ${l} cubes long, ${w} cubes wide, and ${h} cubes tall. How many cubes fill the box?`,'cubic inches'],
+  (l,w,h)=>[`A crate is packed with toy blocks. It is ${l} blocks long, ${w} blocks wide, and ${h} blocks tall. How many blocks are in the crate?`,'blocks'],
+  (l,w,h,n)=>[`${n} builds a solid tower of cubes. It is ${l} cubes long, ${w} cubes wide, and ${h} cubes tall. How many cubes is that?`,'cubes'],
+  (l,w,h)=>[`A shipping box is packed with small boxes: ${l} long, ${w} wide, and ${h} layers high. How many small boxes fit?`,'small boxes']];
+K.volume={picPool:true,ctx:4,
   pool:ph=>{const o=[];const[L,W,H]=ph==='pic'?[5,4,4]:[10,8,6];for(let l=2;l<=L;l++)for(let w=2;w<=W;w++)for(let h=2;h<=H;h++)o.push({l,w,h});return o},
   make(p,ph){const{l,w,h}=p,lw=l*w,V=lw*h;
-    return{q:`A box is filled with 1-inch cubes. It is ${l} cubes long, ${w} cubes wide, and ${h} cubes tall. How many cubes fill the box?`,eq:`${l} × ${w} × ${h} = ?`,
-      board:ph==='pic'?{type:'layers',l,w,h,shown:0}:null,explain:`Volume = length × width × height = ${l} × ${w} × ${h} = ${V} cubic inches.`,
+    const[vq,vu]=VOL_CTX[p.cx%VOL_CTX.length](l,w,h,nm(p));
+    return{q:vq,eq:`${l} × ${w} × ${h} = ?`,
+      board:ph==='pic'?{type:'layers',l,w,h,shown:0}:null,explain:`Volume = length × width × height = ${l} × ${w} × ${h} = ${V} ${vu}.`,
       list:['Find the cubes in one layer: length × width.','Find the number of layers: the height.','Multiply one layer by the number of layers.'],steps:[
       {li:0,prompt:`One layer is ${l} cubes long and ${w} cubes wide. How many cubes are in one layer?`,think:`One layer is ${l} × ${w}. That is ${lw} cubes.`,input:{t:'num',a:lw},cue:`Multiply ${l} × ${w}.`,act:R=>{R.shown=1}},
       {li:1,prompt:'How many layers tall is the box?',think:`The box is ${h} cubes tall, so it has ${h} layers.`,input:{t:'num',a:h},cue:'The height tells how many layers.',act:R=>{R.shown=h}},
@@ -800,11 +837,21 @@ function factHelp(a,b){const id=easiestSet(a,b);const m=id==='01'?(a<=1?a:b):+id
   return{'01':m===0?`Anything times 0 is 0.`:`1 group of ${o} is just ${o}.`,'2':`Double ${o}: ${o} + ${o} = ${2*o}.`,'10':`${o} tens is ${10*o}.`,'5':`Half of 10 × ${o}: half of ${10*o} is ${5*o}.`,
     '9':`10 × ${o} = ${10*o}, take away one ${o}: ${9*o}.`,'4':`Double, then double again: ${o}, ${2*o}, ${4*o}.`,'3':`2 × ${o} = ${2*o}, plus one more ${o}: ${3*o}.`,'6':`5 × ${o} = ${5*o}, plus one more ${o}: ${6*o}.`,
     '8':`4 × ${o} = ${4*o}, doubled: ${8*o}.`,'7':`5 × ${o} = ${5*o} and 2 × ${o} = ${2*o}. ${5*o} + ${2*o} = ${7*o}.`}[id]}
-function factKind(id){return{pool:()=>setFacts(id),
-  make(p,ph){const{a,b}=p,t=a*b,eq=`${a} × ${b} = ?`;
+const FORMS=GRADE===2?['eq','story','arr','jump','add']:['eq','story','arr','miss'];
+function factKind(id){return{pool:()=>{const o=[];setFacts(id).forEach(f=>FORMS.forEach(fm=>{const zero=f.a===0||f.b===0;
+    if(fm==='miss'&&(id==='01'||zero))return;if(fm!=='eq'&&zero)return;o.push({...f,fm})}));return o},
+  make(p,ph){const{a,b}=p,t=a*b,eq=`${a} × ${b} = ?`,fm=p.fm||'eq';
+    const wrapQ=q=>fm==='jump'?`${nm(p)} counts by ${b}s, ${a} ${pl(a,'time')}. What number does ${nm(p)} land on? ${q}`:fm==='add'?`${Array(a).fill(b).join(' + ')} = ? That is ${a} ${pl(a,'group')} of ${b}. ${q}`:fm==='story'?`${nm(p)} has ${a} ${pl(a,hold(p)[0],hold(p)[1])} with ${b} ${itm(p)[1]} in each ${hold(p)[0]}. How many ${itm(p)[1]} in all? ${q}`:fm==='arr'?`${ARR_CTX[p.cx%ARR_CTX.length](nm(p),a,b)[0]} ${q}`:q;
+    if(fm==='miss'){const m=+id,o=a===m?b:a,left=a!==m,meq=left?`? × ${m} = ${t}`:`${m} × ? = ${t}`;
+      const ex=`${m} × ${o} = ${t}, so the missing factor is ${o}. ${factHelp(m,o)}`;
+      const fin={li:1,prompt:`How many ${m}s make ${t}?`,think:`${skTxt(m,o)} That is ${o} ${pl(o,'jump')} of ${m}. So the missing factor is ${o}.`,input:{t:'num',a:o},cue:`Count by ${m}s until you reach ${t}. Hold up a finger for each number you say.`};
+      if(ph==='pic')return{q:'Find the missing factor. Count by jumps on the number line.',eq:meq,explain:ex,ownMode:'jump',board:{type:'jumps',from:0,step:m,max:t,hops:0},list:[`Jump by ${m}s until you land on ${t}.`,'Count the jumps. That is the missing factor.'],steps:[
+        {li:0,prompt:`Press Jump until you land on ${t}.`,think:`I jump ${m} at a time. ${skTxt(m,o)} I landed on ${t}.`,input:{t:'board',mode:'jump',check:R=>R.hops===o},cue:`Each jump adds ${m}. Stop when you land on ${t}.`,act:R=>{R.hops=o}},{...fin,prompt:`How many jumps of ${m}?`}]};
+      return{q:'Find the missing factor.',eq:meq,explain:ex,list:[`Count by ${m}s to ${t}.`,'Count how many numbers you said. That is the missing factor.'],steps:[
+        {li:0,prompt:`We count by ${m}s. What is the first number?`,think:`Counting by ${m}s starts at ${m}.`,input:{t:'num',a:m},cue:`One group of ${m} is ${m}.`},fin]}}
     if(id==='01'){const zero=a===0||b===0;
       const[pr,th]=zero?(a===0?[`0 groups of ${b}. How many in all?`,`There are no groups at all, so there is nothing. ${a} × ${b} = 0.`]:[`${a} groups with 0 in each. How many in all?`,`Every group is empty. ${a} groups of nothing is 0.`]):(a===1?[`1 group of ${b}. How many?`,`One group of ${b} is just ${b}.`]:[`${a} groups of 1. How many?`,`${a} groups with 1 in each is ${a}.`]);
-      return{q:'Use the rule to find the answer.',eq,explain:`${a} × ${b} = ${t}. ${zero?'Times 0 is always 0.':'Times 1 keeps the number the same.'}`,board:ph==='pic'?{type:'groups',g:a,n:b,emoji:'🍎',counted:0}:null,
+      return{q:wrapQ('Use the rule to find the answer.'),eq,explain:`${a} × ${b} = ${t}. ${zero?'Times 0 is always 0.':'Times 1 keeps the number the same.'}`,board:ph==='pic'?{type:'groups',g:a,n:b,emoji:'🍎',counted:0}:null,
         list:['Times 0 is always 0. Times 1 keeps the number the same.'],steps:[{li:0,prompt:pr,think:th,input:{t:'num',a:t},cue:zero?'If there are no groups, or nothing in each group, there is nothing at all.':'One group of a number is that number.'}]}}
     const m=+id,turned=a!==m,o=turned?a:b,T=turned?`${a} × ${b} is the same as ${m} × ${o}. `:'';
     const T2=turned?`Turn it around. ${a} × ${b} is the same as ${m} × ${o}. `:'';
@@ -822,7 +869,7 @@ function factKind(id){return{pool:()=>setFacts(id),
     const steps=S.steps.map((s,i)=>i===0?{...s,prompt:T+s.prompt,think:T2+s.think}:s);
     const board=ph==='pic'?{type:'array',r:S.rows||m,c:o,bands:(S.bands||[]).map(([f,t2,lab])=>({from:f,to:t2,lab,show:id==='2'}))}:null;
     const short=easiestSet(a,b)!==id?` Another way: ${factHelp(a,b)}`:'';
-    return{q:`Use the ${SETINFO[id][0].split(': ')[1]||SETINFO[id][0]} strategy.`,eq,board,explain:`${a} × ${b} = ${t}.${turned?` And ${b} × ${a} = ${t} too.`:''}${short}`,list:S.list,steps}}}}
+    return{q:wrapQ(`Use the ${SETINFO[id][0].split(': ')[1]||SETINFO[id][0]} strategy.`),eq,board,explain:`${a} × ${b} = ${t}.${turned?` And ${b} × ${a} = ${t} too.`:''}${short}`,list:S.list,steps}}}}
 SETS.forEach(id=>{K['f'+id]=factKind(id)});
 
 /* ---------- units for each grade ---------- */
@@ -893,8 +940,10 @@ function factState(a,b){const f=FST[fkey(a,b)];if(f&&f.streak>=3)return 'known';
 function wordsBox(u){return u.words?h('div',{},h('div',{class:'muted',style:'font-size:15px;margin-bottom:4px'},'Words we use'),h('div',{class:'words'},u.words.map(([w,m])=>h('div',{class:'word'},h('b',{},w),m)))):null}
 /* ---------- never repeat: each problem family remembers what it has used ---------- */
 let USED=store.get('used',{});
-function pickProblems(u,ph,n){
-  const kd=K[u.kind],key=u.kind+(kd.picPool?':'+ph:''),src=kd.pool(ph),J=x=>JSON.stringify(x);
+function pickProblems(u,ph,n,add){
+  const kd=K[u.kind],key=u.kind+(kd.picPool?':'+ph:''),raw=kd.pool(ph),J=x=>JSON.stringify(x);
+  const cn=typeof kd.ctx==='function'?kd.ctx(ph):(kd.ctx||1);
+  const src=Array.isArray(raw)&&cn>1?raw.flatMap(p=>Array.from({length:cn},(_,i)=>({...p,ctx:i}))):raw;
   const used=new Set(USED[key]||[]),last=new Set(USED['last:'+u.id]||[]),out=[],keys=new Set();
   const take=p=>{const k=J(p);if(keys.has(k))return;keys.add(k);out.push(p)};
   let restart=false;
@@ -903,8 +952,8 @@ function pickProblems(u,ph,n){
     for(const tier of [fresh.filter(p=>!last.has(J(p))),src.filter(p=>!last.has(J(p))),src])for(const p of shuffle(tier)){if(out.length>=n)break;take(p)}
   }else{let tries=0;while(out.length<n&&tries<40000){tries++;const p=src(out.length),k=J(p),lim=400*(out.length+1);
     if(!used.has(k)||(tries>lim&&!last.has(k))||tries>3*lim)take(p)}}
-  const ks=out.map(J);USED[key]=[...(restart?[]:(USED[key]||[])),...ks].slice(-3000);USED['last:'+u.id]=ks;store.set('used',USED);
-  return out.map(p=>{const q={...p,cx:rint(0,9999),nx:rint(0,9999)};if(kd.dress)kd.dress(q);return q});
+  const ks=out.map(J);USED[key]=[...(restart?[]:(USED[key]||[])),...ks].slice(-3000);USED['last:'+u.id]=add?[...(USED['last:'+u.id]||[]),...ks]:ks;store.set('used',USED);
+  return out.map(p=>{const q={...p,cx:p.ctx!=null?p.ctx:rint(0,9999),nx:rint(0,9999)};if(kd.dress)kd.dress(q);return q});
 }
 
 /* ---------- progress ---------- */
@@ -929,10 +978,11 @@ async function pointAt(el,c){if(A.calm||!el)return;const hd=$('#hand'),r=el.getB
 function hideHand(){const hd=$('#hand');hd.style.left='-80px';hd.style.top='-80px'}
 /* ---------- screens ---------- */
 const PARTS=['Watch me','Try together','On my own'];
+const OWN_N=10,OWN_PASS=8,REVIEW_N=8,REVIEW_PASS=6,TOG_N=3,MAX_EXTRA=3;
 function header(u,phase,partIx,count,idx){
   const trail=h('div',{class:'trail'});
-  if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of 5`));
-  else PARTS.forEach((p,i)=>trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')},i===partIx?`${p} ${idx+1} of ${count}`:p)));
+  if(ses.mode==='review')trail.append(h('span',{class:'pt on'},`Review ${idx+1} of ${REVIEW_N}`));
+  else PARTS.forEach((p,i)=>{const extra=i===2&&i===partIx&&idx>=OWN_N;trail.append(h('span',{class:'pt'+(i===partIx?' on':i<partIx?' done':'')+(extra?' xtra':'')},i===partIx?(extra?'One more like that one':`${p} ${idx+1} of ${i===2?OWN_N:count}`):p))});
   return h('div',{class:'top'},
     
     h('div',{class:'ttl'},u.title,h('small',{},ses.mode==='review'?'Quick review, numbers only':phase==='pic'?'With pictures':'Numbers only')),trail,
@@ -964,11 +1014,12 @@ function layout(u,ph,partIx,count,idx,v,footBtns){
   app.append(header(u,ph,partIx,count,idx),h('div',{class:'ses'},v.work,v.bubble,v.check),h('div',{class:'foot'},footBtns));
   window.scrollTo(0,0);view=v;
 }
-function probIndex(){return ses.mode==='review'?ses.i:[0,2,4][ses.part]+ses.i}
-function partLen(){return ses.mode==='review'?5:[2,2,5][ses.part]}
+function probIndex(){return ses.mode==='review'?ses.i:[0,2,2+TOG_N][ses.part]+ses.i}
+function partLen(){return ses.mode==='review'?REVIEW_N:[2,TOG_N,OWN_N+(ses.extra||0)][ses.part]}
 function show(){
   screen='ses';if(!ses)return home();saveSes();
   const u=unitById(ses.u);if(!u){ses=null;saveSes();return home()}
+  if(!ses.done&&(ses.probs||[]).length<(ses.mode==='review'?REVIEW_N:2+TOG_N+OWN_N)){ses=null;saveSes();return home()}
   if(ses.part===3)return results();
   if(ses.part===0)return watchScreen(u);
   if(ses.part===1)return togetherScreen(u);
@@ -1005,7 +1056,7 @@ function togetherScreen(u){
   const c=newCtx();const p=ses.probs[probIndex()],v=buildView(u,p,ses.ph,'together');
   const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'Now on my own':'Next problem');
   const helper=h('button',{class:'btn',hidden:true},'Okay, next step');
-  layout(u,ses.ph,1,2,ses.i,v,[helper,go]);
+  layout(u,ses.ph,1,TOG_N,ses.i,v,[helper,go]);
   const S=v.prob.steps;let si=0;
   const step=()=>{const st=S[si];let tries=0;v.cur=st;v.mark(st.li,'now');
     if(v.B)v.B.setLive(st.input.t==='board'||st.input.t==='point',st.input.t==='point'?'point':st.input.mode);
@@ -1013,7 +1064,7 @@ function togetherScreen(u){
     v.ask(st.input,val=>{if(!c.alive)return;
       if(isRight(st.input,val,v.B)){v.say(pick(PRAISE));finish(st,false);return true}
       tries++;v.ansSlot.firstChild?.classList.add('shake');setTimeout(()=>v.ansSlot.firstChild?.classList.remove('shake'),400);
-      if(tries===1){v.say("Hmm, not quite. That's okay. "+st.cue);if(st.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
+      if(tries===1){v.say((errorMsg(u,p,st.input,val)||"Hmm, not quite. That's okay.")+' '+st.cue);if(st.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
       v.say("Let's do this step together. "+st.think);finish(st,true);return false})};
   const finish=(st,shown)=>{if(st.act&&v.B){st.act(v.B.spec)}if(v.B)v.B.setLive(false);v.fill(st.input);
     if(!S[si+1]||S[si+1].li!==st.li)v.mark(st.li,'done');
@@ -1022,57 +1073,99 @@ function togetherScreen(u){
   step();
 }
 /* On my own: independent practice with a self-monitoring checklist */
+/* factors of a problem, when they are small enough to draw */
+const FACS={eqgroups:['g','n'],arrays2:['r','c'],meaning:['g','n'],story3:['g','n'],breakapart:['a','b'],unknown:['a','b']};
+function facsOf(u,p){const f=FACS[u.kind]||(u.fact?['a','b']:null);if(!f)return null;const a=p[f[0]],b=p[f[1]];
+  return Number.isInteger(a)&&Number.isInteger(b)&&a>=1&&b>=1&&a<=12&&b<=12?[a,b]:null}
+function dotArr(a,b,totals=true){const c=Math.min(26,280/b,200/a),r=c*.36,W=b*c+48,H=a*c+4;let s=`<svg class="dots" width="${W.toFixed(0)}" height="${H.toFixed(0)}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${a} rows of ${b} dots">`;
+  for(let i=0;i<a;i++){for(let j=0;j<b;j++)s+=`<circle class="d" cx="${(j*c+c/2).toFixed(1)}" cy="${(i*c+c/2+2).toFixed(1)}" r="${r.toFixed(1)}"/>`;
+    if(totals)s+=`<text x="${(b*c+6).toFixed(1)}" y="${(i*c+c/2+7).toFixed(1)}" font-size="${Math.max(11,Math.min(15,c*.6)).toFixed(0)}" style="fill:var(--soft)">${(i+1)*b}</text>`}
+  return s+'</svg>'}
+/* name the likely mistake for a number answer */
+function errorMsg(u,p,inp,val){if(!inp||inp.t!=='num')return null;const ans=inp.a,v=+String(val??'').trim().replace(/,/g,'');if(!Number.isFinite(v)||String(val).trim()==='')return null;
+  const F=facsOf(u,p);
+  if(F&&ans===F[0]*F[1]){const[a,b]=F;
+    if(v===a+b&&a*b!==a+b)return `That is ${a} + ${b}. Times means ${a} equal groups of ${b}, so count by ${b}s, ${a} times.`;
+    if(v===ans-b||v===ans+b)return `You are one group of ${b} ${v<ans?'short':'over'}. There are ${a} groups. Count by ${b}s and say one number for each group.`;
+    if(a!==b&&(v===ans-a||v===ans+a))return `You are ${a} ${v<ans?'short':'over'}. Check: ${a} groups with ${b} in each group.`}
+  if(ans>=10&&v*10===ans)return 'Very close. Did you leave off a zero? Check the ones place.';
+  if(v===ans*10)return 'Check the zeros. Your answer has one zero too many.';
+  if(String(ans).length>1&&String(v)===String(ans).split('').reverse().join(''))return 'The right digits, but in the wrong order. Check which digit goes in the tens place.';
+  if(ans>4&&Math.abs(v-ans)<=2)return 'Very close. Count again slowly, one step at a time.';
+  return null}
+function fbBox(kind,head,u,p,explain,extra,totals=true){const F=facsOf(u,p);
+  return h('div',{class:'fbx'+(kind==='no'?' no':'')},h('div',{class:'why'},head),
+    F?h('div',{html:dotArr(F[0],F[1],totals)}):null,F?h('div',{class:'cap'},totals?`${F[0]} ${pl(F[0],'row')} of ${F[1]}`:`${F[0]} ${pl(F[0],'row')} of ${F[1]}. Count by ${F[1]}s, one row at a time.`):null,
+    explain?h('div',{class:'sayit',html:'<b>Say it:</b> '+md(explain)}):null,extra?h('div',{class:'cap'},extra):null)}
 function ownScreen(u){
-  const c=newCtx();const idx=probIndex(),p=ses.probs[idx],v=buildView(u,p,ses.mode==='review'?'num':ses.ph,'own');
+  const c=newCtx();const idx=probIndex(),p=ses.probs[idx],ph=ses.mode==='review'?'num':ses.ph,v=buildView(u,p,ph,'own');
   const quiet=ses.mode==='review';
   const fin=v.prob.steps[v.prob.steps.length-1];v.cur=fin;
-  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},ses.i===partLen()-1?'See how I did':'Next problem');
-  let tries=0,hints=0;
+  const goLabel=()=>ses.i>=partLen()-1?'See how I did':'Next problem';
+  const go=h('button',{class:'btn main',disabled:true,on:{click:advance}},goLabel());
+  let tries=0,hints=0,queued=false;
   const help=h('button',{class:'btn',on:{click(){if(!c.alive)return;hints++;const left=[...v.list.children].findIndex(x=>!x.classList.contains('done'));const li=left<0?v.prob.list.length-1:left;v.mark(li,'now');
     if(hints===1)v.say(`What is the next step on your checklist? It is step ${li+1}: ${v.prob.list[li]}`);
     else{const st=v.prob.steps.find(s=>s.li===li)||fin;v.say(st.cue)}}}},'💡 Help');
-  layout(u,ses.mode==='review'?'num':ses.ph,2,5,ses.i,v,quiet?[go]:[help,go]);
+  const F=!quiet&&ph==='num'&&!v.B?facsOf(u,p):null;
+  const picBtn=F?h('button',{class:'btn',on:{click(){if(!c.alive)return;hints++;picBtn.disabled=true;
+    v.work.insertBefore(h('div',{class:'fbx'},h('div',{html:dotArr(F[0],F[1],false)}),h('div',{class:'cap'},`${F[0]} ${pl(F[0],'row')} of ${F[1]}. Count by ${F[1]}s, one row at a time.`)),v.ansSlot);
+    v.say(`Here is a picture. ${F[0]} ${pl(F[0],'row')} of ${F[1]}. Count by ${F[1]}s.`)}}},'🖼 Show a picture'):null;
+  layout(u,ph,2,partLen(),ses.i,v,quiet?[go]:[help,picBtn,go].filter(Boolean));
   if(v.B)v.B.setLive(!quiet&&ses.ph==='pic'||fin.input.t==='point',fin.input.t==='point'?'point':v.prob.ownMode||null);
-  v.say(quiet?'Work this one out on your own. I will show you how you did at the end.':ses.i===0?'Your turn. Use your checklist. Tap Help if you get stuck.':pick(['Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.']));
+  v.say(quiet?'Work this one out on your own. I will show you how you did at the end.':idx>=2+TOG_N+OWN_N?'Here is one more like the one that was tricky. You can do this.':ses.i===0?'Your turn. Use your checklist. Tap Help if you get stuck.':pick(['Here is the next one. Take your time.','Okay, try this one.','You can do this one. Use your checklist.']));
   const record=ok=>{ses.res[idx]={ok};saveSes();if(u.fact)factLog(p.a,p.b,ok)};
+  const showFb=el=>{v.ansSlot.append(el);requestAnimationFrame(()=>el.scrollIntoView({block:'nearest'}))};
+  const queueSimilar=()=>{if(queued||quiet||(ses.extra||0)>=MAX_EXTRA)return '';queued=true;
+    const more=pickProblems(u,ses.ph,1,true)[0];if(!more)return '';ses.probs.push(more);ses.extra=(ses.extra||0)+1;saveSes();go.textContent=goLabel();return 'We will try one more like this at the end.'};
+  const done=()=>{if(v.B)v.B.setLive(false);go.disabled=false;go.textContent=goLabel();go.focus();help.disabled=true;if(picBtn)picBtn.disabled=true};
   v.ask(fin.input,val=>{if(!c.alive)return;const ok=isRight(fin.input,val,v.B);
     if(quiet){record(ok);v.fill({t:'num',a:'Saved'});v.ansSlot.querySelector('.filled').textContent='Answer saved';go.disabled=false;go.focus();if(v.B)v.B.setLive(false);return true}
-    if(ok){record(tries===0&&hints===0);v.fill(fin.input);v.say(`${tries?'Yes, you fixed it. ':pick(PRAISE)+' '}${v.prob.explain}`);if(v.B)v.B.setLive(false);go.disabled=false;go.focus();help.disabled=true;return true}
+    if(ok){record(tries===0&&hints===0);v.fill(fin.input);
+      showFb(fbBox('ok',tries?'Yes, you fixed it. Here is why it works.':'Correct. Here is why it works.',u,p,v.prob.explain));
+      v.say(`${tries?'Yes, you fixed it. ':pick(PRAISE)+' '}${v.prob.explain}`);done();return true}
     tries++;
-    if(tries===1){v.say(fin.input.t==='choice'?'Not quite. Look at your checklist and try again.':"Not quite. That's okay. Look at your checklist and try once more.");v.ansSlot.firstChild?.classList.add('shake');if(fin.input.t!=='choice')v.ansSlot.firstChild?.clear?.();return false}
-    record(false);v.fill(fin.input);if(fin.act&&v.B){fin.act(v.B.spec);v.B.setLive(false)}
-    v.say(`Here is how it works. ${v.prob.explain} You are still learning this, and that is okay.`);go.disabled=false;go.focus();help.disabled=true;return false});
+    if(tries===1){const why=errorMsg(u,p,fin.input,val),note=queueSimilar();
+      const msg=why||(fin.input.t==='choice'?'Not quite. Look at your checklist and try again.':"Not quite. That's okay. Look at your checklist and try once more.");
+      v.say(msg);const w=v.ansSlot.firstChild;w?.classList.add('shake');if(fin.input.t!=='choice')w?.clear?.();
+      v.ansSlot.querySelector('.fbx')?.remove();showFb(fbBox('no','Where it went wrong',u,p,null,[msg,why?'Try once more.':'',note].filter(Boolean).join(' '),false));return false}
+    record(false);v.fill(fin.input);if(fin.act&&v.B){fin.act(v.B.spec);v.B.refresh?.()}
+    const note=queueSimilar();
+    showFb(fbBox('no','Here is how it works',u,p,v.prob.explain,note||'You are still learning this, and that is okay.'));
+    v.say(`Here is how it works. ${v.prob.explain} You are still learning this, and that is okay.`);done();return false});
 }
 /* Results and mastery */
 function results(){
-  const u=unitById(ses.u),s=pu(u.id),r=ses.res.filter(Boolean),score=r.filter(x=>x.ok).length,pass=score>=4,need=A.need;
+  const u=unitById(ses.u),s=pu(u.id),rev=ses.mode==='review',tot=rev?REVIEW_N:OWN_N,from=rev?0:2+TOG_N;
+  const orig=Array.from({length:tot},(_,i)=>ses.res[from+i]),score=orig.filter(x=>x&&x.ok).length,pass=score>=(rev?REVIEW_PASS:OWN_PASS),need=A.need,extra=ses.extra||0;
   newCtx();hush();hideHand();app.innerHTML='';
   let title,msg,nextLabel='Keep going';
-  if(!ses.done){ses.done=true;s.log.push({ph:ses.ph,mode:ses.mode,score,at:Date.now()});
-    if(ses.mode==='review'){if(pass){s.gap=Math.min(60,(s.gap||7)*2);s.due=Date.now()+s.gap*DAY}else{s.boost=true}}
+  if(!ses.done){ses.done=true;s.log.push({ph:ses.ph,mode:ses.mode,score,tot,at:Date.now()});
+    if(rev){if(pass){s.gap=Math.min(60,(s.gap||7)*2);s.due=Date.now()+s.gap*DAY}else{s.boost=true}}
     else if(ses.mode==='boost'){if(pass){s.boost=false;s.due=Date.now()+(s.gap||7)*DAY}}
     else if(pass){s[ses.ph]++;if(ses.ph==='num'&&s.num>=need&&!s.mastered){s.mastered=Date.now();s.due=Date.now()+7*DAY;s.gap=7}}
     saveProg();saveSes()}
-  if(ses.mode==='review'){title=pass?'You still remember it!':'Time for a little boost';msg=pass?`You got ${score} of 5. Your next review will be ready in ${s.gap} days.`:`You got ${score} of 5. That's okay. Skills fade when we don't use them. A short boost lesson will bring it back.`}
-  else if(pass){title=score===5?'Wonderful work!':'Great job!';const st=stateOf(u);msg=`You got ${score} of 5 right on the first try.`+(ses.mode==='boost'?' The skill is back.':s.mastered&&ses.ph==='num'?' You have mastered this unit.':ses.ph==='pic'&&s.pic>=need?' You are ready for numbers only.':` ${st.label}.`)}
-  else{title="Let's practice this one more time";msg=`You got ${score} of 5 right on the first try. Practicing again, with new numbers, is how your brain gets stronger.`;nextLabel='Practice again'}
-  const dots=h('div',{class:'score','aria-label':`${score} of 5`},ses.res.map(x=>h('span',{},x&&x.ok?'⭐':'○')));
+  const extraLine=extra?` You also practiced ${extra} extra ${pl(extra,'problem')} on the tricky parts.`:'';
+  if(rev){title=pass?'You still remember it!':'Time for a little boost';msg=pass?`You got ${score} of ${tot}. Your next review will be ready in ${s.gap} days.`:`You got ${score} of ${tot}. That's okay. Skills fade when we don't use them. A short boost lesson will bring it back.`}
+  else if(pass){title=score===tot?'Wonderful work!':'Great job!';const st=stateOf(u);msg=`You got ${score} of ${tot} right on the first try.`+extraLine+(ses.mode==='boost'?' The skill is back.':s.mastered&&ses.ph==='num'?' You have mastered this unit.':ses.ph==='pic'&&s.pic>=need?' You are ready for numbers only.':` ${st.label}.`)}
+  else{title="Let's practice this one more time";msg=`You got ${score} of ${tot} right on the first try.${extraLine} Practicing again, with new problems, is how your brain gets stronger.`;nextLabel='Practice again'}
+  const dots=h('div',{class:'score','aria-label':`${score} of ${tot}`},orig.map(x=>h('span',{},x&&x.ok?'⭐':'○')));
   const next=stateOf(u).next;
   app.append(h('div',{class:'panel',style:'margin-top:20px'},h('div',{class:'big'},pass?'🌟':'🌱'),h('h1',{},title),dots,h('p',{style:'margin:0'},msg)),
     h('div',{class:'foot'},h('button',{class:'btn',on:{click:()=>{ses=null;saveSes();home()}}},'Home'),h('button',{class:'btn main',on:{click:()=>start(u,next)}},nextLabel)));
   say(`${title}. ${msg}`);
 }
 function start(u,next,skipWatch){
-  const n=next.mode==='review'?5:9;ses={u:u.id,ph:next.ph,mode:next.mode,part:next.mode==='review'?2:(skipWatch?1:0),i:0,probs:pickProblems(u,next.ph,n),res:[]};
-  if(next.mode==='review')ses.probs=ses.probs.slice(0,5);
+  const n=next.mode==='review'?REVIEW_N:2+TOG_N+OWN_N;ses={u:u.id,ph:next.ph,mode:next.mode,part:next.mode==='review'?2:(skipWatch?1:0),i:0,probs:pickProblems(u,next.ph,n),res:[],extra:0};
+  if(next.mode==='review')ses.probs=ses.probs.slice(0,REVIEW_N);
   saveSes();show();
 }
 function intro(u){
   screen='intro';const st=stateOf(u),s=pu(u.id);hush();newCtx();app.innerHTML='';
   const nx=st.next,isReview=nx.mode==='review';
   const canSkip=!isReview&&(s.log.some(x=>x.ph===nx.ph));
-  const plan=isReview?h('p',{},'5 problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.'):
-    h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},'🤝 Try together: 2 problems, with help on every step.'),h('li',{},'⭐ On my own: 5 problems with your checklist. Get 4 right to move on.'));
+  const plan=isReview?h('p',{},`${REVIEW_N} problems, numbers only. No hints, and you see how you did at the end. This checks that the skill stayed with you.`):
+    h('ol',{},h('li',{},'👀 Watch me: 2 examples, step by step.'),h('li',{},`🤝 Try together: ${TOG_N} problems, with help on every step.`),h('li',{},`⭐ On my own: ${OWN_N} problems with your checklist. Get ${OWN_PASS} right to move on. If one is tricky, you get one more like it at the end.`));
   app.append(
     h('div',{class:'panel'},h('div',{class:'chip'},`Grade ${GRADE}, ${u.std}, ${nx.mode==='boost'?'Boost':isReview?'Review':nx.ph==='pic'?'With pictures':'Numbers only'}`),h('h1',{},u.title),h('p',{style:'margin:0'},u.sub),plan,wordsBox(u),
       h('div',{class:'row'},h('button',{class:'btn main',id:'startBtn',on:{click:()=>start(u,nx)}},isReview?'Start review':"Let's start"),canSkip?h('button',{class:'btn',on:{click:()=>start(u,nx,true)}},'Skip watching, I remember'):null,
@@ -1196,38 +1289,45 @@ function unitCard(u,i,up){const st=stateOf(u),s=pu(u.id);
     s.mastered?h('span',{class:'chip ok'},'⭐ Mastered'):null,st.chip==='due'?h('span',{class:'chip due'},st.label):null);
   return h('div',{class:'unit'+(st.done&&st.chip!=='due'?' done':'')+(up?' up':'')},h('div',{class:'t'},h('span',{class:'num'},s.mastered?'⭐':String(i+1)),h('div',{},h('b',{},u.title),h('small',{},u.sub))),chips,
     h('button',{class:'btn'+(up||st.chip==='due'?' main':''),on:{click:()=>intro(u)}},st.chip==='due'?(st.next.mode==='review'?'Start review':'Start boost'):s.log.length?(st.done?'Practice more':'Keep going'):'Start'))}
+function statusOf(u){const st=stateOf(u),s=pu(u.id);
+  if(st.chip==='due')return['due',st.label];if(s.mastered)return['ok','Mastered'];
+  if(s.pic>=A.need&&s.num>0)return['','Numbers only'];if(s.pic>=A.need)return['','Pictures done'];if(s.log.length)return['','Started'];return['','']}
+function lrow(u,i,up){const s=pu(u.id),[c,t]=statusOf(u);
+  return h('li',{},h('button',{type:'button',class:'lrow'+(s.mastered?' done':'')+(up?' up':''),'aria-label':`${u.title}. ${t||'Not started'}`,on:{click:()=>intro(u)}},
+    h('span',{class:'num','aria-hidden':'true'},s.mastered?'⭐':String(i+1)),h('span',{class:'tx'},h('b',{},u.title),h('small',{},u.sub)),t?h('span',{class:'st'+(c?' '+c:'')},t):null))}
 function home(){
   screen='home';newCtx();document.body.classList.add('at-home');hush();hideHand();view=null;app.innerHTML='';
   const grades=h('nav',{class:'grades','aria-label':'Grades'},[2,3,4,5].map(g=>h('a',{href:`multiplication-grade${g}.html`,'aria-current':g===GRADE?'page':null},`Grade ${g}`)));
   app.append(h('div',{class:'hero'},h('div',{class:'grow'},h('h1',{},'Multiplication Path'),h('p',{},'Multiplication, one step at a time.')),grades,h('button',{class:'quiet',on:{click:openSettings}},'⚙ Settings')));
-  if(ses&&!ses.done){const u=unitById(ses.u);if(u)app.append(h('div',{class:'card'},h('div',{class:'grow'},h('b',{},'Continue where you stopped'),h('div',{class:'muted',style:'font-size:15px'},`${u.title}: ${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
-  app.append(h('div',{class:'tools'},
-    h('button',{class:'tool',id:'tableBtn',on:{click:tableScreen}},h('span',{class:'ic'},'🔢'),h('span',{},h('b',{},'Times table'),h('small',{},'Tap any fact to see it and learn a way to work it out'))),
-    h('button',{class:'tool',id:'sprintBtn',on:{click:sprintHome}},h('span',{class:'ic'},'⏱'),h('span',{},h('b',{},'Quick practice'),h('small',{},'1 minute of facts. Meet or beat your goal.')))));
-  const upL=LESSONS.find(u=>!stateOf(u).done),upF=FACTSETS.find(u=>!stateOf(u).done);
-  const gl=h('div',{class:'units'});LESSONS.forEach((u,i)=>gl.append(unitCard(u,i,u===upL)));
-  const gf=h('div',{class:'units small'});FACTSETS.forEach((u,i)=>gf.append(unitCard(u,i,u===upF)));
-  app.append(h('h2',{class:'sec'},'Lessons'),h('p',{class:'secp'},upL?`Up next: ${upL.title}`:'Every lesson is mastered. Reviews keep the skills fresh.'),gl,
-    h('h2',{class:'sec'},'Fact Builder'),h('p',{class:'secp'},GRADE===2?'Learn the 2s, 10s, and 5s with a strategy for each one. Go in order.':'Learn the facts one family at a time, with a strategy for each. Go in order: later families use the earlier ones.'),gf,notes());
+  const live=ses&&!ses.done&&unitById(ses.u);
+  if(live){const u=unitById(ses.u);app.append(h('div',{class:'upnext'},h('div',{},h('div',{class:'k'},'Continue where you stopped'),h('b',{},u.title),h('small',{},`${ses.mode==='review'?'Review':PARTS[ses.part]||'Results'}, problem ${ses.i+1}`)),h('button',{class:'btn main',id:'contBtn',on:{click:show}},'▶ Continue')))}
+  const due=UNITS.find(u=>stateOf(u).chip==='due'),upL=LESSONS.find(u=>!stateOf(u).done),upF=FACTSETS.find(u=>!stateOf(u).done),nx=due||upL||upF;
+  if(!live&&nx){const st=stateOf(nx);app.append(h('div',{class:'upnext'},h('div',{},h('div',{class:'k'},due?(st.next.mode==='review'?'Review is ready':'Boost practice'):'Up next'),h('b',{},nx.title),h('small',{},`${nx.sub}. ${st.label}.`)),h('button',{class:'btn main',id:'upBtn',on:{click:()=>intro(nx)}},'Start')))}
+  app.append(h('div',{class:'minitools'},h('button',{class:'quiet',id:'tableBtn',on:{click:tableScreen}},'🔢 Times table'),h('button',{class:'quiet',id:'sprintBtn',on:{click:sprintHome}},'⏱ Quick practice')));
+  app.append(h('h2',{class:'sec'},'Lessons'),h('ol',{class:'list'},LESSONS.map((u,i)=>lrow(u,i,u===upL))),
+    h('h2',{class:'sec'},'Fact Builder'),h('p',{class:'secp'},GRADE===2?'Learn the 2s, 10s, and 5s with a strategy for each. Go in order.':'Learn the facts one family at a time, with a strategy for each. Go in order: later families use the earlier ones.'),
+    h('ol',{class:'list two'},FACTSETS.map((u,i)=>lrow(u,i,u===upF))),notes());
   say('');
 }
 function notes(){return h('details',{},h('summary',{},'For teachers and parents: how this follows the research'),
   h('ul',{},
-    h('li',{},'The design follows the six recommendations in the What Works Clearinghouse practice guide, Assisting Students Struggling with Mathematics: Intervention in the Elementary Grades (Fuchs and colleagues, 2021). All six are rated as having strong evidence.'),
-    h('li',{},'Systematic instruction: every lesson has 2 worked examples with a spoken think-aloud (Watch me), 2 guided problems with a prompt on every step (Try together), and 5 problems on your own with a checklist. "With pictures" uses smaller numbers, then "Numbers only" uses bigger ones. Lessons are in order, and each builds on the last.'),
-    h('li',{},'Mathematical language: each lesson starts with its key words and kid-friendly meanings, and the same words (factor, product, rows, equal groups) are used every time.'),
-    h('li',{},'Representations: equal groups, arrays, number lines, base-ten blocks, area models, bar pictures, and cube layers appear next to the number sentence. Students then move to numbers only, like the concrete-representational-abstract sequence.'),
+    h('li',{},'The design follows the six recommendations in the What Works Clearinghouse practice guide, Assisting Students Struggling with Mathematics: Intervention in the Elementary Grades (Fuchs and colleagues, 2021): systematic instruction, mathematical language, representations, number lines, word problems, and timed activities.'),
+    h('li',{},`Systematic instruction: every lesson has 2 worked examples with a spoken think-aloud (Watch me), ${TOG_N} guided problems with a prompt on every step (Try together), and ${OWN_N} problems on your own with a checklist. "With pictures" uses smaller numbers, then "Numbers only" uses bigger ones. Lessons are in order, and each builds on the last.`),
+    h('li',{},'Enough practice: struggling learners need many more chances to respond than their classmates. Each session now has 15 problems, and one more like any problem the child misses (up to 3 extra).'),
+    h('li',{},'Feedback after every answer: a right answer shows a picture of the fact and a "Say it" sentence. A wrong answer names the likely mistake (for example adding instead of multiplying, being one group off, or a missing zero) and shows a picture, then the child tries once more. Feedback that tells a learner what went wrong and what to do next is among the most effective kinds (Hattie and Timperley, 2007).'),
+    h('li',{},'Mathematical language: each lesson starts with its key words, and every solution ends with a sentence to say out loud using the same words (rows, equal groups, factor, product). Saying full sentences follows the practice guide and the stem sentences used in England’s teaching-for-mastery materials (NCETM).'),
+    h('li',{},'Representations: equal groups, arrays, number lines, base-ten blocks, area models, bar pictures, and cube layers appear next to the number sentence, then fade to numbers only (concrete-representational-abstract). In numbers-only practice a child can still tap "Show a picture". Going back to a picture when needed is part of the approach, not a step backward (NCETM).'),
     h('li',{},'Number lines: skip counting, missing factors, and multiples use jumps on a number line.'),
-    h('li',{},'Word problems: students name the problem type (equal groups, array, or compare) before solving. Some problems include a number that does not help, to practice ignoring it. Two-step problems start with a plan question.'),
+    h('li',{},'Word problems: students name the problem type (equal groups, array, or compare) before solving, as in schema-based instruction (Jitendra and colleagues; Fuchs and colleagues). Some problems include a number that does not help, to practice ignoring it. Two-step problems start with a plan question.'),
     h('li',{},'Timed activities: Quick practice is short (1 minute) and comes after a strategy is taught. A chart shows past scores with a "meet or beat" goal, and each mistake is fixed right away using the strategy. A no-timer option is there for children who find the clock stressful.'),
-    h('li',{},'Strategies before speed: Woodward (2006) found that 4th graders, including students with learning disabilities, did better on later checks when strategy teaching was combined with timed practice than with timed practice alone. The Fact Builder teaches one strategy per fact family (doubles, tens, half of ten, ten take away one group, and so on).'),
+    h('li',{},'Strategies before speed: Woodward (2006) found that 4th graders, including students with learning disabilities, did better on later checks when strategy teaching was combined with timed practice than with timed practice alone. The Fact Builder teaches one strategy per fact family, in an order where later families build on earlier ones (doubles, tens, half of ten, ten take away one group), much like the linked times tables in England’s NCETM materials (2, 4 and 8; 3, 6 and 9).'),
     h('li',{},'From pictures to the written method: Flores, Hinton, and Schweck (2014) taught 2-digit multiplication to students with learning disabilities by moving from base-ten blocks to drawings to numbers, with a step-by-step strategy. All four students reached mastery. The grade 4 and 5 lessons follow the same path, with a short checklist: estimate, multiply the ones, write a zero and multiply the tens, add.'),
     h('li',{},'Mixing known and new facts: in Quick practice, about 2 of every 3 facts are ones the child already knows, mixed with 1 still being learned. This borrows from incremental rehearsal (Burns, 2005; Codding, Archer, and Connell, 2010).'),
-    h('li',{},'Fixing mistakes: a missed fact is shown with its answer, then hidden, then typed from memory, like Cover-Copy-Compare (Skinner and colleagues, 1989).'),
-    h('li',{},'Mastery and review: 4 of 5 right on the first try passes a session. A unit needs passing sessions with pictures and with numbers only. Seven days after mastery, a 5-problem review appears. A score of 3 or less unlocks a boost lesson, and reviews then space out over time.'),
-    h('li',{},'Numbers do not repeat between sessions. Each problem family remembers what it has used in this browser and picks new numbers until it runs out. Fact families are small (about 17 facts), so facts do come back in later sessions on purpose, in a new order and mix.'),
+    h('li',{},'Fixing mistakes: in Quick practice, a missed fact is shown with its answer, then hidden, then typed from memory, like Cover-Copy-Compare (Skinner and colleagues, 1989).'),
+    h('li',{},`Mastery and review: ${OWN_PASS} of ${OWN_N} right on the first try passes a session. A unit needs passing sessions with pictures and with numbers only. Seven days after mastery, a ${REVIEW_N}-problem review appears. Fewer than ${REVIEW_PASS} right unlocks a boost lesson, and reviews then space out over time.`),
+    h('li',{},'Questions do not repeat. Each lesson remembers the problems it has used for each learner in this browser and picks new ones, including new stories and pictures for the same skill, until it has used them all. Fact families ask each fact in several ways (a number sentence, an equal-groups story, an array story, and from grade 3 a missing factor), so a fact comes back on purpose, but as a different question.'),
     h('li',{},'Keep in mind: some of these studies are small (one had 4 students, another had 1). The practice guide is the strongest evidence. Use Quick practice scores to show a child their own growth, never to compare children.'),
-    h('li',{},'Progress is saved in this browser on this device.')))}
+    h('li',{},'Progress is saved in this browser on this device, separately for each learner.')))}
 
 function openSettings(){
   const box=h('div',{class:'sheet',tabindex:'-1'});
