@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fraction Steps</title>
-<script src="lc/catalog.js"></script><script src="lc/nav.js"></script>
+<script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
 <style>
 /* VOICE everyday learning: calm, quiet, one idea on screen at a time
    IDEA a classroom set of paper fraction strips, circles and counters laid on a number line
@@ -62,6 +62,16 @@ nav.steps{position:sticky;top:0;z-index:5}
 @media (max-width:440px){.navb{font-size:15px;padding:6px 10px}.navb .nw{display:none}}
 .lt h2{font-size:clamp(28px,4vw,38px)}
 .goal{color:var(--mute);margin:6px 0 0}
+/* teacher voice */
+.spk{min-height:40px;min-width:44px;padding:4px 10px;margin-left:6px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--blue);font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;vertical-align:middle}
+.spk:focus-visible,.navb:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#vpanel{position:fixed;z-index:50;right:max(4vw,12px);top:64px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 80px);overflow:auto;background:var(--bg);color:var(--ink);border:2px solid var(--blue);border-radius:16px;padding:14px 16px;display:grid;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#vpanel[hidden]{display:none}
+#vpanel .vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#vpanel .vrow>span{flex:1}
+#vpanel button.opt{min-height:44px;padding:6px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px;cursor:pointer}
+#vpanel button.opt[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+#vpanel select{min-height:44px;width:100%;font:inherit;font-size:16px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+#vpanel .vnote{font-size:15px;color:var(--mute);margin:0}
 section.part{margin-top:30px}
 .ph{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .ph h3{font-size:22px}
@@ -234,7 +244,8 @@ details.tn summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;a
 </style>
 </head>
 <body>
-<div class="sitebar"><nav id="nav" aria-label="Go to"><a class="navb" href="index.html">🏠 Learning Corner</a><a class="navb" href="index.html#topic/fractions">🍕 Fractions<span class="nw"> by grade</span></a><a class="navb" href="#for-teachers">For teachers</a></nav></div>
+<div class="sitebar"><nav id="nav" aria-label="Go to"><a class="navb" href="index.html">🏠 Learning Corner</a><a class="navb" href="index.html#topic/fractions">🍕 Fractions<span class="nw"> by grade</span></a><a class="navb" href="#for-teachers">For teachers</a><button type="button" class="navb" id="voiceBtn" aria-expanded="false" aria-controls="vpanel">🔊 Voice</button></nav></div>
+<div id="vpanel" role="dialog" aria-label="Voice settings" hidden></div>
 <header>
   <div class="wrap hd">
     <div>
@@ -339,6 +350,72 @@ const NW=['zero','one','two','three','four','five','six','seven','eight','nine',
 const W=(n,d)=>`${NW[n]??n} ${n===1?UN[d]:NM[d]}`;
 const pl=(n,s,p)=>n===1?s:(p||s+'s');
 
+/* ---------- teacher voice: the natural voice (lc/voice.js) when it is on and ready, the device voice otherwise ---------- */
+const VS={on:true,slow:true,vol:85,uri:''};
+try{Object.assign(VS,JSON.parse(localStorage.getItem('fracsteps.voice')||'{}'))}catch(e){}
+const vsave=()=>{try{localStorage.setItem('fracsteps.voice',JSON.stringify(VS))}catch(e){}};
+const TTS='speechSynthesis'in window&&'SpeechSynthesisUtterance'in window?window.speechSynthesis:null;
+const natural=()=>!!(window.LCVoice&&LCVoice.active()),devRate=()=>VS.slow?.8:.95;
+const NOVELTY=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Ralph|Fred|Kathy|Grandma|Grandpa|Eddy|Flo|Reed|Rocko|Sandy|Shelley/i;
+const vScore=v=>{let n=0,s=v.name;if(/Natural|Neural/i.test(s))n+=50;if(/Premium|Enhanced/i.test(s))n+=40;if(/Google US English/i.test(s))n+=30;if(/Ava|Samantha|Allison|Susan|Zoe|Aria|Jenny|Serena|Nicky/i.test(s))n+=20;if(/en.US/i.test(v.lang))n+=10;return n};
+let voices=[];
+function loadVoices(){if(!TTS)return;voices=TTS.getVoices().filter(v=>/^en/i.test(v.lang)&&!NOVELTY.test(v.name)).sort((a,b)=>vScore(b)-vScore(a));if(voices.length&&!voices.some(v=>v.voiceURI===VS.uri))VS.uri=voices[0].voiceURI}
+if(TTS){loadVoices();if(TTS.addEventListener)TTS.addEventListener('voiceschanged',loadVoices)}
+let vq=[],vbusy=false,vrun=0;
+function hush(){vrun++;vq=[];vbusy=false;if(TTS)TTS.cancel();if(window.LCVoice)LCVoice.stop()}
+function vpump(run){
+  if(run!==vrun||vbusy||!vq.length)return;
+  vbusy=true;const text=vq.shift();let once=false,t=0;
+  const done=()=>{if(once)return;once=true;clearTimeout(t);if(run!==vrun)return;vbusy=false;setTimeout(()=>vpump(run),/\?$/.test(text)?520:320)};
+  const dev=()=>{if(run!==vrun)return;if(!TTS){done();return}
+    const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=devRate();u.pitch=1;u.volume=Math.max(.05,VS.vol/100);
+    const v=voices.find(x=>x.voiceURI===VS.uri);if(v)u.voice=v;
+    t=setTimeout(done,text.length*140+3000);u.onend=done;u.onerror=done;TTS.speak(u);if(TTS.paused)TTS.resume()};
+  if(natural()){LCVoice.utter(text,{rate:devRate(),volume:VS.vol/100}).then(done,dev);return}
+  dev();
+}
+/* page HTML to the words a teacher would say: fractions as fractions, no pictures or buttons */
+function speech(x){
+  const d=document.createElement('div');if(typeof x==='string')d.innerHTML=x;else d.append(x.cloneNode(true));
+  d.querySelectorAll('svg,button,input,.dots,.lbl,[hidden]').forEach(e=>e.remove());
+  d.querySelectorAll('.fr').forEach(f=>{const n=f.querySelector('.nu'),de=f.querySelector('.de');f.replaceWith(` ${n?n.textContent:''}/${de?de.textContent:''} `)});
+  d.querySelectorAll('.op').forEach(o=>o.replaceWith(` ${o.textContent} `));
+  d.querySelectorAll('p,div,li,h4,h3,h2').forEach(e=>e.append(' '));
+  return d.textContent.replace(/Say it:/g,'').replace(/[✓✔]/g,'').replace(/\s+/g,' ').replace(/\s+([.,?!])/g,'$1').trim();
+}
+function speak(x,{queue=false}={}){
+  if(!VS.on||!(TTS||natural()))return;const text=speech(x);if(!text)return;
+  if(!queue)hush();
+  const parts=text.split(/(?<=[.?!])\s+/).map(s=>s.trim()).filter(Boolean);
+  if(natural())LCVoice.prefetch(parts,{speed:LCVoice.speedFor(devRate()),urgent:true});
+  vq.push(...parts);vpump(vrun);
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
+document.addEventListener('click',e=>{const b=e.target.closest('.spk');if(!b)return;const t=b.dataset.say||b.closest('.say,.goalrow,.phead,.stp');if(t)speak(b.dataset.say?b.dataset.say:t.matches('.phead')?t.closest('.pcard,.warm').querySelector('.pq'):t.matches('.stp')?b.closest('.wgrid').querySelector('#slist li.now'):t.querySelector('.say-t')||t)});
+/* voice settings panel */
+const vpanel=document.getElementById('vpanel'),vbtn=document.getElementById('voiceBtn');
+const vtest=()=>speak("Hi there. I'm so glad you're here. Let's learn about fractions together, one step at a time.");
+function drawVoice(){
+  const E=(t,a,...k)=>{const e=document.createElement(t);for(const n in a||{}){if(n==='class')e.className=a[n];else if(n==='onclick'||n==='onchange'||n==='oninput')e[n]=a[n];else e.setAttribute(n,a[n])}e.append(...k.filter(x=>x!=null));return e};
+  const opt=(on,label,f)=>E('button',{type:'button',class:'opt','aria-pressed':on,onclick(){f();drawVoice()}},label);
+  const sel=voices.length>1?E('select',{'aria-label':'Choose a device voice',onchange(e){VS.uri=e.target.value;vsave();vtest()}},...voices.map(v=>E('option',{value:v.voiceURI},v.name))):null;if(sel)sel.value=VS.uri;
+  vpanel.textContent='';
+  vpanel.append(...[E('div',{class:'vrow'},E('h3',{style:'flex:1;margin:0'},'Voice'),E('button',{type:'button',class:'opt',onclick:closeVoice},'Close')),
+    E('div',{class:'vrow'},E('span',{},'Teacher voice'),opt(VS.on,'On',()=>{VS.on=true;vsave();vtest()}),opt(!VS.on,'Off',()=>{VS.on=false;vsave();hush()})),
+    VS.on&&window.LCVoice?LCVoice.panel({test:vtest}):null,
+    VS.on?E('div',{class:'vrow'},E('span',{},'Speed'),opt(VS.slow,'Calm',()=>{VS.slow=true;vsave();vtest()}),opt(!VS.slow,'A bit faster',()=>{VS.slow=false;vsave();vtest()})):null,
+    VS.on?E('label',{},'Volume',E('input',{type:'range',min:'10',max:'100',step:'5',value:VS.vol,style:'width:100%;height:34px',oninput(e){VS.vol=+e.target.value;vsave()},onchange:vtest})):null,
+    VS.on&&sel?E('label',{},'Device voice',sel):null,
+    E('p',{class:'vnote'},'The voice reads the example steps, the questions and the feedback. Tap any 🔊 to hear something again.')].filter(Boolean));
+}
+function openVoice(){drawVoice();vpanel.hidden=false;vbtn.setAttribute('aria-expanded','true');vpanel.querySelector('button').focus()}
+function closeVoice(){vpanel.hidden=true;vbtn.setAttribute('aria-expanded','false')}
+vbtn.onclick=e=>{e.stopPropagation();vpanel.hidden?openVoice():closeVoice()};
+vpanel.addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',()=>{if(!vpanel.hidden)closeVoice()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vpanel.hidden){closeVoice();vbtn.focus()}});
+if(window.LCVoice&&LCVoice.justTurnedOn())setTimeout(openVoice,300);
+
 /* ---------- drawing helpers ---------- */
 const F=(n,d,c='a',big)=>`<span class="fr${big?' big':''}"><span class="nu ${c}">${n}</span><span class="de">${d}</span></span>`;
 const MX=(w,n,d,c='a')=>`<span class="mx"><span class="w">${w}</span>${F(n,d,c)}</span>`;
@@ -346,7 +423,7 @@ const op=s=>`<span class="op">${s}</span>`;
 const eq=(...p)=>`<div class="eq">${p.join('')}</div>`;
 const cap=t=>`<p class="cap">${t}</p>`;
 const row=(l,s)=>`<div class="row"><div class="rl">${l}</div><div>${s}</div></div>`;
-const say=t=>t?`<p class="say"><b>Say it:</b> ${t}</p>`:'';
+const say=t=>t?`<p class="say"><b>Say it:</b> ${t}<button type="button" class="spk" aria-label="Hear it">🔊</button></p>`:'';
 const items=a=>`<div class="items">${a.join('')}</div>`;
 const trio=a=>`<div class="trio">${a.join('')}</div>`;
 function fills(d,parts){const f=[];parts.forEach(([k,c])=>{for(let i=0;i<k;i++)f.push(c)});while(f.length<d)f.push('');return f.slice(0,d)}
@@ -720,13 +797,13 @@ function Practice(el,gens,o={}){
   function draw(){
     if(i>=probs.length)return end();
     p=probs[i];tried=0;shown=false;sel=null;
-    el.innerHTML=`<div class="phead"><span>${p.retry?'<span class="rt">One more like that one</span>':`${o.label||'Problem'} ${i+1} of ${probs.length}`}</span><span class="dots" aria-hidden="true">${probs.map((_,j)=>`<i class="${j<i?'d':j===i?'c':''}"></i>`).join('')}</span></div>
+    el.innerHTML=`<div class="phead"><span>${p.retry?'<span class="rt">One more like that one</span>':`${o.label||'Problem'} ${i+1} of ${probs.length}`}<button type="button" class="spk" aria-label="Hear the question">🔊</button></span><span class="dots" aria-hidden="true">${probs.map((_,j)=>`<i class="${j<i?'d':j===i?'c':''}"></i>`).join('')}</span></div>
       <div class="pq">${p.q}</div>
       ${p.pic?(p.fade?`<button type="button" class="ghost showpic">Show the picture</button><div class="ppic" hidden>${p.pic}</div>`:`<div class="ppic">${p.pic}</div>`):''}
       <div class="pin${p.pics?' pics':''}">${input(p)}</div>
       <div class="fb" aria-live="polite"></div>
       <div class="btns"><button type="button" class="go chk">Check</button></div>`;
-    if(touched){const f=el.querySelector('input');if(f)f.focus({preventScroll:true})}
+    if(touched){const f=el.querySelector('input');if(f)f.focus({preventScroll:true});speak(el.querySelector('.pq'))}
   }
   function read(){
     const q=s=>el.querySelector(s),num=s=>parseInt((q(s)||{}).value,10);
@@ -740,20 +817,22 @@ function Practice(el,gens,o={}){
   const solBox=h=>`<div class="sol"><p class="solh">${h}</p>${p.sol}${say(p.say)}</div>`;
   function check(){
     const v=read(),fb=el.querySelector('.fb'),btns=el.querySelector('.btns');
-    if(v===null&&['frac','num','mix','den'].includes(p.kind)){fb.innerHTML=`<div class="msg no">${p.kind==='frac'?'Type both numbers first.':p.kind==='mix'?'Type the whole number and the top number first.':p.kind==='den'?'Type the bottom number first.':'Type the top number first.'}</div>`;return}
+    if(v===null&&['frac','num','mix','den'].includes(p.kind)){fb.innerHTML=`<div class="msg no">${p.kind==='frac'?'Type both numbers first.':p.kind==='mix'?'Type the whole number and the top number first.':p.kind==='den'?'Type the bottom number first.':'Type the top number first.'}</div>`;speak(fb);return}
     const r=p.check(v);
-    if(r.blank){fb.innerHTML=`<div class="msg no">${r.msg}</div>`;return}
+    if(r.blank){fb.innerHTML=`<div class="msg no">${r.msg}</div>`;speak(fb);return}
     if(r.ok){
       if(!tried&&!shown)first++;
       fb.innerHTML=`<div class="msg ok"><strong>&#10003; Correct.</strong>${r.msg}</div>${solBox('See why')}`;
       btns.innerHTML=`<button type="button" class="go next">${i+1<probs.length||(p.missed&&extra<3)?'Next problem':'Finish'}</button>`;
       el.querySelector('.next').focus({preventScroll:true});
+      speak(fb.querySelector('.msg'));if(p.say)speak('Say it with me. '+p.say,{queue:true});
     }else{
       tried++;p.missed=true;
       const wp=wrongPic(p,v);
       let h=`<div class="msg no"><strong>Not yet.</strong>${r.msg}</div>${wp?`<div class="sol wrong"><p class="solh">Where it went wrong</p>${wp}</div>`:''}`;
       if(tried>=2&&!shown){shown=true;h+=solBox('Here is how it works')}
       fb.innerHTML=h;
+      speak("Not yet. That's okay. "+speech(fb.querySelector('.msg')).replace(/^Not yet\.\s*/,''));if(shown&&p.say)speak("Here is how it works. "+p.say,{queue:true});
       btns.innerHTML=`<button type="button" class="go chk">Try again</button>${shown?'<button type="button" class="ghost next">Next problem</button>':'<button type="button" class="ghost how">Show me how</button>'}`;
       const f=el.querySelector('.pin input');if(f)f.focus({preventScroll:true});
     }
@@ -767,6 +846,7 @@ function Practice(el,gens,o={}){
     el.innerHTML=`<div class="end"><h4>You got ${first} of ${probs.length} right on the first try.</h4><p>${extra?`You also practiced ${extra} extra ${pl(extra,'problem')} on the tricky parts. `:''}${o.endMsg||(great?'Great work. You are ready for the next step.':'Good effort. Try a new set to make it stick.')}</p>
       <div class="btns"><button type="button" class="${great&&o.next?'ghost':'go'} again">New problems</button>${o.next?`<a class="${great?'go':'ghost'}" href="#lesson-${o.next}">Next lesson</a>`:''}</div></div>`;
     if(o.onEnd)o.onEnd(great);
+    speak(el.querySelector('.end'));
   }
   el.onclick=e=>{
     touched=true;
@@ -777,7 +857,7 @@ function Practice(el,gens,o={}){
     if(t.classList.contains('tk')){el.querySelectorAll('.tk.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');sel=+t.dataset.i;return}
     if(t.classList.contains('ch')){el.querySelectorAll('.ch.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');sel=t.dataset.v;return}
     if(t.classList.contains('chk'))return check();
-    if(t.classList.contains('how')){shown=true;t.closest('.btns').innerHTML='<button type="button" class="go chk">Try again</button><button type="button" class="ghost next">Next problem</button>';el.querySelector('.fb').insertAdjacentHTML('beforeend',solBox('Here is how it works'));return}
+    if(t.classList.contains('how')){shown=true;t.closest('.btns').innerHTML='<button type="button" class="go chk">Try again</button><button type="button" class="ghost next">Next problem</button>';el.querySelector('.fb').insertAdjacentHTML('beforeend',solBox('Here is how it works'));if(p.say)speak('Here is how it works. '+p.say);return}
     if(t.classList.contains('next'))return next();
     if(t.classList.contains('again'))return make();
   };
@@ -989,11 +1069,11 @@ function render(k){
   const l=L[k];drawStepper(k);
   const prevA=k>0?`<a class="ghost" href="#lesson-${k}">&larr; Lesson ${k}</a>`:`<a class="ghost" href="index.html">&larr; Learning Corner</a>`;
   const nextA=k<L.length-1?`<a class="go" href="#lesson-${k+2}">Lesson ${k+2} &rarr;</a>`:`<a class="go" href="index.html">Done: back to Learning Corner</a>`;
-  let h=`<div class="lt"><h2>Lesson ${k+1}: ${l.title}</h2><div class="tnav">${prevA}${k<L.length-1?`<a class="ghost" href="#lesson-${k+2}">Lesson ${k+2} &rarr;</a>`:''}</div></div><p class="goal">${l.goal}</p>`;
+  let h=`<div class="lt"><h2>Lesson ${k+1}: ${l.title}</h2><div class="tnav">${prevA}${k<L.length-1?`<a class="ghost" href="#lesson-${k+2}">Lesson ${k+2} &rarr;</a>`:''}</div></div><p class="goal goalrow">${l.goal}<button type="button" class="spk" aria-label="Hear the lesson goal" data-say="${`Lesson ${k+1}. ${l.title} ${l.goal}`.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}">🔊</button></p>`;
   if(k>0)h+=`<section class="part"><div class="ph"><h3>Quick remember</h3><span class="tag">from earlier lessons</span></div><div class="warm" id="warm"></div></section>`;
   if(l.ex)h+=`<section class="part"><div class="ph"><h3>Watch</h3><span class="tag">one step at a time</span></div>
     <div class="exs">${l.ex.map((e,i)=>`<button type="button" class="exb" data-x="${i}">Example ${i+1}</button>`).join('')}</div>
-    <div class="wgrid"><div class="board" id="board" aria-live="polite"></div><div class="stp"><h4 id="extitle"></h4><ol id="slist"></ol><div id="exsay"></div>
+    <div class="wgrid"><div class="board" id="board" aria-live="polite"></div><div class="stp"><h4><span id="extitle"></span><button type="button" class="spk" aria-label="Hear this step">🔊</button></h4><ol id="slist"></ol><div id="exsay"></div>
     <div class="btns"><button type="button" class="ghost" id="back">Back</button><button type="button" class="go" id="fwd">Next step</button></div></div></div></section>`;
   if(l.mixed)h+=`<section class="part"><div class="ph"><h3>Your rule cards</h3></div><div class="rules">${L.filter(x=>x.rule).map(x=>ruleCard(x.rule)).join('')}</div></section>`;
   h+=`<section class="part"><div class="ph"><h3>Your turn</h3><span class="tag">${l.gens.length} problems</span></div><div class="pcard" id="prac"></div></section>`;
@@ -1004,7 +1084,7 @@ function render(k){
   if(k>0){const pool=[...new Set(L.slice(0,k).flatMap(x=>x.gens))];Practice(document.getElementById('warm'),shuffle(pool).slice(0,3),{label:'Question',hide:true,endMsg:'Nice remembering. Now on to something new.'})}
   if(l.ex){
     let x=0,s=0;const board=document.getElementById('board'),list=document.getElementById('slist'),back=document.getElementById('back'),fwd=document.getElementById('fwd'),exsay=document.getElementById('exsay');
-    const show=()=>{const e=l.ex[x],last=s===e.s.length-1;
+    const show=(talk)=>{const e=l.ex[x],last=s===e.s.length-1;
       main.querySelectorAll('.exb').forEach((b,i)=>{b.classList.toggle('on',i===x);b.setAttribute('aria-pressed',i===x)});
       document.getElementById('extitle').textContent=e.t;
       board.innerHTML=e.s[s][1];
@@ -1012,10 +1092,11 @@ function render(k){
       exsay.innerHTML=last?say(e.say):'';
       back.disabled=s===0&&x===0;
       fwd.textContent=!last?'Next step':x<l.ex.length-1?'Next example':'Start practice';
+      if(talk){speak((s===0?e.t+'. ':'')+speech(e.s[s][0]));if(last&&e.say)speak('Say it with me. '+e.say,{queue:true})}
     };
-    main.querySelectorAll('.exb').forEach(b=>b.onclick=()=>{x=+b.dataset.x;s=0;show()});
-    fwd.onclick=()=>{const e=l.ex[x];if(s<e.s.length-1)s++;else if(x<l.ex.length-1){x++;s=0}else{document.getElementById('prac').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return}show()};
-    back.onclick=()=>{if(s>0)s--;else if(x>0){x--;s=l.ex[x].s.length-1}show()};
+    main.querySelectorAll('.exb').forEach(b=>b.onclick=()=>{x=+b.dataset.x;s=0;show(true)});
+    fwd.onclick=()=>{const e=l.ex[x];if(s<e.s.length-1)s++;else if(x<l.ex.length-1){x++;s=0}else{hush();document.getElementById('prac').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return}show(true)};
+    back.onclick=()=>{if(s>0)s--;else if(x>0){x--;s=l.ex[x].s.length-1}show(true)};
     show();
   }
   Practice(document.getElementById('prac'),l.mixed?shuffle([...l.gens]):l.gens,{fadeFrom:4,next:k<L.length-1?k+2:null,onEnd:great=>{if(great){done[k+1]=1;save();drawStepper(k)}}});
@@ -1028,7 +1109,7 @@ function route(){
   if(m)k=Math.min(Math.max(+m[1]-1,0),L.length-1);
   else{let saved=0;try{saved=+(localStorage.getItem('fracsteps.last')||0)}catch(e){}k=Math.min(Math.max(saved||0,0),L.length-1);try{history.replaceState(null,'','#lesson-'+(k+1))}catch(e){}}
   try{localStorage.setItem('fracsteps.last',String(k))}catch(e){}
-  if(k!==cur){const first=cur<0;cur=k;touched=false;render(k);if(!first)window.scrollTo(0,0)}
+  if(k!==cur){const first=cur<0;cur=k;touched=false;hush();render(k);if(!first)window.scrollTo(0,0)}
 }
 addEventListener('hashchange',route);
 route();

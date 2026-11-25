@@ -27,11 +27,20 @@
     if(n>0)o.push(under1000(n));return o.join(' ')}
   function numWords(s){s=s.replace(/,/g,'');if(s.includes('.')){const[a,b]=s.split('.');return (a?intWords(+a):'zero')+' point '+b.split('').map(d=>ONES[+d]).join(' ')}return intWords(+s)}
   const plural=w=>/six$/.test(w)?w+'es':/y$/.test(w)?w.slice(0,-1)+'ies':w+'s';
-  const ORD={2:['half','halves'],3:['third','thirds'],4:['fourth','fourths'],5:['fifth','fifths'],6:['sixth','sixths'],7:['seventh','sevenths'],8:['eighth','eighths'],9:['ninth','ninths'],10:['tenth','tenths'],12:['twelfth','twelfths'],100:['hundredth','hundredths']};
+  /* fraction names for any bottom number: 4 fourth, 16 sixteenth, 24 twenty-fourth */
+  const ORDX={one:'first',two:'second',three:'third',five:'fifth',eight:'eighth',nine:'ninth',twelve:'twelfth'};
+  function ordinal(d){const w=intWords(d).replace(/^one (hundred|thousand|million)$/,'$1'),m=/(.*?)([a-z]+)$/.exec(w),last=m[2];
+    return m[1]+(ORDX[last]||(/y$/.test(last)?last.slice(0,-1)+'ieth':last+'th'))}
+  function fracName(d,many){if(d===2)return many?'halves':'half';if(d===4&&!many)return 'fourth';const o=ordinal(d);return many?o+'s':o}
+  const LETTER={a:'ay',b:'bee',c:'see',d:'dee',e:'ee',f:'eff',g:'jee',h:'aitch',i:'eye',j:'jay',k:'kay',l:'ell',m:'em',n:'en',o:'oh',p:'pee',q:'cue',r:'are',s:'ess',t:'tee',u:'you',v:'vee',w:'double you',x:'ex',y:'why',z:'zee'};
   function prepare(t){
+    const one=/^\s*([A-Za-z])\s*[.?!]?\s*$/.exec(String(t??''));if(one)return LETTER[one[1].toLowerCase()];
     return String(t??'')
       .replace(/\p{Extended_Pictographic}|️/gu,'')
-      .replace(/(\d+)\s*\/\s*(\d+)/g,(m,n,d)=>{n=+n;d=+d;const w=ORD[d];return w?`${intWords(n)} ${n===1?w[0]:w[1]}`:`${intWords(n)} over ${intWords(d)}`})
+      .replace(/\$(\d+)\.(\d\d)\b/g,(m,d,c)=>{const ds=+d===1?'1 dollar':d+' dollars';return +c?`${ds} and ${+c} ${+c===1?'cent':'cents'}`:ds})
+      .replace(/\$(\d+)\b/g,(m,d)=>+d===1?'1 dollar':d+' dollars').replace(/(\d+)\s*¢/g,(m,n)=>+n===1?'1 cent':n+' cents')
+      .replace(/\b(\d+)\s+(\d+)\s*\/\s*(\d+)\b/g,'$1 and $2/$3')
+      .replace(/(\d+)\s*\/\s*(\d+)/g,(m,n,d)=>{n=+n;d=+d;if(d<2||d>1000)return `${intWords(n)} over ${intWords(d)}`;return `${intWords(n)} ${fracName(d,n!==1)}`})
       .replace(/10\^(\d+)/g,(m,k)=>`ten to the power of ${intWords(+k)}`)
       .replace(/×/g,' times ').replace(/÷/g,' divided by ').replace(/−/g,' minus ').replace(/\s\+\s/g,' plus ').replace(/\s=\s/g,' equals ')
       .replace(/\b(\d+)s\b/g,(m,n)=>plural(intWords(+n)))
@@ -136,8 +145,64 @@
       for(const p of parts){let a;try{a=await synth(p,speed,true)}catch(e){return}if(run!==runId)return;await play(a.pcm,a.sr,volume);if(run!==runId)return;
         await new Promise(r=>setTimeout(r,/\?$/.test(p)?520:320))}},
     /* make sentences ahead of time; urgent ones (about to be spoken) go before background ones */
-    prefetch(list,{speed=.85,urgent=false}={}){if(!ready)return;for(const t of list){const p=prepare(t);if(p)synth(p,speed,urgent).catch(()=>{})}},
-    stop:stopAudio
+    prefetch(list,{speed=.85,urgent=false}={}){if(!ready)return;for(const t of list)for(const x of segments(String(t??''))){const p=prepare(x.src);if(p)synth(p,speed,urgent).catch(()=>{})}},
+    stop:stopAudio,
+    /* the natural speed that matches a page's device-voice rate */
+    speedFor(rate){return rate==null?.85:rate<.5?.6:rate<.68?.72:rate<.82?.85:.95},
+    /* For pages that keep their own speech queue: say one piece of text in the natural voice.
+       Resolves when it has been said (or was stopped). Rejects before any sound if the natural
+       voice cannot say it, so the page can use the device voice for it instead.
+       Options: rate (the page's device rate) or speed, volume (0-1), onstart(),
+       boundary(charIndex): called about when each word of the original text is said. */
+    async utter(text,{rate,speed,volume=.85,onstart,boundary}={}){
+      if(!LCVoice.active())throw new Error('natural voice not ready');
+      const sp=speed??LCVoice.speedFor(rate),run=runId,raw=String(text??'');
+      const list=segments(raw).map(x=>({...x,t:prepare(x.src)})).filter(x=>x.t);if(!list.length)return;
+      list.forEach(x=>{x.p=synth(x.t,sp,true);x.p.catch(()=>{})});
+      let played=false;
+      for(let i=0;i<list.length;i++){const x=list[i];let a;
+        try{a=await x.p}catch(e){if(!played)throw e;return}
+        if(run!==runId)return;
+        if(boundary)words(x,a.pcm.length/a.sr,boundary,run);
+        try{const pl=play(a.pcm,a.sr,volume);if(!played){played=true;if(onstart)onstart()}await pl}catch(e){if(!played)throw e;return}
+        if(run!==runId)return;
+        if(i<list.length-1)await new Promise(r=>setTimeout(r,/\?\s*$/.test(x.src)?480:300))}},
+    /* A settings section any page can show: turn on, progress, errors, test. test() should speak through the page. */
+    panel({test}={}){return panel(test)}
   };
+  /* split text at sentence ends, keeping where each piece starts in the original */
+  function segments(raw){const out=[];let st=0,m;const re=/[.?!]+["”')]*\s+/g;
+    while((m=re.exec(raw))){const end=m.index+m[0].length;out.push({off:st,src:raw.slice(st,end)});st=end}
+    if(st<raw.length)out.push({off:st,src:raw.slice(st)});return out}
+  /* there is no word timing from the model, so spread the words over the sentence by length */
+  function words(x,dur,cb,run){const ws=[];let m;const re=/\S+/g;while((m=re.exec(x.src)))ws.push({i:x.off+m.index,w:m[0].replace(/[^\p{L}\p{N}]/gu,'').length+2+(/[,;:]$/.test(m[0])?3:0)});
+    const tot=ws.reduce((s,a)=>s+a.w,0)||1;let acc=0;
+    for(const a of ws){const t=dur*acc/tot*1000;acc+=a.w;setTimeout(()=>{if(run===runId)cb(a.i)},t)}}
+  /* ---------- shared settings section ---------- */
+  function panel(test){
+    if(!document.getElementById('lcv-css')){const st=document.createElement('style');st.id='lcv-css';st.textContent=
+      '.lcv{display:grid;gap:8px;padding:12px 14px;border:2px solid #d5dee8;border-radius:12px;background:#f6f9fc;font-size:16px;line-height:1.4;text-align:left}'+
+      '.lcv .lcv-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}.lcv .lcv-on{background:#e1f4e7;color:#1d6e3f;border-radius:99px;padding:1px 10px;font-size:14px;font-weight:600}'+
+      '.lcv p{margin:0;color:#4a5568;font-size:15px}.lcv .lcv-row{display:flex;flex-wrap:wrap;gap:8px}'+
+      '.lcv button{font:inherit;font-size:16px;min-height:44px;padding:6px 14px;border-radius:10px;border:2px solid #2c5c94;background:#fff;color:#2c5c94;cursor:pointer}'+
+      '.lcv button.lcv-main{background:#2c5c94;color:#fff}.lcv button:focus-visible{outline:3px solid #f5c542;outline-offset:2px}'+
+      '.lcv .lcv-bar{height:10px;border-radius:99px;background:#e2e8f0;overflow:hidden}.lcv .lcv-bar i{display:block;height:100%;background:#2f855a;transition:width .3s}';
+      document.head.append(st)}
+    const el=document.createElement('div');el.className='lcv';
+    const E=(t,a,...k)=>{const e=document.createElement(t);for(const n in a||{}){if(n==='class')e.className=a[n];else if(n==='onclick')e.onclick=a[n];else e.setAttribute(n,a[n])}e.append(...k.filter(x=>x!=null));return e};
+    const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    const draw=()=>{el.textContent='';el.append(E('div',{class:'lcv-h'},'Natural voice',LCVoice.active()?E('span',{class:'lcv-on'},'On'):null));
+      if(!supported()){el.append(E('p',{},'This browser cannot run the natural voice, so the device voice is used.'));return}
+      const pc=Math.round(progress*100);
+      if(LCVoice.wanted()&&state==='loading'){el.append(E('p',{},`Getting the voice ready: ${pc}%. You can keep going. The device voice is used until it is ready.`),
+        E('div',{class:'lcv-bar',role:'progressbar','aria-valuenow':pc,'aria-valuemin':0,'aria-valuemax':100,'aria-label':'Natural voice download'},E('i',{style:`width:${pc}%`})));return}
+      if(LCVoice.wanted()&&state==='error'){el.append(E('p',{},'The natural voice could not load on this device, so the device voice is used.'),E('p',{style:'font-size:13px'},'Details: '+(err||'unknown')),
+        E('div',{class:'lcv-row'},E('button',{type:'button',onclick(){LCVoice.enable()}},'Try again'),E('button',{type:'button',onclick(){LCVoice.disable()}},'Use the device voice')));return}
+      if(LCVoice.active()){el.append(E('p',{},'A calm voice made right on this device'+(window.crossOriginIsolated?', using several processor cores':'')+'. On older computers it may pause for a moment before some sentences.'+(ios?' On iPhone and iPad, turn off silent mode to hear it.':'')),
+        E('div',{class:'lcv-row'},test?E('button',{type:'button',onclick(){test()}},'▶ Hear it'):null,E('button',{type:'button',onclick(){LCVoice.disable()}},'Use the device voice instead')));return}
+      el.append(E('p',{},`A calm, natural voice that sounds the same on every device. It downloads once (about ${CFG.sizeMB} MB), then also works offline. Best on Wi-Fi.`),
+        E('div',{class:'lcv-row'},E('button',{type:'button',class:'lcv-main',onclick(){LCVoice.enable()}},'Turn on natural voice')))};
+    draw();const off=LCVoice.onChange(()=>{if(!el.isConnected&&el.dataset.shown){off();return}draw()});
+    requestAnimationFrame(()=>{el.dataset.shown='1'});return el}
   if(LCVoice.wanted()&&supported()){start();if(!window.crossOriginIsolated)isolate()}
 })();

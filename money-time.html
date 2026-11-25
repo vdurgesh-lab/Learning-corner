@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lc/catalog.js"></script><script src="lc/nav.js"></script>
+<script src="lc/catalog.js"></script><script src="lc/nav.js"></script><script src="lc/voice.js"></script>
 <title>Money Time</title>
 <style>
 :root{
@@ -394,24 +394,30 @@ let lastLead='';
 function leadIn(kind){const l=LEADS[kind];if(!l||Math.random()<.3)return '';let x;do{x=l[Math.floor(Math.random()*l.length)]}while(x===lastLead);lastLead=x;return x+' '}
 const live=[];
 let voices=[],talkRun=0,talkQ=[],talking=false;
-function stopTalking(){talkRun++;talkQ=[];talking=false;if(TTS)TTS.cancel();live.length=0}
+/* natural voice (lc/voice.js) when it is on and ready; the device voice otherwise */
+const natural=()=>!!(window.LCVoice&&LCVoice.active()),devRate=()=>S.slow?.8:.95;
+function stopTalking(){talkRun++;talkQ=[];talking=false;if(TTS)TTS.cancel();if(window.LCVoice)LCVoice.stop();live.length=0}
 function pump(run){
   if(run!==talkRun||talking||!talkQ.length)return;
-  talking=true;const text=talkQ.shift();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='en-US';u.rate=S.slow?.8:.95;u.pitch=1;u.volume=Math.max(.05,S.volume/100);
-  const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)u.voice=v;
-  let doneOnce=false;
+  talking=true;const text=talkQ.shift();let doneOnce=false,guardT=0,u=null;
   const next=()=>{if(doneOnce)return;doneOnce=true;clearTimeout(guardT);const i=live.indexOf(u);if(i>=0)live.splice(i,1);if(run!==talkRun)return;talking=false;setTimeout(()=>pump(run),/\?$/.test(text)?550:320)};
-  const guardT=setTimeout(next,text.length*130+3000);
-  live.push(u);u.onend=next;u.onerror=next;TTS.speak(u);if(TTS.paused)TTS.resume();
+  const dev=()=>{if(run!==talkRun)return;if(!TTS){next();return}
+    u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US';u.rate=devRate();u.pitch=1;u.volume=Math.max(.05,S.volume/100);
+    const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)u.voice=v;
+    guardT=setTimeout(next,text.length*130+3000);
+    live.push(u);u.onend=next;u.onerror=next;TTS.speak(u);if(TTS.paused)TTS.resume()};
+  if(natural()){LCVoice.utter(text,{rate:devRate(),volume:S.volume/100}).then(next,dev);return}
+  dev();
 }
 function say(t,{queue=false,force=false,lead=null}={}){
-  if(!TTS||(!force&&(!S.voice||S.muted||S.volume===0)))return;
+  if(!(TTS||natural())||(!force&&(!S.voice||S.muted||S.volume===0)))return;
   const text=spoken((lead?leadIn(lead):'')+t);if(!text)return;
   if(!queue)stopTalking();
   const run=talkRun;
-  talkQ.push(...(text.match(/[^.?]+(?:[.?]+|$)/g)||[text]).map(x=>x.trim()).filter(Boolean));
+  const parts=(text.match(/[^.?]+(?:[.?]+|$)/g)||[text]).map(x=>x.trim()).filter(Boolean);
+  if(natural())LCVoice.prefetch(parts,{speed:LCVoice.speedFor(devRate()),urgent:true});
+  talkQ.push(...parts);
   pump(run);
 }
 let audio;
@@ -464,6 +470,8 @@ function wireAudio(){
   $('#spNorm').addEventListener('click',()=>{setA('slow',false);say('This is a little faster. Tell me if it feels too quick.')});
   $('#voicePick').addEventListener('change',e=>{setA('voiceURI',e.target.value);say("Hi there. This is how I sound.")});
   $('#testBtn').addEventListener('click',()=>{unmute();clink();chime();say("Hi there. I'm glad you're here. Let's learn about money together.")});
+  if(window.LCVoice){$('#testBtn').before(LCVoice.panel({test(){unmute();say("Hi there. I'm glad you're here. Let's learn about money together.")}}));
+    if(LCVoice.justTurnedOn())setTimeout(()=>openP(true),300)}
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stopTalking()});
   window.addEventListener('pagehide',stopTalking);
 }
